@@ -42,3 +42,22 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Editor / IDE (optionnel)
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Cursor project data (optionnel — retire cursor/ si tu veux versionner tes rules)
+.cursor/
