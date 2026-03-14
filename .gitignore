@@ -59,5 +59,6 @@ coverage/
 *.swp
 *.swo
 
-# Cursor project data (optionnel — retire cursor/ si tu veux versionner tes rules)
+# Cursor (règles / style — ne pas versionner)
+cursor/
 .cursor/
