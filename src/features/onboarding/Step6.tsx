@@ -17,7 +17,9 @@ const Step6 = () => {
       pricePerUnit: onboarding.pricePerUnit,
       quitDate: onboarding.quitDate,
       isFirstTime: onboarding.isFirstTime,
-      unlockedEtapes: [], 
+      unlockedEtapes: [],
+      relapseCount: 0,
+      bestStreak: 0,
     }
     initialize(profile)
 

@@ -1,12 +1,15 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { etapes } from '../utils/calculations'
-import { useEtapes } from '../hooks/useEtapes'
 import { EtapesRow } from './EtapesRow'
+import type { Etape } from '../types'
 
+type Props = {
+  currentEtape: Etape | null
+  nextEtape: Etape | null
+}
 
-export const EtapeList = () => {
-  const { currentEtape, nextEtape } = useEtapes()
+export const EtapeList = ({ currentEtape, nextEtape }: Props) => {
   const doneCount = currentEtape ? etapes.filter((e) => e.hours <= currentEtape.hours).length : 0
 
   return (

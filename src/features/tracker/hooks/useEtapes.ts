@@ -4,7 +4,7 @@ import { Etape } from '../types'
 import { useNow } from './useNow'
 import { useEffect, useMemo, useRef } from 'react'
 import { addEtape, getCurrentUid, saveProfile } from '@/src/services'
-import type { TrackerConfig } from '../types'
+import { trackerProfileFromStore } from '../types'
 
 
 type EtapesResult = {
@@ -49,15 +49,7 @@ export const useEtapes = (): EtapesResult => {
     })
 
     if (didUnlock) {
-      const state = useTrackerStore.getState()
-      const profile: TrackerConfig = {
-        smokingType: state.smokingType,
-        quantityPerDay: state.quantityPerDay,
-        pricePerUnit: state.pricePerUnit,
-        quitDate: state.quitDate,
-        isFirstTime: state.isFirstTime,
-        unlockedEtapes: state.unlockedEtapes,
-      }
+      const profile = trackerProfileFromStore(useTrackerStore.getState())
       console.log('[useEtapes] saving profile', { didUnlock, unlockedEtapes: profile.unlockedEtapes })
       saveProfile(uid, profile).catch((err) => console.warn('[useEtapes] saveProfile error', err))
     }
