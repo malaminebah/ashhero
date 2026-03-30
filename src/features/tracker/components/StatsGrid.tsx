@@ -4,7 +4,14 @@ import { StatsCard } from './StatsCard'
 import { useStats } from '../hooks/useStats'
 
 export const StatsCardGrid = () => {
-  const { moneySaved, cigarettesAvoided, dayCount,lifeRegained } = useStats()
+  const {
+    moneySaved,
+    cigarettesAvoided,
+    dayCount,
+    lifeRegained,
+    lifeRegainedCardLabel,
+    equivalentAvoidedLabel,
+  } = useStats()
 
   return (
     <View className="flex-row flex-wrap gap-2">
@@ -12,10 +19,14 @@ export const StatsCardGrid = () => {
         <StatsCard icon="💰" value={moneySaved} label="Économisés" />
       </View>
       <View className="flex-1 min-w-[45%]">
-        <StatsCard icon="🚬" value={cigarettesAvoided} label="Évitées" />
+        <StatsCard icon="🚬" value={cigarettesAvoided} label={equivalentAvoidedLabel} />
       </View>
       <View className="flex-1 min-w-[45%]">
-        <StatsCard icon="❤️" value={lifeRegained} label="Santé" />
+        <StatsCard
+          icon="❤️"
+          value={`${Math.round(lifeRegained)} min`}
+          label={lifeRegainedCardLabel}
+        />
       </View>
       <View className="flex-1 min-w-[45%]">
         <StatsCard icon="👑" value={dayCount} label="Jalons" />

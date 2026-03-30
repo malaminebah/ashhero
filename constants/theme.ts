@@ -7,6 +7,13 @@ import { Platform } from 'react-native'
  */
 
 /** Polices pour les composants template (ThemedText, explore, etc.) */
+/** Titres type maquette (Dashboard, Profil, onboarding). */
+export const titleSerif = Platform.select({
+  ios: 'Georgia',
+  android: 'serif',
+  default: 'serif',
+}) as string
+
 export const Fonts = {
   rounded: Platform.select({
     ios: 'System',

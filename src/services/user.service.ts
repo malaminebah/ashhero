@@ -39,6 +39,11 @@ export const getProfile = async (
     level: typeof data.level === 'number' ? data.level : 1,
     combatsWon: typeof data.combatsWon === 'number' ? data.combatsWon : 0,
     combatsLost: typeof data.combatsLost === 'number' ? data.combatsLost : 0,
+    vapeBottleVolumeMl:
+      typeof data.vapeBottleVolumeMl === 'number' ? data.vapeBottleVolumeMl : null,
+    vapeBottlePriceEuro:
+      typeof data.vapeBottlePriceEuro === 'number' ? data.vapeBottlePriceEuro : null,
+    vapeMlPerWeek: typeof data.vapeMlPerWeek === 'number' ? data.vapeMlPerWeek : null,
   } as TrackerConfig
 }
 

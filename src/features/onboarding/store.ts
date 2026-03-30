@@ -2,11 +2,14 @@ import { create } from 'zustand';
 import { OnboardingData} from './types';
 
 const initialState: OnboardingData = {
-smokingType: null ,
+  smokingType: null,
   quantityPerDay: null,
-  isFirstTime: null, 
+  isFirstTime: null,
   pricePerUnit: null,
-  quitDate: null
+  vapeBottleVolumeMl: null,
+  vapeBottlePriceEuro: null,
+  vapeMlPerWeek: null,
+  quitDate: null,
 }
 
 type OnboardingStore = OnboardingData&{

@@ -8,6 +8,9 @@ const initialState: TrackerConfig = {
   smokingType: null,
   quantityPerDay: null,
   pricePerUnit: null,
+  vapeBottleVolumeMl: null,
+  vapeBottlePriceEuro: null,
+  vapeMlPerWeek: null,
   quitDate: null,
   isFirstTime: null,
   unlockedEtapes: [],
@@ -67,6 +70,9 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         quitDate: state.quitDate?.toISOString() ?? null,
         quantityPerDay: state.quantityPerDay,
         pricePerUnit: state.pricePerUnit,
+        vapeBottleVolumeMl: state.vapeBottleVolumeMl,
+        vapeBottlePriceEuro: state.vapeBottlePriceEuro,
+        vapeMlPerWeek: state.vapeMlPerWeek,
         smokingType: state.smokingType,
         isFirstTime: state.isFirstTime,
         unlockedEtapes: state.unlockedEtapes,
@@ -86,6 +92,9 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         if (typeof state.level !== 'number') state.level = 1
         if (typeof state.combatsWon !== 'number') state.combatsWon = 0
         if (typeof state.combatsLost !== 'number') state.combatsLost = 0
+        if (typeof state.vapeBottleVolumeMl !== 'number') state.vapeBottleVolumeMl = null
+        if (typeof state.vapeBottlePriceEuro !== 'number') state.vapeBottlePriceEuro = null
+        if (typeof state.vapeMlPerWeek !== 'number') state.vapeMlPerWeek = null
       },
     }
   )

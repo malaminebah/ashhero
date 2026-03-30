@@ -21,9 +21,14 @@ export const ProfileScreenBody = () => {
   const xp = useTrackerStore((s) => s.xp)
   const level = useTrackerStore((s) => s.level)
 
-  const { moneySaved, cigarettesAvoided, dayCount } = useStats()
-  const avoidedLabel =
-    smokingType === 'cigarette' ? 'Cigarettes évitées' : 'Puffs évitées'
+  const {
+    moneySaved,
+    cigarettesAvoided,
+    dayCount,
+    equivalentAvoidedLabel,
+    lifeRegained,
+    lifeRegainedCardLabel,
+  } = useStats()
 
   const badgeStats: ProfileBadgeStats = {
     dayCount,
@@ -48,7 +53,9 @@ export const ProfileScreenBody = () => {
           dayCount={dayCount}
           moneySaved={moneySaved}
           avoidedCount={cigarettesAvoided}
-          avoidedLabel={avoidedLabel}
+          avoidedLabel={equivalentAvoidedLabel}
+          lifeRegainedMinutes={lifeRegained}
+          lifeRegainedLabel={lifeRegainedCardLabel}
           combatsWon={combatsWon}
           xp={xp}
           level={level}

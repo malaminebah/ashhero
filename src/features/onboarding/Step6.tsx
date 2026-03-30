@@ -1,67 +1,36 @@
 import React from 'react'
-import { View, Pressable, Text } from 'react-native'
+import { View, Text } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
-import { useTrackerStore } from '@/src/features/tracker/store'
-import { getCurrentUid, saveProfile } from '@/src/services'
+import { useOnboardingSubmit } from './hooks/useOnboardingSubmit'
+import { OnboardingHeader } from './components/OnboardingHeader'
+import { OnboardingPrimaryButton } from './components/OnboardingPrimaryButton'
 
 const Step6 = () => {
   const router = useRouter()
-  const onboarding = useOnboardingStore()
-  const { initialize } = useTrackerStore()
+  const reset = useOnboardingStore((s) => s.reset)
+  const { submit } = useOnboardingSubmit()
 
   const onStart = async () => {
-    const profile = {
-      smokingType: onboarding.smokingType,
-      quantityPerDay: onboarding.quantityPerDay,
-      pricePerUnit: onboarding.pricePerUnit,
-      quitDate: onboarding.quitDate,
-      isFirstTime: onboarding.isFirstTime,
-      unlockedEtapes: [],
-      relapseCount: 0,
-      bestStreak: 0,
-      xp: 0,
-      level: 1,
-      combatsWon: 0,
-      combatsLost: 0,
-    }
-    initialize(profile)
-
-    const uid = getCurrentUid()
-    console.log(uid);
-    
-    if (uid) {
-      try {
-        await saveProfile(uid, profile)
-        console.log('====================================');
-        console.log('profile save ', uid);
-        console.log('====================================');
-      } catch (error) {
-        console.log('error uid', error)
-      }
-     
-    }
-    else{
-      console.log('2. ❌ uid null')
-    }
-      onboarding.reset()
-      router.replace('/(tabs)' as never)
+    await submit()
+    reset()
+    router.replace('/(tabs)' as never)
   }
 
   return (
-    <View className="flex-1 bg-brand-bg p-6 pt-12 justify-center">
-      <Text className="text-white text-2xl font-mono mb-2">Tu es prêt ⚔️</Text>
-      <Text className="text-white/70 text-lg font-mono mb-12">
-        Ton aventure commence maintenant.
-      </Text>
-      <Pressable
-        onPress={onStart}
-        className="w-full py-4 rounded-xl items-center justify-center bg-brand-accentDark active:opacity-90"
-      >
-        <Text className="text-white text-sm font-mono tracking-widest uppercase">
-          Commencer
+    <View className="flex-1 justify-center bg-brand-bg px-6 pb-12 pt-4">
+      <OnboardingHeader
+        step={6}
+        title="Tu es prêt"
+        subtitle="Ton dashboard, tes combats et tes jalons t’attendent. Un pas de plus vers le héros sans fumée."
+      />
+      <View className="mb-10 items-center rounded-2xl border border-brand-accent/30 bg-brand-accent/10 px-5 py-8">
+        <Text className="text-5xl">⚔️</Text>
+        <Text className="mt-4 text-center font-mono text-sm leading-5 text-white/70">
+          Chaque envie vaincue te fait gagner de l&apos;XP. Bienvenue dans ton aventure.
         </Text>
-      </Pressable>
+      </View>
+      <OnboardingPrimaryButton label={"Commencer l'aventure"} onPress={onStart} />
     </View>
   )
 }

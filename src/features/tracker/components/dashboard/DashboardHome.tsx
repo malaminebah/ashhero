@@ -9,13 +9,9 @@ import { DashboardDailyBonus } from './DashboardDailyBonus'
 
 export const DashboardHome = () => {
   const quitDate = useTrackerStore((s) => s.quitDate)
-  const smokingType = useTrackerStore((s) => s.smokingType)
   const level = useTrackerStore((s) => s.level)
   const xp = useTrackerStore((s) => s.xp)
-  const { moneySaved, cigarettesAvoided, dayCount } = useStats()
-
-  const avoidedLabel =
-    smokingType === 'cigarette' ? 'Cigarettes évitées' : 'Puffs évitées'
+  const { moneySaved, cigarettesAvoided, dayCount, equivalentAvoidedLabel } = useStats()
 
   const hoursSinceQuit = quitDate
     ? (Date.now() - quitDate.getTime()) / 3_600_000
@@ -33,7 +29,7 @@ export const DashboardHome = () => {
         <DashboardStatsPair
           moneySaved={moneySaved}
           avoidedCount={cigarettesAvoided}
-          avoidedLabel={avoidedLabel}
+          avoidedLabel={equivalentAvoidedLabel}
         />
         <DashboardJalonsGrid hoursSinceQuit={hoursSinceQuit} />
         <DashboardDailyBonus />

@@ -1,14 +1,9 @@
-import { View, Text, Platform } from 'react-native'
+import { View, Text } from 'react-native'
+import { titleSerif } from '@/constants/theme'
 
 type Props = {
   level: number
 }
-
-const titleSerif = Platform.select({
-  ios: 'Georgia',
-  android: 'serif',
-  default: 'serif',
-})
 
 export const DashboardHeader = ({ level }: Props) => (
   <View className="mb-6 flex-row items-start justify-between">

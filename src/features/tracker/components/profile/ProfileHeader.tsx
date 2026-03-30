@@ -1,10 +1,5 @@
-import { View, Text, Platform } from 'react-native'
-
-const titleSerif = Platform.select({
-  ios: 'Georgia',
-  android: 'serif',
-  default: 'serif',
-})
+import { View, Text } from 'react-native'
+import { titleSerif } from '@/constants/theme'
 
 export const ProfileHeader = () => (
   <View className="mb-6 items-center">

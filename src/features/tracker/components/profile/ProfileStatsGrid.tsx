@@ -22,6 +22,8 @@ type Props = {
   moneySaved: number
   avoidedCount: number
   avoidedLabel: string
+  lifeRegainedMinutes: number
+  lifeRegainedLabel: string
   combatsWon: number
   xp: number
   level: number
@@ -32,6 +34,8 @@ export const ProfileStatsGrid = ({
   moneySaved,
   avoidedCount,
   avoidedLabel,
+  lifeRegainedMinutes,
+  lifeRegainedLabel,
   combatsWon,
   xp,
   level,
@@ -47,7 +51,14 @@ export const ProfileStatsGrid = ({
         <StatCell value={avoidedCount} label={avoidedLabel} valueClass="text-white" />
       </View>
       <View className="flex-row gap-2">
+        <StatCell
+          value={`${Math.round(lifeRegainedMinutes)} min`}
+          label={lifeRegainedLabel}
+          valueClass="text-rose-300"
+        />
         <StatCell value={combatsWon} label="Combats gagnés" valueClass="text-green-400" />
+      </View>
+      <View className="flex-row gap-2">
         <StatCell value={xp} label="XP total" valueClass="text-sky-400" />
         <StatCell value={level} label="Niveau actuel" valueClass="text-yellow-400" />
       </View>

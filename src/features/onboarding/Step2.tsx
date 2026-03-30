@@ -1,40 +1,46 @@
 import React from 'react'
-import { View, Pressable, Text } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
+import { OnboardingHeader } from './components/OnboardingHeader'
+import { OnboardingChoiceCard } from './components/OnboardingChoiceCard'
 
 const Step2 = () => {
-  const { setField } = useOnboardingStore()
+  const setField = useOnboardingStore((s) => s.setField)
   const router = useRouter()
 
   return (
-    <View className="flex-1 bg-brand-bg p-6 pt-12">
-      <Text className="text-white text-xl font-mono mb-8">
-        C’est ta première fois ?
-      </Text>
-      <Pressable
-        onPress={() => {
-          setField('isFirstTime', true)
-          router.push('/onboarding/step3' as never)
-        }}
-        className="w-full py-4 rounded-xl items-center justify-center bg-brand-accentDark active:opacity-90 mb-3"
-      >
-        <Text className="text-white text-sm font-mono tracking-widest uppercase">
-          Oui, je suis plein de confiance
-        </Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          setField('isFirstTime', false)
-          router.push('/onboarding/step3' as never)
-        }}
-        className="w-full py-4 rounded-xl items-center justify-center border border-brand-accent/50 bg-transparent active:opacity-90"
-      >
-        <Text className="text-brand-accent text-sm font-mono tracking-widest uppercase">
-          Non, pas la première
-        </Text>
-      </Pressable>
-    </View>
+    <ScrollView
+      className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <OnboardingHeader
+        step={2}
+        title="Première fois ?"
+        subtitle="Ça nous aide à calibrer ton parcours et tes encouragements."
+      />
+      <View>
+        <OnboardingChoiceCard
+          emoji="✨"
+          label="Oui, je suis plein de confiance"
+          variant="primary"
+          onPress={() => {
+            setField('isFirstTime', true)
+            router.push('/onboarding/step3' as never)
+          }}
+        />
+        <OnboardingChoiceCard
+          emoji="⚔️"
+          label="Non, pas la première"
+          variant="outline"
+          onPress={() => {
+            setField('isFirstTime', false)
+            router.push('/onboarding/step3' as never)
+          }}
+        />
+      </View>
+    </ScrollView>
   )
 }
 

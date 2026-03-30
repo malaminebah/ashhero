@@ -8,10 +8,11 @@ export default function HomeScreen() {
   const router = useRouter()
   const quitDate = useTrackerStore((s) => s.quitDate)
 
+  // Pas de profil actif : retour à l'accueil (welcome), pas directement à l'onboarding
   useEffect(() => {
     if (quitDate) return
     const t = setTimeout(() => {
-      router.replace('/onboarding/step1' as never)
+      router.replace('/' as never)
     }, 100)
     return () => clearTimeout(t)
   }, [quitDate, router])

@@ -7,7 +7,7 @@ type ButtonResetProps = {
 }
 
 export const ButtonReset = () => {
-    const {reset} = useTrackerStore()
+  const reset = useTrackerStore((s) => s.reset)
   return (
     <Pressable
       onPress={reset}

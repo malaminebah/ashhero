@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
-import { View, Pressable, Text } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { useOnboardingStore } from './store'
+import { OnboardingHeader } from './components/OnboardingHeader'
+import { OnboardingPrimaryButton } from './components/OnboardingPrimaryButton'
 
 const Step5 = () => {
   const [date, setDate] = useState<Date>(() => new Date())
-  const { setField } = useOnboardingStore()
+  const setField = useOnboardingStore((s) => s.setField)
   const router = useRouter()
 
   const onConfirm = () => {
@@ -15,14 +17,17 @@ const Step5 = () => {
   }
 
   return (
-    <View className="flex-1 bg-brand-bg p-6 pt-12">
-      <Text className="text-white text-xl font-mono mb-2">
-        Date d’arrêt
-      </Text>
-      <Text className="text-white/50 text-sm font-mono mb-6">
-        À partir de quand tu arrêtes ?
-      </Text>
-      <View className="mb-6">
+    <ScrollView
+      className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <OnboardingHeader
+        step={5}
+        title="Date d’arrêt"
+        subtitle="À partir de quand on compte tes jours sans vape / sans clope."
+      />
+      <View className="mb-8 overflow-hidden rounded-2xl border border-brand-accent/25 bg-white/[0.04] p-4">
         <DateTimePicker
           value={date}
           mode="date"
@@ -32,15 +37,8 @@ const Step5 = () => {
           themeVariant="dark"
         />
       </View>
-      <Pressable
-        onPress={onConfirm}
-        className="w-full py-4 rounded-xl items-center justify-center bg-brand-accentDark active:opacity-90"
-      >
-        <Text className="text-white text-sm font-mono tracking-widest uppercase">
-          Continu
-        </Text>
-      </Pressable>
-    </View>
+      <OnboardingPrimaryButton label="Continuer" onPress={onConfirm} />
+    </ScrollView>
   )
 }
 

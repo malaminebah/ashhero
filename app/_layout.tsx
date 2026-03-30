@@ -20,7 +20,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
-  const { initialize } = useTrackerStore()
+  const initialize = useTrackerStore((s) => s.initialize)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
