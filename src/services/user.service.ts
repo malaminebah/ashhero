@@ -5,9 +5,14 @@ import {
   collection,
   addDoc,
   Timestamp,
+  serverTimestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import { TrackerConfig } from '@/src/features/tracker/types'
+import type {
+  TrackerConfig,
+  CombatAction,
+  CombatResult,
+} from '@/src/features/tracker/types'
 
 export const saveProfile = async (
   uid: string,
@@ -29,8 +34,11 @@ export const getProfile = async (
   const data = snap.data()
   return {
     ...data,
-
     quitDate: data.quitDate ? data.quitDate.toDate() : null,
+    xp: typeof data.xp === 'number' ? data.xp : 0,
+    level: typeof data.level === 'number' ? data.level : 1,
+    combatsWon: typeof data.combatsWon === 'number' ? data.combatsWon : 0,
+    combatsLost: typeof data.combatsLost === 'number' ? data.combatsLost : 0,
   } as TrackerConfig
 }
 
@@ -50,14 +58,18 @@ export const addEtape = async (uid: string, etape: string): Promise<void> => {
     etape,
   })
 }
+export type CombatFirestorePayload = {
+  action: CombatAction
+  xpGained: number
+  result: CombatResult
+}
+
 export const addCombat = async (
   uid: string,
-  xpGained: number,
-  action: string
+  payload: CombatFirestorePayload
 ): Promise<void> => {
   await addDoc(collection(db, 'users', uid, 'combats'), {
-    date: Timestamp.now(),
-    xpGained,
-    action,
+    ...payload,
+    date: serverTimestamp(),
   })
 }

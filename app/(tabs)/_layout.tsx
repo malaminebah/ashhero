@@ -1,15 +1,14 @@
 import { Tabs } from 'expo-router'
-import React, { useState } from 'react'
+import React from 'react'
 
 import { HapticTab } from '@/components/haptic-tab'
 import { IconSymbol } from '@/components/ui/icon-symbol'
 import { Colors, THEME } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { View } from 'react-native'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
- 
+
   return (
     <Tabs
       screenOptions={{
@@ -28,27 +27,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Camp',
+          title: 'HOME',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
-        }}
-      />
-       <Tabs.Screen
-        name="Combat"
-        options={{
-          title: 'Combat',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="capsule.fill" color={color} />
+            <IconSymbol size={26} name="house.fill" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="Hero"
+        name="combat"
         options={{
-          title: 'Hero',
+          title: 'COMBAT',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="iphone.gen1.landscape" color={color} />
+            <IconSymbol size={26} name="shield.lefthalf.filled" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'PROFIL',
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={26} name="person.fill" color={color} />
           ),
         }}
       />

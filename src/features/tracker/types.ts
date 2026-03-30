@@ -1,5 +1,15 @@
 import { SmokingType } from "../onboarding/types"
 
+export type CombatAction = 'breathe' | 'water' | 'distract' | 'special'
+
+export type CombatResult = 'victory' | 'defeat'
+
+export type CombatState = {
+  isActive: boolean
+  selectedAction: CombatAction | null
+  result: CombatResult | null
+}
+
 export type TrackerConfig = {
   smokingType: SmokingType | null,
   quantityPerDay: number | null,
@@ -8,7 +18,11 @@ export type TrackerConfig = {
   isFirstTime: boolean | null,
   unlockedEtapes: string[] ,
   relapseCount: number | null,
-  bestStreak: number | null
+  bestStreak: number | null,
+  xp: number,
+  level: number,
+  combatsWon: number,
+  combatsLost: number,
 }
 
 
@@ -17,6 +31,8 @@ export type TrackerActions = {
   unlockEtape: (label: string) => void ,
   reset: () => void
   relapse: (currentDayCount: number) => void
+  winCombat: (action: CombatAction, xpGained: number) => void
+  loseCombat: () => void
 }
 
 export type Etape = {
@@ -38,4 +54,8 @@ export const trackerProfileFromStore = (s: TrackerStore): TrackerConfig => ({
   unlockedEtapes: s.unlockedEtapes,
   relapseCount: s.relapseCount,
   bestStreak: s.bestStreak,
+  xp: s.xp,
+  level: s.level,
+  combatsWon: s.combatsWon,
+  combatsLost: s.combatsLost,
 })

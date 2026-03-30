@@ -1,8 +1,25 @@
+import { Platform } from 'react-native'
+
 /**
  * Thème Violet / Royal — Mockup app tracker
  * Utiliser ces tokens pour garder la cohérence visuelle.
  * Les classes Tailwind correspondent à tailwind.config.js
  */
+
+/** Polices pour les composants template (ThemedText, explore, etc.) */
+export const Fonts = {
+  rounded: Platform.select({
+    ios: 'System',
+    android: 'sans-serif',
+    default: 'sans-serif',
+  }),
+  mono: Platform.select({
+    ios: 'Menlo',
+    android: 'monospace',
+    default: 'monospace',
+  }),
+} as const
+
 export const THEME = {
   bg: '#08000f',
   bg2: '#0f0020',

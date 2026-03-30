@@ -4,7 +4,8 @@ import type { Etape } from "../types"
 const oneDay = 86_400_000
 export function getDayCount(quitDate: Date | null): number {
   if (!quitDate) return 0
-  return Math.floor((Date.now() - quitDate.getTime()) / oneDay)
+  const raw = Math.floor((Date.now() - quitDate.getTime()) / oneDay)
+  return Math.max(0, raw)
 }
 
 export function getMoneySaved(

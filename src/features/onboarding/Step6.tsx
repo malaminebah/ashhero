@@ -20,6 +20,10 @@ const Step6 = () => {
       unlockedEtapes: [],
       relapseCount: 0,
       bestStreak: 0,
+      xp: 0,
+      level: 1,
+      combatsWon: 0,
+      combatsLost: 0,
     }
     initialize(profile)
 

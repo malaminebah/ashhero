@@ -12,8 +12,11 @@ const initialState: TrackerConfig = {
   isFirstTime: null,
   unlockedEtapes: [],
   relapseCount: 0,
-  bestStreak: 0
-  
+  bestStreak: 0,
+  xp: 0,
+  level: 1,
+  combatsWon: 0,
+  combatsLost: 0,
 }
 
 export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
@@ -41,6 +44,20 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
           saveProfile(uid, trackerProfileFromStore(get())),
         ]).catch((err) => console.warn('[tracker] relapse sync', err))
       },
+      winCombat: (_action, xpGained) =>
+        set((state) => {
+          const newXp = state.xp + xpGained
+          const newLevel = Math.floor(newXp / 100) + 1
+          return {
+            xp: newXp,
+            level: newLevel,
+            combatsWon: state.combatsWon + 1,
+          }
+        }),
+      loseCombat: () =>
+        set((state) => ({
+          combatsLost: state.combatsLost + 1,
+        })),
       reset: () => set(initialState),
     }),
     {
@@ -54,12 +71,21 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         isFirstTime: state.isFirstTime,
         unlockedEtapes: state.unlockedEtapes,
         relapseCount: state.relapseCount,
-        bestStreak: state.bestStreak
+        bestStreak: state.bestStreak,
+        xp: state.xp,
+        level: state.level,
+        combatsWon: state.combatsWon,
+        combatsLost: state.combatsLost,
       }),
       onRehydrateStorage: () => (state) => {
-        if (state?.quitDate && typeof state.quitDate === 'string') {
+        if (!state) return
+        if (state.quitDate && typeof state.quitDate === 'string') {
           state.quitDate = new Date(state.quitDate)
         }
+        if (typeof state.xp !== 'number') state.xp = 0
+        if (typeof state.level !== 'number') state.level = 1
+        if (typeof state.combatsWon !== 'number') state.combatsWon = 0
+        if (typeof state.combatsLost !== 'number') state.combatsLost = 0
       },
     }
   )
