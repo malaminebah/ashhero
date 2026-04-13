@@ -47,7 +47,7 @@ export type Etape = {
 
 export type TrackerStore = TrackerConfig & TrackerActions
 
-/** Extrait un `TrackerConfig` pur pour Firestore (sans les actions Zustand). */
+/** Maps store state to a plain `TrackerConfig` for Firestore (strips Zustand actions). */
 export const trackerProfileFromStore = (s: TrackerStore): TrackerConfig => ({
   smokingType: s.smokingType,
   quantityPerDay: s.quantityPerDay,

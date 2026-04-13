@@ -3,10 +3,10 @@ import type { Etape } from "../types"
 
 const oneDay = 86_400_000
 
-/** Minutes de vie estimées par cigarette évitée (tabac). */
+/** Estimated life minutes regained per avoided cigarette (tobacco). */
 export const MINUTES_LIFE_PER_CIGARETTE_AVOIDED = 11
 
-/** Minutes de vie estimées par équivalent vape (pause) évitée. */
+/** Estimated life minutes regained per avoided vape equivalent (session). */
 export const MINUTES_LIFE_PER_VAPE_EQUIVALENT_AVOIDED = 3.75
 
 export function getLifeRegainedMinutes(
@@ -33,9 +33,9 @@ export function getDayCount(quitDate: Date | null): number {
 }
 
 /**
- * Cigarette : quantityPerDay = cigarettes/jour, pricePerPack = prix du paquet (€).
- * Vape : si vapePricing complet → € = (jours/7) × (ml/semaine × prixDuFlacon/volumeFlacon).
- * Sinon fallback legacy : jours × sessions/jour × pricePerPack (ancien onboarding).
+ * Tobacco: quantityPerDay = cigarettes/day, pricePerPack = pack price (€).
+ * Vape: if vapePricing is complete → € = (days/7) × (ml/week × bottlePrice/bottleVolume).
+ * Else legacy fallback: days × sessions/day × pricePerPack (older onboarding).
  */
 export function getMoneySaved(
   smokingType: SmokingType,

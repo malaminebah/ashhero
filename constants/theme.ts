@@ -1,13 +1,13 @@
 import { Platform } from 'react-native'
 
 /**
- * Thème Violet / Royal — Mockup app tracker
- * Utiliser ces tokens pour garder la cohérence visuelle.
- * Les classes Tailwind correspondent à tailwind.config.js
+ * Violet / Royal theme — tracker app mockup.
+ * Use these tokens for visual consistency.
+ * Tailwind classes map to tailwind.config.js
  */
 
-/** Polices pour les composants template (ThemedText, explore, etc.) */
-/** Titres type maquette (Dashboard, Profil, onboarding). */
+/** Fonts for template components (ThemedText, explore, etc.) */
+/** Mockup-style titles (Dashboard, Profile, onboarding). */
 export const titleSerif = Platform.select({
   ios: 'Georgia',
   android: 'serif',
@@ -42,7 +42,7 @@ export const THEME = {
   textDim: 'rgba(243,232,255,0.2)',
 } as const
 
-/** Pour compatibilité avec les composants Expo (tabs, collapsible, etc.) */
+/** Expo tab / template components compatibility (tabs, collapsible, etc.) */
 export const Colors = {
   light: {
     tint: THEME.accent,

@@ -1,4 +1,4 @@
-/** Seuils en heures pour la grille « maquette » (alignés sur les grandes étapes). */
+/** Hour thresholds for the milestone grid (aligned with major recovery steps). */
 export const DASHBOARD_JALONS = [
   { key: '1d', label: '1 JOUR', hours: 24, icon: '🌱' },
   { key: '1w', label: '1 SEMAINE', hours: 168, icon: '⚔️' },

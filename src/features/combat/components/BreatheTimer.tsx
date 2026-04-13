@@ -44,7 +44,7 @@ export const BreatheTimer = ({ onComplete }: Props) => {
         </View>
       </View>
       <Text className="text-brand-accent text-lg font-mono mt-6 tracking-widest">
-        Respire...
+        Breathe…
       </Text>
       <Text className="text-white text-3xl font-mono mt-2 tabular-nums">
         {remaining}s

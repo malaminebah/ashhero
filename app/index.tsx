@@ -9,21 +9,21 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useTrackerStore } from '@/src/features/tracker/store'
 
-// Personnage simplifié style pixel (carrés gris)
+// Simplified pixel-style character (gray blocks)
 function CharacterDay0() {
   return (
     <View style={{ width: 96, height: 96, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ alignItems: 'center' }}>
-        {/* Tête */}
+        {/* Head */}
         <View style={{ width: 32, height: 20, backgroundColor: '#a1a1aa', borderRadius: 2 }} />
         <View style={{ flexDirection: 'row', gap: 8, marginTop: -2 }}>
           <View style={{ width: 10, height: 10, backgroundColor: '#71717a', borderRadius: 1 }} />
           <View style={{ width: 10, height: 10, backgroundColor: '#71717a', borderRadius: 1 }} />
         </View>
-        {/* Corps */}
+        {/* Torso */}
         <View style={{ width: 40, height: 8, backgroundColor: '#c0a080', borderRadius: 1, marginTop: 2 }} />
         <View style={{ width: 48, height: 28, backgroundColor: '#52525b', borderRadius: 2, marginTop: 2 }} />
-        {/* Jambes */}
+        {/* Legs */}
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 2 }}>
           <View style={{ width: 16, height: 14, backgroundColor: '#52525b', borderRadius: 1 }} />
           <View style={{ width: 16, height: 14, backgroundColor: '#52525b', borderRadius: 1 }} />
@@ -75,11 +75,11 @@ export default function WelcomeScreen() {
         </Text>
       </Animated.View>
 
-      {/* Zone personnage */}
+      {/* Character area */}
       <Animated.View style={[charStyle, { alignItems: 'center', flex: 1, justifyContent: 'center' }]}>
-        {/* Halo / anneau extérieur */}
+        {/* Outer ring / halo */}
         <View className="w-[130px] h-[130px] rounded-full border border-brand-accent/20 items-center justify-center">
-          {/* Anneau intérieur */}
+          {/* Inner ring */}
           <View className="w-[100px] h-[100px] rounded-full border border-brand-accent/10 bg-brand-accent/5 items-center justify-center">
             <CharacterDay0 />
           </View>
@@ -92,7 +92,7 @@ export default function WelcomeScreen() {
           Jour 0 · Niveau 1
         </Text>
 
-        {/* Barre XP */}
+        {/* XP bar */}
         <View className="w-40 mt-4">
           <View className="flex-row gap-0.5">
             {Array.from({ length: 16 }).map((_, i) => (

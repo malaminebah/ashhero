@@ -3,11 +3,11 @@ export type OnboardingData = {
   smokingType: SmokingType | null
   quantityPerDay: number | null
   pricePerUnit: number | null
-  /** Vape : volume du flacon de référence (ml), ex. 50 */
+  /** Vape: reference bottle volume (ml), e.g. 50 */
   vapeBottleVolumeMl: number | null
-  /** Vape : prix du flacon (€), ex. 9 */
+  /** Vape: bottle price (€), e.g. 9 */
   vapeBottlePriceEuro: number | null
-  /** Vape : consommation estimée avant arrêt (ml / semaine) */
+  /** Vape: estimated consumption before quit (ml / week) */
   vapeMlPerWeek: number | null
   quitDate: Date | null
   isFirstTime: boolean| null

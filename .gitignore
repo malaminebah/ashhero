@@ -59,6 +59,10 @@ coverage/
 *.swp
 *.swo
 
-# Cursor (règles / style — ne pas versionner)
-cursor/
+# Cursor IDE — keep local only (rules, hooks, editor metadata)
 .cursor/
+.cursorrules
+.cursorignore
+
+# Optional policy doc often named for Cursor; remove from here if you want it versioned
+CURSOR.md

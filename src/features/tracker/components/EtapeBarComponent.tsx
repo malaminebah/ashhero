@@ -17,7 +17,7 @@ export const EtapeBarComponent = ({ currentEtape, nextEtape, percentageComplete 
           {currentEtape?.title ?? '—'}
         </Text>
         <Text className="text-xs text-brand-accent font-mono">
-          → {nextEtape?.title ?? 'Terminé'}
+          → {nextEtape?.title ?? 'Done'}
         </Text>
       </View>
       <View className="h-2 w-full rounded bg-white/5 overflow-hidden">

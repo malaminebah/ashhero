@@ -13,14 +13,13 @@ export default function CombatScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text className="font-mono text-[10px] uppercase tracking-[0.35rem] text-white/60">
-          Arène
+          Arena
         </Text>
         <Text className="mt-2 text-3xl font-bold tracking-tight text-brand-accent">
           COMBAT
         </Text>
         <Text className="mt-3 font-mono text-sm leading-5 text-white/50">
-          Affronte l&apos;envie : chaque victoire te rapporte de l&apos;XP. Les attaques
-          spéciales se débloquent après 7 jours de série.
+          Face the craving: each win earns XP. Special moves unlock after a 7-day streak.
         </Text>
         <Pressable
           onPress={() => setOpen(true)}
@@ -28,7 +27,7 @@ export default function CombatScreen() {
         >
           <Text className="text-xl">⚔️</Text>
           <Text className="font-mono text-xs uppercase tracking-[0.2rem] text-white">
-            Lancer un combat
+            Start a battle
           </Text>
         </Pressable>
       </ScrollView>

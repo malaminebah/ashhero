@@ -16,41 +16,41 @@ export type ProfileBadgeDef = {
   isUnlocked: (s: ProfileBadgeStats) => boolean
 }
 
-/** 6 badges — déblocage basé sur les stats du store (YAGNI, pas de Firestore ici). */
+/** Six badges — unlock rules from store stats only (YAGNI; no Firestore here). */
 export const PROFILE_BADGES: ProfileBadgeDef[] = [
   {
     id: 'first',
-    name: 'Premier Jour',
+    name: 'First day',
     icon: '🌱',
     isUnlocked: (s) => s.dayCount >= 1,
   },
   {
     id: 'warrior',
-    name: 'Guerrier',
+    name: 'Warrior',
     icon: '⚔️',
     isUnlocked: (s) => s.combatsWon >= 3,
   },
   {
     id: 'fighter',
-    name: 'Combattant',
+    name: 'Fighter',
     icon: '💪',
     isUnlocked: (s) => s.combatsWon >= 1,
   },
   {
     id: 'master',
-    name: 'Maître',
+    name: 'Master',
     icon: '🛡️',
     isUnlocked: (s) => s.level >= 5,
   },
   {
     id: 'legend',
-    name: 'Légende',
+    name: 'Legend',
     icon: '👑',
     isUnlocked: (s) => s.xp >= 2000,
   },
   {
     id: 'thrifty',
-    name: 'Économe',
+    name: 'Thrifty',
     icon: '💰',
     isUnlocked: (s) => s.moneySaved >= 50,
   },

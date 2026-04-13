@@ -8,10 +8,10 @@ type Props = {
 export const VictoryBanner = ({ xpGained, streakDays }: Props) => {
   const message =
     streakDays < 3
-      ? 'Bien joué, tu résistes !'
+      ? 'Nice — keep holding the line!'
       : streakDays < 7
-        ? 'Tu gagnes en puissance !'
-        : 'Héros confirmé 🔥'
+        ? 'You are getting stronger!'
+        : 'Certified hero 🔥'
 
   return (
     <View className="mx-4 p-6 rounded-md border-2 border-brand-accent bg-brand-accent/15 items-center">

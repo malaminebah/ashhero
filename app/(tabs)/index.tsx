@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const router = useRouter()
   const quitDate = useTrackerStore((s) => s.quitDate)
 
-  // Pas de profil actif : retour à l'accueil (welcome), pas directement à l'onboarding
+  // No active profile: go to welcome home, not straight to onboarding
   useEffect(() => {
     if (quitDate) return
     const t = setTimeout(() => {

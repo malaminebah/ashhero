@@ -4,7 +4,7 @@ type Props = {
   combatsWon: number
 }
 
-/** Historique visuel type maquette ; détail jour par jour = sync Firestore plus tard. */
+/** Placeholder history UI; day-by-day sync with Firestore can come later. */
 export const ProfileHistorySection = ({ combatsWon }: Props) => (
   <View className="mb-6">
     <Text className="mb-3 font-mono text-[10px] uppercase tracking-[0.25rem] text-white/70">

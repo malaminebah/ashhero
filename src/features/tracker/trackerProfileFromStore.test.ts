@@ -32,9 +32,9 @@ function makeStore(overrides: Partial<TrackerStore> = {}): TrackerStore {
 
 describe('trackerProfileFromStore', () => {
   it(`
-    Given un état Zustand complet (config + actions)
-    When on extrait le profil
-    Then l'objet ne contient que les champs sérialisables et les mêmes valeurs que le store
+    Given a full Zustand state (config + actions)
+    When we extract the profile
+    Then the object only has serializable fields with the same values as the store
   `, () => {
     const store = makeStore()
     const profile = trackerProfileFromStore(store)
@@ -61,9 +61,9 @@ describe('trackerProfileFromStore', () => {
   })
 
   it(`
-    Given un store dont quitDate est null
-    When on extrait le profil
-    Then quitDate reste null (pas de transformation côté sélecteur)
+    Given a store whose quitDate is null
+    When we extract the profile
+    Then quitDate stays null (no transform in the selector)
   `, () => {
     const profile = trackerProfileFromStore(makeStore({ quitDate: null }))
     expect(profile.quitDate).toBeNull()
