@@ -5,21 +5,21 @@ export const COMBAT_BOSS_MAX_HP = 100
 
 /** Damage dealt to the boss — same scale as `src/features/tracker/combatXpTable.ts`. */
 export const DAMAGE_TO_BOSS: Record<CombatAction, number> = {
-  breathe: 20,
+  breathe: 35,
   water: 15,
-  distract: 10,
-  special: 40,
+  distract: 17,
+  special: 70,
 }
 
 /** Boss counter-attack: base 12 ± 4 → integer in [8, 16]. */
 export function rollBossRiposteDamage(): number {
-  return 8 + Math.floor(Math.random() * 9)
+  return 7 + Math.floor(Math.random() * 9)
 }
 
 export const BOSS_ATTACK_NAMES = [
-  'Craving Surge',
-  'Stress Spike',
-  'Irritant Haze',
+  'Poussée d\'envie',
+  'Envie de relacher la pression',
+  'Odeur de fumer',
 ] as const
 
 export function randomBossAttackName(): string {
