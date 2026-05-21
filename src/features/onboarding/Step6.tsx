@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { Alert, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
 import { useOnboardingSubmit } from './hooks/useOnboardingSubmit'
@@ -12,7 +12,14 @@ const Step6 = () => {
   const { submit } = useOnboardingSubmit()
 
   const onStart = async () => {
-    await submit()
+    const ok = await submit()
+    if (!ok) {
+      Alert.alert(
+        'Enregistrement',
+        "Impossible d'enregistrer ton profil. Vérifie la connexion et réessaie."
+      )
+      return
+    }
     reset()
     router.replace('/(tabs)' as never)
   }

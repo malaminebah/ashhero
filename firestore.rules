@@ -1,0 +1,11 @@
+rules_version = '2';
+// Aligné sur user.service (users/{uid}/profile, etapes, relapses, combats).
+// Déployer : firebase deploy --only firestore:rules (depuis un projet avec firebase init).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+  }
+}

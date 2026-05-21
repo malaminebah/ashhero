@@ -1,5 +1,6 @@
 import { View, ScrollView, Pressable, Text } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
 import { ButtonCraving, ButtonReset } from '@/src/features/tracker'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
@@ -12,6 +13,7 @@ import type { ProfileBadgeStats } from './badgeRules'
 
 export const ProfileScreenBody = () => {
   const router = useRouter()
+  const { signOut, pending: signOutPending } = useEmailAuthActions()
   const reset = useTrackerStore((s) => s.reset)
   const smokingType = useTrackerStore((s) => s.smokingType)
   const combatsWon = useTrackerStore((s) => s.combatsWon)
@@ -42,6 +44,11 @@ export const ProfileScreenBody = () => {
   const onRestartFlow = () => {
     reset()
     router.replace('/' as never)
+  }
+
+  const onLogout = async () => {
+    const ok = await signOut()
+    if (ok) router.replace('/auth/login' as never)
   }
 
   return (
@@ -76,6 +83,15 @@ export const ProfileScreenBody = () => {
         <View className="mt-8 gap-3">
           <ButtonCraving />
           <ButtonReset />
+          <Pressable
+            onPress={onLogout}
+            disabled={signOutPending}
+            className="w-full items-center justify-center rounded-xl border border-white/15 py-3 active:opacity-90 disabled:opacity-50"
+          >
+            <Text className="font-mono text-xs uppercase tracking-[0.2rem] text-white/55">
+              {signOutPending ? '…' : 'Se déconnecter'}
+            </Text>
+          </Pressable>
         </View>
 
         <Pressable onPress={onRestartFlow} className="mt-10 items-center py-3 active:opacity-80">

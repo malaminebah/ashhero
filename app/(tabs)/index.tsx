@@ -2,20 +2,16 @@ import { useEffect } from 'react'
 import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { DashboardHome } from '@/src/features/tracker'
-import { useTrackerStore } from '@/src/features/tracker/store'
+import { useSessionStore } from '@/src/features/auth/sessionStore'
 
 export default function HomeScreen() {
   const router = useRouter()
-  const quitDate = useTrackerStore((s) => s.quitDate)
+  const hasServerProfile = useSessionStore((s) => s.hasServerProfile)
 
-  // No active profile: go to welcome home, not straight to onboarding
   useEffect(() => {
-    if (quitDate) return
-    const t = setTimeout(() => {
-      router.replace('/' as never)
-    }, 100)
-    return () => clearTimeout(t)
-  }, [quitDate, router])
+    if (hasServerProfile !== false) return
+    router.replace('/' as never)
+  }, [hasServerProfile, router])
 
   return (
     <View className="flex-1 bg-brand-bg">

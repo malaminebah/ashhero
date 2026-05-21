@@ -1,50 +1,76 @@
-# Welcome to your Expo app 👋
+# AshHero
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App mobile **React Native** (anti-vape) **gamifiée** : progression type RPG, thème **pixel art** sombre, accent violet.
 
-## Get started
+Dépôt : [github.com/malaminebah/ashhero](https://github.com/malaminebah/ashhero)
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Stack
 
-2. Start the app
+| Sujet | Choix |
+|--------|--------|
+| Framework | [Expo](https://expo.dev) + [Expo Router](https://docs.expo.dev/router/introduction/) |
+| Langage | TypeScript |
+| État global | [Zustand](https://github.com/pmndrs/zustand) (sélecteurs atomiques, voir `CURSOR.md`) |
+| Backend | [Firebase](https://firebase.google.com) — Auth + Firestore |
+| Styles | [NativeWind](https://www.nativewind.dev/) (pas de `StyleSheet.create` dans les conventions du projet) |
 
-   ```bash
-   npx expo start
-   ```
+L’architecture (features, services, règles Zustand/Firebase) est décrite dans **[`CURSOR.md`](./CURSOR.md)** : à lire avant toute contribution substantielle.
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Documentation utile
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Fichier | Contenu |
+|---------|---------|
+| [`CURSOR.md`](./CURSOR.md) | Architecture, design system, checklist PR |
+| [`docs/firebase-auth-strategy.md`](./docs/firebase-auth-strategy.md) | Auth Firebase, flux, règles Firestore côté doc |
+| [`docs/combat-turn-based-spec.md`](./docs/combat-turn-based-spec.md) | Spécification combat tour par tour |
+| [`docs/github-issues-backlog.md`](./docs/github-issues-backlog.md) | Brouillons d’**issues GitHub** (MVP, contenu, V2) — à créer sur le board |
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Périmètre produit (résumé)
+
+- **MVP** : compte **email + mot de passe** (inscription, connexion, réinitialisation du mot de passe côté Firebase à prévoir dans le flux) ; onboarding, tracker, combats, sync Firestore selon le modèle documenté dans `CURSOR.md`.
+- **Hors scope MVP (V2+)** : notifications push, social login (Google/Apple) sauf arbitrage ultérieur, contenus narratifs/UX à cadrer — tickets correspondants en backlog, pas bloquants pour un premier build testable.
+
+Le détail des tickets (titres, critères, labels) est dans [`docs/github-issues-backlog.md`](./docs/github-issues-backlog.md).
+
+---
+
+## Prérequis
+
+- [Node.js](https://nodejs.org) (LTS recommandé)
+- Un projet Firebase configuré (Auth + Firestore) — variables d’environnement selon `src/services/firebase.ts` / la doc interne.
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) via `npx` (pas d’install globale obligatoire).
+
+---
+
+## Démarrage
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Simulateur / device : suis les options du terminal (Android, iOS, Expo Go si applicable).
+- Vérification TypeScript (alignée `CURSOR.md`) :
 
-## Learn more
+```bash
+npx tsc --noEmit
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Issues & board GitHub (backlog)
 
-## Join the community
+- Brouillons de tickets : [`docs/github-issues-backlog.md`](./docs/github-issues-backlog.md).
+- **Project / board** : la CLI `gh` exige le scope `project` sur le token. Après `gh auth refresh -s project,read:project -h github.com`, lance **`./scripts/github-backlog-project.sh`** pour créer le Project v2, le lier au dépôt [ashhero](https://github.com/malaminebah/ashhero) et y ajouter les issues (par défaut #1–#11).
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Licence & contributions
+
+Définition à ajouter (projet personnel / CLA) selon ton choix.

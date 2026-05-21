@@ -1,13 +1,14 @@
+import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
 import { useEffect } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter, useSegments } from 'expo-router'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
 } from 'react-native-reanimated'
-import { useTrackerStore } from '@/src/features/tracker/store'
 
 // Simplified pixel-style character (gray blocks)
 function CharacterDay0() {
@@ -35,7 +36,10 @@ function CharacterDay0() {
 
 export default function WelcomeScreen() {
   const router = useRouter()
-  const quitDate = useTrackerStore((s) => s.quitDate)
+  const segments = useSegments()
+  const uid = useSessionStore((s) => s.uid)
+  const hasServerProfile = useSessionStore((s) => s.hasServerProfile)
+  const { signOut, pending: signOutPending } = useEmailAuthActions()
 
   const headerOpacity = useSharedValue(0)
   const charOpacity = useSharedValue(0)
@@ -48,19 +52,34 @@ export default function WelcomeScreen() {
   }, [headerOpacity, charOpacity, ctaOpacity])
 
   useEffect(() => {
-    if (!quitDate) return
-    const t = setTimeout(() => {
-      router.replace('/(tabs)' as never)
-    }, 100)
-    return () => clearTimeout(t)
-  }, [quitDate, router])
+    if (!uid || hasServerProfile !== true) return
+    if (segments[0] === '(tabs)') return
+    router.replace('/(tabs)' as never)
+  }, [uid, hasServerProfile, router, segments])
 
   const headerStyle = useAnimatedStyle(() => ({ opacity: headerOpacity.value }))
   const charStyle = useAnimatedStyle(() => ({ opacity: charOpacity.value }))
   const ctaStyle = useAnimatedStyle(() => ({ opacity: ctaOpacity.value }))
 
+  if (!uid) {
+    return <Redirect href={'/auth/login' as never} />
+  }
+
+  if (hasServerProfile === null) {
+    return (
+      <View className="flex-1 bg-brand-bg items-center justify-center">
+        <Text className="text-white font-mono text-xs">Chargement…</Text>
+      </View>
+    )
+  }
+
   const onStart = () => {
     router.push('/onboarding/step1' as never)
+  }
+
+  const onChangeAccount = async () => {
+    const ok = await signOut()
+    if (ok) router.replace('/auth/login' as never)
   }
 
   return (
@@ -86,7 +105,7 @@ export default function WelcomeScreen() {
         </View>
 
         <Text className="text-white/50 text-sm font-mono mt-6 tracking-wide">
-          Ton guerrier t'attend.
+          {"Ton guerrier t'attend."}
         </Text>
         <Text className="text-white/15 text-[10px] font-mono tracking-widest uppercase mt-1">
           Jour 0 · Niveau 1
@@ -128,13 +147,19 @@ export default function WelcomeScreen() {
           }}
         >
           <Text className="text-white text-xs font-mono tracking-[3px] uppercase">
-            ⚔  Commencer l'aventure
+            {"⚔  Commencer l'aventure"}
           </Text>
         </Pressable>
 
-        <Text className="text-center text-white/15 text-[9px] font-mono mt-4 tracking-widest">
-          J'ai déjà un compte
-        </Text>
+        <Pressable
+          onPress={onChangeAccount}
+          disabled={signOutPending}
+          className="mt-4 py-2 active:opacity-80 disabled:opacity-40"
+        >
+          <Text className="text-center text-white/15 text-[9px] font-mono tracking-widest">
+            {signOutPending ? '…' : 'Changer de compte'}
+          </Text>
+        </Pressable>
       </Animated.View>
     </View>
   )

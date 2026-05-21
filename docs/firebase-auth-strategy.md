@@ -2,13 +2,18 @@
 
 Document de référence pour le todo « stratégie auth + impacts Firestore ». À faire évoluer avec le produit.
 
+## Décision produit (V1)
+
+**V1 = les deux** : sur les écrans d’authentification, l’utilisateur peut soit **s’inscrire / se connecter en e-mail + mot de passe**, soit **démarrer en session anonyme** (`signInAnonymously`). Aucun de ces modes ne remplace l’autre ; le reset mot de passe ne concerne que le parcours e-mail. La **liaison** e-mail depuis un compte anonyme (même `uid`) est prévue côté produit pour une étape « Sécuriser mon compte » (plus tard / profil).
+
 ## Décision retenue (V1)
 
 | Phase | Mécanisme | Rôle |
 |--------|-----------|------|
-| **V1 — maintenant** | **Anonyme + liaison email/mot de passe** | Premier lancement sans friction ; l’utilisateur peut **lier** le même `uid` à un email pour retrouver ses données sur un autre téléphone. |
-| **V1 — entrée « compte »** | **Connexion email/mot de passe** | Pour « J’ai déjà un compte » : `signInWithEmailAndPassword` (pas d’anonyme). |
-| **Plus tard (V2)** | Google / Apple Sign-In | `linkWithCredential` ou compte uniquement social ; nécessite config native (Expo) plus lourde. |
+| **V1** | **E-mail + mot de passe** | Inscription, connexion, `sendPasswordResetEmail`. |
+| **V1** | **Anonyme** | Démarrage rapide, même arbre Firestore `users/{uid}`. |
+| **V1+** | **Liaison** `linkWithCredential` (email) | Même `uid` que l’anonyme, données conservées. |
+| **V2** | Google / Apple Sign-In | `linkWithCredential` ou flux dédié ; config native. |
 
 ### Pourquoi ne pas seulement « créer un compte » sans anonyme ?
 
@@ -25,9 +30,14 @@ Avec **Firebase JS + Expo**, l’email/mot de passe est entièrement supporté p
 
 ## Flux utilisateur cibles
 
-1. **Nouvel utilisateur — « Commencer l’aventure »**  
-   - `signInAnonymously` (comme aujourd’hui).  
-   - Optionnel : écran ou section profil **« Sécuriser mon compte »** → email + mot de passe → `linkWithCredential`.
+*L’app propose **côte à côte** l’e-mail (inscription / connexion) et l’anonyme : l’utilisateur choisit sur l’écran auth.*
+
+0. **V1 — nouvel utilisateur (e-mail)**  
+   - Inscription : email + mot de passe → compte Firestore dès le premier écran de setup.
+
+1. **Nouvel utilisateur — « Commencer l’aventure » (option anonyme)**  
+   - `signInAnonymously` (si ce flux est conservé).  
+   - Optionnel : **« Sécuriser mon compte »** → email + mot de passe → `linkWithCredential`.
 
 2. **Retour — « J’ai déjà un compte »**  
    - Écran email + mot de passe → `signInWithEmailAndPassword`.  
@@ -55,7 +65,7 @@ Fichiers concernés actuels : [src/services/auth.service.ts](../src/services/aut
 
 ## Règles Firestore (sécurité)
 
-Aujourd’hui le repo ne contient **pas** de `firestore.rules` versionné ; elles sont à maintenir dans la **console Firebase** (ou via Firebase CLI si tu ajoutes un dossier `firebase/` plus tard).
+Le fichier source des règles est **`firestore.rules`** à la racine du dépôt (déploiement : `firebase deploy --only firestore:rules` avec un projet lié). La console Firebase doit rester **alignée** sur ce fichier.
 
 ### Modèle d’accès recommandé
 
@@ -90,11 +100,12 @@ service cloud.firestore {
 
 ## Récap décision (pour la suite du plan)
 
-| Question | Choix V1 |
-|----------|----------|
-| Anonyme au démarrage ? | Oui (conservé). |
-| Compte « permanent » ? | Email + mot de passe, avec **link** depuis l’anonyme. |
-| « J’ai déjà un compte » ? | `signInWithEmailAndPassword` sans anonyme préalable sur cet écran. |
+| Question | Choix |
+|----------|--------|
+| V1 — e-mail ? | **Oui** : inscription, connexion, reset. |
+| V1 — anonyme ? | **Oui** : `signInAnonymously` depuis l’écran auth (invité). |
+| Compte « permanent » ? | E-mail + mot de passe ; **liaison** depuis anonyme (même `uid`) en option produit. |
+| « J’ai déjà un compte » ? | `signInWithEmailAndPassword` sur l’écran dédié (ne pas lancer d’anonyme juste avant sur ce flux). |
 | Google / Apple ? | V2. |
 | Firestore ? | Règles par `uid` sur `users/{userId}/**` ; pas de changement de schéma obligatoire. |
 
