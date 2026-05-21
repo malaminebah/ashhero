@@ -8,9 +8,6 @@ import {
 } from 'firebase/auth'
 import { auth } from './firebase'
 
-/**
- * Session anonyme Firebase (V1) — à proposer en parallèle de l’e-mail (voir `docs/firebase-auth-strategy.md`).
- */
 export const signInAnon = async (): Promise<string> => {
   const { user } = await signInAnonymously(auth)
   return user.uid

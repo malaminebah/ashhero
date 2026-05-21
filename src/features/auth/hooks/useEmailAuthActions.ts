@@ -10,9 +10,6 @@ import { authErrorToUserMessage, type AuthErrorContext } from '../utils/authErro
 
 type Status = { error: string | null; pending: boolean }
 
-/**
- * Appels auth + mapping d’erreurs — à utiliser depuis les écrans auth uniquement.
- */
 export const useEmailAuthActions = () => {
   const [state, setState] = useState<Status>({ error: null, pending: false })
 
@@ -41,7 +38,6 @@ export const useEmailAuthActions = () => {
     [wrap]
   )
 
-  /** Session anonyme (V1) — alternative à l’e-mail, pas de fusion avec un compte mail dans ce handler. */
   const signInAsGuest = useCallback(
     () => wrap(() => signInAnon()),
     [wrap]

@@ -1,11 +1,7 @@
 import { FirebaseError } from 'firebase/app'
 
-/** Connexion / inscription vs reset MDP : messages et discrétion différentes. */
 export type AuthErrorContext = 'signIn' | 'passwordReset'
 
-/**
- * Messages FR pour l’UI (aucune logique Firebase dans les écrans).
- */
 export const authErrorToUserMessage = (
   err: unknown,
   context: AuthErrorContext = 'signIn'
