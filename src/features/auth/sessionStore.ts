@@ -12,6 +12,11 @@ export const useSessionStore = create<SessionState>((set) => ({
   uid: null,
   authReady: false,
   hasServerProfile: null,
-  setFromAuth: (uid) => set({ uid, authReady: true, hasServerProfile: null }),
+  setFromAuth: (uid) =>
+    set((state) => ({
+      uid,
+      authReady: true,
+      hasServerProfile: state.uid === uid ? state.hasServerProfile : null,
+    })),
   setProfileResolved: (hasProfile) => set({ hasServerProfile: hasProfile }),
 }))

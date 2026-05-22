@@ -1,6 +1,8 @@
 import { View, ScrollView, Pressable, Text } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
+import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { useOnboardingStore } from '@/src/features/onboarding/store'
 import { ButtonCraving, ButtonReset } from '@/src/features/tracker'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
@@ -43,6 +45,13 @@ export const ProfileScreenBody = () => {
 
   const onRestartFlow = () => {
     reset()
+    useOnboardingStore.getState().reset()
+    useSessionStore.getState().setProfileResolved(false)
+    router.replace('/' as never)
+  }
+
+  const onResetAll = () => {
+    useSessionStore.getState().setProfileResolved(false)
     router.replace('/' as never)
   }
 
@@ -82,7 +91,7 @@ export const ProfileScreenBody = () => {
 
         <View className="mt-8 gap-3">
           <ButtonCraving />
-          <ButtonReset />
+          <ButtonReset onAfterReset={onResetAll} />
           <Pressable
             onPress={onLogout}
             disabled={signOutPending}
