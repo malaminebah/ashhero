@@ -8,11 +8,36 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ---
 
+## Tableau commits → tickets (dernières livraisons)
+
+| Commit | Ticket | Statut board |
+|--------|--------|--------------|
+| `1c8f44d` feat(auth): email flow, session, firestore rules | **T-101**, **T-102**, **T-103** | **In Review** |
+| `b1b4611` feat(firebase): AsyncStorage auth persistence | **T-122** | **In Review** |
+| `ce5e7b1` chore(auth): remove inline comments | *(nettoyage, pas de ticket)* | — |
+| `024f0f2` feat(combat): rebalance action xp | **T-125** | **In Review** |
+| `7d7b8b4` feat(combat): rebalance damage + boss names FR | **T-124** | **In Review** |
+| `a4e07f6` feat(combat): visual juice | **T-114** → **T-118** | **In Review** |
+| `06ef17d` fix(auth): tabs guard + reset routing | **T-123** | **In Review** |
+| `f5e8b20` docs(backlog) | meta | — |
+
+---
+
 ## MVP — Auth & données
+
+| Ticket | Statut board | Commit |
+|--------|--------------|--------|
+| T-101 | **In Review** | `1c8f44d` |
+| T-102 | **In Review** | `1c8f44d` |
+| T-103 | **In Review** | `1c8f44d` |
+| T-122 | **In Review** | `b1b4611` |
+| T-123 | **In Review** | `06ef17d` |
 
 ### T-101 — Auth email/mot de passe (inscription + connexion)
 
-**Labels :** `mvp`, `auth`, `firebase`
+**Labels :** `mvp`, `auth`, `firebase`  
+**Statut board :** `In Review`  
+**Commit :** `1c8f44d`
 
 **Corps :**
 
@@ -26,9 +51,10 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 **Hors périmètre** : Google/Apple (V2).
 
 **Critères d’acceptation**
-- [ ] Depuis un état non connecté, un utilisateur peut s’inscrire avec email + mot de passe valides et obtenir un `uid` stable.
-- [ ] Depuis un autre lancement / appareil (même build), connexion avec les mêmes identifiants recharge le profil Firestore existant (comportement aligné `getProfile` / layout actuel).
-- [ ] Aucun import `firebase/*` dans un composant UI — logique dans services + hooks (`CURSOR.md`).
+- [x] Depuis un état non connecté, un utilisateur peut s’inscrire avec email + mot de passe valides et obtenir un `uid` stable.
+- [x] Depuis un autre lancement / appareil (même build), connexion avec les mêmes identifiants recharge le profil Firestore existant (comportement aligné `getProfile` / layout actuel).
+- [x] Aucun import `firebase/*` dans un composant UI — logique dans services + hooks (`CURSOR.md`).
+- [ ] Validation PO : parcours complet inscription → onboarding → tabs
 
 **Définition of Done** : `npx tsc --noEmit` OK ; pas de régression sur la structure Firestore documentée.
 
@@ -36,15 +62,18 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ### T-102 — Réinitialisation du mot de passe (Firebase)
 
-**Labels :** `mvp`, `auth`
+**Labels :** `mvp`, `auth`  
+**Statut board :** `In Review`  
+**Commit :** `1c8f44d`
 
 **Corps :**
 
 **Objectif** : flux « mot de passe oublié » via `sendPasswordResetEmail` (ou équivalent SDK), avec libellés d’erreur cohérents.
 
 **Critères d’acceptation**
-- [ ] Depuis l’écran de connexion (ou lien dédié), l’utilisateur peut demander un email de reset pour une adresse valide.
-- [ ] Cas d’erreur (email invalide, trop de requêtes) gérés sans crash.
+- [x] Depuis l’écran de connexion (ou lien dédié), l’utilisateur peut demander un email de reset pour une adresse valide.
+- [x] Cas d’erreur (email invalide, trop de requêtes) gérés sans crash.
+- [ ] Validation PO : email reset reçu et utilisable
 
 **Note** : dépend de T-101 (écrans auth en place).
 
@@ -52,14 +81,69 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ### T-103 — Retirer ou réduire la dépendance au seul `signInAnonymously` pour le parcours MVP
 
-**Labels :** `mvp`, `auth`
+**Labels :** `mvp`, `auth`  
+**Statut board :** `In Review`  
+**Commit :** `1c8f44d`
 
 **Corps :**
 
 **Objectif** : aligner le démarrage de l’app sur le parcours **compte email** (T-101). Si l’anonyme reste en code, documenter dans le ticket de doc produit **où** il sert (ex. dev only) ou le retirer du chemin utilisateur MVP.
 
 **Critères d’acceptation**
-- [ ] Le premier écran « compte » du MVP ne se contente pas d’une session anonyme sans offrir inscription/connexion email (sauf décision explicite documentée dans la PR).
+- [x] Le premier écran « compte » du MVP ne se contente pas d’une session anonyme sans offrir inscription/connexion email (sauf décision explicite documentée dans la PR).
+- [ ] Validation PO : parcours invité vs email clair pour l’utilisateur
+
+---
+
+### T-122 — Auth : persistance session Firebase avec AsyncStorage (React Native)
+
+**Labels :** `mvp`, `auth`, `firebase`  
+**Statut board :** `In Review`  
+**Commit :** `b1b4611`
+
+**Corps :**
+
+**Objectif** : conserver la session auth entre les relances de l’app (pas de re-login à chaque ouverture).
+
+**Critères d'acceptation**
+- [x] `initializeAuth` avec `getReactNativePersistence(AsyncStorage)`
+- [x] Guard double init (`auth/already-initialized`) pour fast refresh
+- [x] Types RN dans `firebase-auth-rn.d.ts`
+- [ ] Validation PO : fermer app → rouvrir → toujours connecté
+
+**Fichiers**
+- `src/services/firebase.ts`
+- `src/services/firebase-auth-rn.d.ts`
+
+**Définition of Done** : session persistée sur device ; pas de crash au redémarrage.
+
+---
+
+### T-123 — Auth : garde tabs sans profil + sync reset routing
+
+**Labels :** `mvp`, `auth`, `tracker`  
+**Statut board :** `In Review`  
+**Commit :** `06ef17d`
+
+**Corps :**
+
+**Objectif** : empêcher l’accès aux tabs sans profil Firestore ; synchroniser reset profil / onboarding / session.
+
+**Critères d'acceptation**
+- [x] Redirect vers `/` depuis `app/(tabs)/_layout.tsx` si `hasServerProfile !== true`
+- [x] Garde dupliquée retirée de `app/(tabs)/index.tsx`
+- [x] `sessionStore.setFromAuth` conserve `hasServerProfile` si même `uid`
+- [x] `ProfileScreenBody` : restart reset onboarding + `setProfileResolved(false)`
+- [x] `ButtonReset` : callback `onAfterReset` pour routing post-reset
+- [ ] Validation PO : reset / restart ramène bien au bon écran
+
+**Fichiers**
+- `app/(tabs)/_layout.tsx`, `app/(tabs)/index.tsx`
+- `src/features/auth/sessionStore.ts`
+- `src/features/tracker/components/ButtonReset.tsx`
+- `src/features/tracker/components/profile/ProfileScreenBody.tsx`
+
+**Définition of Done** : pas d’accès dashboard sans profil ; reset cohérent.
 
 ---
 
@@ -122,7 +206,9 @@ Vérifier que les écritures `addCombat`, relapses, étapes respectent les règl
 | T-116 | **In Review** | FSM + emojis |
 | T-117 | **In Review** | Drain barres PV |
 | T-118 | **In Review** | Haptics — valider sur device |
-| T-119 | **To Do** | Copy FR |
+| T-124 | **In Review** | Rebalance dégâts + noms boss FR (`7d7b8b4`) |
+| T-125 | **In Review** | Rebalance XP combat (`024f0f2`) |
+| T-119 | **To Do** | Copy FR UI combat |
 | T-120 | **To Do** | Polish design final |
 | T-121 | **Backlog** | Sprites / particules |
 
@@ -247,6 +333,53 @@ Vérifier que les écritures `addCombat`, relapses, étapes respectent les règl
 - `src/features/combat/hooks/useTurnCombat.ts`
 
 **Définition of Done** : vibration ressentie sur device physique ; pas de lag combat.
+
+---
+
+### T-124 — Combat : rebalance dégâts et noms d'attaque boss (FR)
+
+**Labels :** `mvp`, `combat`, `balance`  
+**Statut board :** `In Review`  
+**Commit :** `7d7b8b4`
+
+**Corps :**
+
+**Objectif** : ajuster les dégâts combat (`DAMAGE_TO_BOSS`, riposte boss) et localiser les noms d'attaque du boss en français.
+
+**Critères d'acceptation**
+- [x] `DAMAGE_TO_BOSS` rebalance (breathe, water, distract, special)
+- [x] `rollBossRiposteDamage` ajusté
+- [x] `BOSS_ATTACK_NAMES` en FR (Poussée d'envie, etc.)
+- [ ] Validation PO : durée combat ~3–8 tours ; feeling équilibré
+
+**Fichiers**
+- `src/features/combat/constants.ts`
+
+**Note** : copy UI combat (Battle, You…) reste **T-119**.
+
+**Définition of Done** : playtest ; chiffres documentés vs spec.
+
+---
+
+### T-125 — Combat : rebalance XP victoire par action
+
+**Labels :** `mvp`, `combat`, `tracker`, `balance`  
+**Statut board :** `In Review`  
+**Commit :** `024f0f2`
+
+**Corps :**
+
+**Objectif** : ajuster la table XP gagnée en cas de victoire (`COMBAT_XP_BY_ACTION`), distincte des dégâts combat.
+
+**Critères d'acceptation**
+- [x] `combatXpTable.ts` mis à jour (breathe, water, distract, special)
+- [x] XP ≠ dégâts documenté (deux tables)
+- [ ] Validation PO : progression tracker cohérente après combats
+
+**Fichiers**
+- `src/features/tracker/combatXpTable.ts`
+
+**Définition of Done** : victoire combat applique le bon XP ; pas de régression `useCombat`.
 
 ---
 
