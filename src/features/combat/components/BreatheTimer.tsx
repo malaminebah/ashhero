@@ -43,8 +43,8 @@ export const BreatheTimer = ({ onComplete }: Props) => {
           ))}
         </View>
       </View>
-      <Text className="text-brand-accent text-lg font-mono mt-6 tracking-widest">
-        Breathe…
+      <Text className="mt-6 font-mono text-xs tracking-widest text-brand-accent">
+        Respire…
       </Text>
       <Text className="text-white text-3xl font-mono mt-2 tabular-nums">
         {remaining}s

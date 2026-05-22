@@ -7,6 +7,7 @@ import {
   COMBAT_BOSS_MAX_HP,
   COMBAT_PLAYER_MAX_HP,
   DAMAGE_TO_BOSS,
+  COMBAT_BREATHE_STATUS,
   combatActionLabel,
   randomBossAttackName,
   rollBossRiposteDamage,
@@ -207,7 +208,7 @@ export function useTurnCombat({ enabled }: Options) {
     inputLockRef.current = true
     setBattleMessage({
       kind: 'status',
-      text: 'Stay with it: breathe until the timer ends.',
+      text: COMBAT_BREATHE_STATUS,
     })
     setPhase('breathe_pending')
   }, [phase])

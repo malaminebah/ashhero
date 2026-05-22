@@ -1,4 +1,3 @@
-/** Copy shown in the battle message box (Pokémon-style). */
 export type BattleMessage =
   | { kind: 'idle' }
   | { kind: 'status'; text: string }
