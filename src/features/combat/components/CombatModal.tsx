@@ -7,6 +7,7 @@ import { getDayCount } from '@/src/features/tracker/utils/calculations'
 import { combatActionLabel } from '../constants'
 import { useTurnCombat } from '../hooks/useTurnCombat'
 import { ActionButton } from './ActionButton'
+import { AttackEffect } from './AttackEffect'
 import { BreatheTimer } from './BreatheTimer'
 import { CombatMessageBox } from './CombatMessageBox'
 import { CombatMonster } from './CombatMonster'
@@ -37,6 +38,7 @@ export const CombatModal = ({ visible, onClose }: Props) => {
     victoryAction,
     defeatSource,
     canUseSpecial,
+    currentAttackEmoji,
     showActionButtons,
     showBreatheTimer,
     showAbandon,
@@ -104,7 +106,7 @@ export const CombatModal = ({ visible, onClose }: Props) => {
       presentationStyle="fullScreen"
       onRequestClose={handleRequestClose}
     >
-      <SafeAreaView className="flex-1 bg-brand-bg">
+      <SafeAreaView className="flex-1 bg-[#05000a]">
         <ScrollView
           className="flex-1 px-5 pb-8 pt-4"
           contentContainerStyle={{ flexGrow: 1 }}
@@ -142,6 +144,11 @@ export const CombatModal = ({ visible, onClose }: Props) => {
               />
 
               <CombatMessageBox message={battleMessage} />
+
+              <AttackEffect
+                emoji={currentAttackEmoji ?? ''}
+                visible={currentAttackEmoji != null}
+              />
 
               {phase === 'enemy_turn' ? (
                 <Text className="mb-4 text-center font-mono text-sm text-white/60">

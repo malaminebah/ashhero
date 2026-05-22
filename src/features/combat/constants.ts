@@ -20,7 +20,7 @@ export const BOSS_ATTACK_NAMES = [
   'Poussée d\'envie',
   'Envie de relacher la pression',
   'Odeur de fumer',
-] as const
+]
 
 export function randomBossAttackName(): string {
   const i = Math.floor(Math.random() * BOSS_ATTACK_NAMES.length)

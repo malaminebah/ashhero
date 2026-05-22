@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import * as Haptics from 'expo-haptics'
 import { useCombat } from '@/src/features/tracker/hooks/useCombat'
 import type { CombatAction } from '@/src/features/tracker/types'
 import type { BattleMessage } from '../battleMessage'
@@ -40,11 +41,13 @@ export function useTurnCombat({ enabled }: Options) {
   const [playerShakeKey, setPlayerShakeKey] = useState(0)
   const [victoryAction, setVictoryAction] = useState<CombatAction | null>(null)
   const [defeatSource, setDefeatSource] = useState<'riposte' | 'abandon' | null>(null)
+  const [currentAttackEmoji, setCurrentAttackEmoji] = useState<string | null>(null)
 
   const endedRef = useRef(false)
   const inputLockRef = useRef(false)
   const enemyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const enemyWindupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const emojiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const clearEnemyTimer = useCallback(() => {
     if (enemyTimerRef.current) {
@@ -54,6 +57,10 @@ export function useTurnCombat({ enabled }: Options) {
     if (enemyWindupTimerRef.current) {
       clearTimeout(enemyWindupTimerRef.current)
       enemyWindupTimerRef.current = null
+    }
+    if (emojiTimerRef.current) {
+      clearTimeout(emojiTimerRef.current)
+      emojiTimerRef.current = null
     }
   }, [])
 
@@ -69,6 +76,7 @@ export function useTurnCombat({ enabled }: Options) {
     setPlayerShakeKey(0)
     setVictoryAction(null)
     setDefeatSource(null)
+    setCurrentAttackEmoji(null)
   }, [clearEnemyTimer])
 
   useEffect(() => {
@@ -103,10 +111,24 @@ export function useTurnCombat({ enabled }: Options) {
     [handleDefeat]
   )
 
+  const showAttackEmoji = useCallback((emoji: string) => {
+    if (emojiTimerRef.current) {
+      clearTimeout(emojiTimerRef.current)
+      emojiTimerRef.current = null
+    }
+    setCurrentAttackEmoji(emoji)
+    emojiTimerRef.current = setTimeout(() => {
+      emojiTimerRef.current = null
+      setCurrentAttackEmoji(null)
+    }, 900)
+  }, [])
+
   const runEnemyTurn = useCallback(() => {
     if (endedRef.current) return
     const dmg = rollBossRiposteDamage()
     const name = randomBossAttackName()
+    showAttackEmoji('😈')
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
     setBattleMessage({
       kind: 'boss_hit',
       attackName: name,
@@ -126,7 +148,7 @@ export function useTurnCombat({ enabled }: Options) {
       }
       return next
     })
-  }, [finalizeDefeat])
+  }, [finalizeDefeat, showAttackEmoji])
 
   const scheduleEnemyTurn = useCallback(() => {
     clearEnemyTimer()
@@ -142,6 +164,14 @@ export function useTurnCombat({ enabled }: Options) {
 
   const applyDamageToBoss = useCallback(
     (action: CombatAction, damage: number) => {
+      const emojiMap: Record<CombatAction, string> = {
+        breathe: '💨',
+        water: '💧',
+        distract: '🎮',
+        special: '⚡',
+      }
+      showAttackEmoji(emojiMap[action])
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
       setBattleMessage({
         kind: 'player_hit',
         actionLabel: combatActionLabel(action),
@@ -158,7 +188,7 @@ export function useTurnCombat({ enabled }: Options) {
         return next
       })
     },
-    [finalizeVictory, scheduleEnemyTurn]
+    [finalizeVictory, scheduleEnemyTurn, showAttackEmoji]
   )
 
   const chooseInstantAction = useCallback(
@@ -208,6 +238,7 @@ export function useTurnCombat({ enabled }: Options) {
     victoryAction,
     defeatSource,
     canUseSpecial,
+    currentAttackEmoji,
     showActionButtons: phase === 'player_turn',
     showBreatheTimer: phase === 'breathe_pending',
     showAbandon: phase === 'player_turn' || phase === 'breathe_pending',

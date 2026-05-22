@@ -1,5 +1,10 @@
-import { View, Text } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { useEffect } from 'react'
+import { Text, View } from 'react-native'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
 
 type Props = {
@@ -14,25 +19,31 @@ export const CombatMonster = ({ hp, maxHp, shakeKey }: Props) => {
   const clampedHp = Math.max(0, hp)
   const shakeStyle = useCombatShakeStyle(shakeKey)
 
+  const hpWidth = useSharedValue(pct)
+
+  useEffect(() => {
+    hpWidth.value = withTiming(pct, { duration: 400 })
+  }, [pct, hpWidth])
+
+  const barStyle = useAnimatedStyle(() => ({
+    width: `${hpWidth.value}%`,
+  }))
+
   return (
-    <Animated.View style={shakeStyle} className="mb-6 w-full items-center">
-      <View className="w-full max-w-[220px] items-center border-4 border-brand-accent bg-brand-bg2 p-5">
-        <Text className="text-[72px] leading-[80px]">👾</Text>
-        <Text className="mt-2 font-mono text-[10px] uppercase tracking-[0.3rem] text-brand-accent">
-          The Craving
-        </Text>
-      </View>
-      <View className="mt-4 w-full max-w-[220px]">
-        <View className="mb-1 flex-row justify-between">
+    <Animated.View style={shakeStyle} className="mb-8 w-full items-end pr-4">
+      <View className="w-full max-w-[240px] rounded-lg border-4  bg-black p-6 shadow-lg">
+        <View className=" flex-row justify-between">
           <Text className="font-mono text-[10px] text-white/50">PV</Text>
-          <Text className="font-mono text-[10px] text-white">
+          <Text className="text-right font-mono text-[10px] text-white">
             {clampedHp} / {maxHp}
           </Text>
         </View>
-        <View className="h-3 w-full overflow-hidden border-2 border-brand-border bg-white/10">
-          <View className="h-full bg-brand-accent" style={{ width: `${pct}%` }} />
+        <View className="h-3 w-full overflow-hidden rounded-sm border-2 border-brand-border bg-white/10">
+          <Animated.View style={barStyle} className="h-full bg-brand-accent" />
         </View>
+        <Text className="text-[80px] text-right leading-[88px]">👾</Text>
       </View>
+      <View className="mt-4 w-full max-w-[240px]"></View>
     </Animated.View>
   )
 }
