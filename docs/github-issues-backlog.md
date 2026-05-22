@@ -550,71 +550,216 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ## Contenu & copy (fin de pipeline — quand le produit est stable)
 
+| Ticket | Statut board |
+|--------|--------------|
+| T-201 | **To Do** |
+| T-202 | **To Do** |
+| T-203 | **To Do** |
+
 ### T-201 — Passage copy : écrans auth (FR)
 
-**Labels :** `content`, `ux-copy`
+**Labels :** `content`, `ux-copy`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-**Objectif** : textes définitifs (titres, erreurs, aide) pour inscription, connexion, reset — ton produit à valider par toi.
+**Objectif** : finaliser tous les textes des écrans auth en français (tutoiement ou ton arbitré par le PO) — titres, boutons, erreurs Firebase, messages d’aide.
 
-**À fournir par le PO** : glossaire ou exemples de ton (formel / tutoiement).
+**Périmètre**
+
+- Écrans : login, register, forgot-password (`app/auth/**`).
+- Messages d’erreur : `authErrors.ts` — cohérence, clarté, pas de jargon technique exposé brut.
+- Politique mot de passe : libellés `passwordPolicy.ts` si affichés à l’utilisateur.
+- Boutons et liens : inscription, connexion, retour, invité (si conservé).
+
+**Hors périmètre** : copy combat (T-119) ; onboarding (T-202) ; refonte UX des écrans auth.
+
+**Critères d’acceptation**
+
+- [ ] Glossaire ou exemples de ton validés par le PO (tutoiement / registre).
+- [ ] Aucune chaîne EN visible sur les écrans auth.
+- [ ] Chaque code erreur Firebase fréquent a un message FR compréhensible.
+- [ ] Relecture humaine effectuée (orthographe, ton bienveillant).
+
+**Définition of Done** : parcours auth testé en FR sur device ; PO valide le ton.
+
+**Fichiers**
+- `app/auth/login.tsx`, `register.tsx`, `forgot-password.tsx`
+- `src/features/auth/utils/authErrors.ts`
+- `src/features/auth/utils/passwordPolicy.ts`
+
+**Dépend de :** T-101 à T-103 validés (écrans auth en place).
 
 ---
 
 ### T-202 — Passage copy : onboarding & tracker (FR)
 
-**Labels :** `content`, `ux-copy`
+**Labels :** `content`, `ux-copy`, `tracker`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-Tous les textes des steps onboarding et du dashboard tracker : libellés, encouragements, conformité aux promesses santé (relecture humaine recommandée).
+**Objectif** : uniformiser en français tous les textes onboarding et dashboard tracker — libellés, encouragements, stats — avec un ton cohérent et des promesses santé assumées.
+
+**Périmètre**
+
+- Steps onboarding (`Step1` → `Step6`) : questions, boutons, messages de validation.
+- Dashboard / home tracker : streak, XP, stats, libellés profil.
+- Boutons actions : craving, reset, déconnexion, restart flow (`ProfileScreenBody`, etc.).
+- Messages calculés (ex. minutes de vie regagnées) : formulation FR claire.
+
+**Hors périmètre** : copy auth (T-201) ; copy combat modal (T-119) ; contenu médical validé par un pro (relecture PO uniquement).
+
+**Critères d’acceptation**
+
+- [ ] Scan des fichiers `src/features/onboarding/**` et `src/features/tracker/**` : pas de EN résiduel volontaire.
+- [ ] Ton aligné avec T-201 (même tutoiement / registre).
+- [ ] Encouragements non culpabilisants ; promesses réalistes (pas de « guérison garantie »).
+- [ ] Relecture PO sur un parcours onboarding complet + dashboard.
+
+**Définition of Done** : onboarding + tracker entièrement en FR ; PO valide le ton et la clarté.
+
+**Fichiers**
+- `src/features/onboarding/**`
+- `src/features/tracker/components/**`
+- `app/(tabs)/**` (libellés visibles uniquement)
+
+**Dépend de :** T-111 (flux onboarding stable).
 
 ---
 
 ### T-203 — Assets pixel art / illustration (liste manquante)
 
-**Labels :** `content`
+**Labels :** `content`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-**Objectif** : inventaire des assets nécessaires (écrans, combats, icônes) + statut (fait / manquant). **Ne pas inventer** la liste : le PO remplit le tableau dans la description de l’issue après revue des écrans.
+**Objectif** : produire un inventaire des assets visuels manquants (écrans, combats, icônes, tab bar) avec statut fait / manquant — **sans inventer** la liste : le PO la complète après revue des écrans.
+
+**Périmètre**
+
+- Parcourir chaque écran MVP : welcome, auth, onboarding, tabs, combat, profil.
+- Pour chaque asset : nom, usage, format (PNG/SVG), priorité MVP vs V2, statut.
+- Identifier les emojis provisoires remplaçables (boss, joueur, effets d’attaque → lien T-121).
+- Documenter dans le corps du ticket ou un fichier `docs/assets-inventory.md` (à créer si le PO valide).
+
+**Hors périmètre** : création des assets (ticket séparé par asset ou lot) ; sprites combat (T-121).
+
+**Critères d’acceptation**
+
+- [ ] Tableau rempli par le PO (écran → asset → statut → priorité).
+- [ ] Au moins : icônes tabs, sprite boss/joueur, fond arène combat, logo app si prévu.
+- [ ] Aucun asset critique MVP marqué « manquant » sans ticket de suivi ou décision explicite.
+
+**Définition of Done** : inventaire relu ; prochaine vague de tickets asset créée à partir de la liste.
+
+**Fichiers**
+- `docs/assets-inventory.md` (optionnel, si créé)
+- Référence croisée : `assets/`, composants avec emoji placeholder
 
 ---
 
 ## V2+ — Backlog (spécification à cadrer)
 
+| Ticket | Statut board |
+|--------|--------------|
+| T-301 | **Backlog** |
+| T-302 | **Backlog** |
+| T-303 | **Backlog** |
+
 ### T-301 — Notifications push (spéc V2)
 
-**Labels :** `v2`, `infra`
+**Labels :** `v2`, `infra`  
+**Statut board :** `Backlog`
 
 **Corps :**
 
-**Objectif** : définir quels événements déclenchent une notification (rappel combat, étape, etc.) — **hors MVP**.
+**Objectif** : cadrer puis spécifier les notifications push AshHero (rappels combat, étapes, streak) — **hors MVP**.
 
-**À trancher avant dev** : fréquence, opt-in, contenu, OS (iOS/Android), conformité store.
+**Périmètre**
 
-**Critères d’acceptation (quand le spec existe)** : à compléter après atelier produit.
+- Lister les événements candidats : rappel envie, rappel respiration, milestone streak, etc.
+- Arbitrer : fréquence max, opt-in explicite, contenu des messages, heures silencieuses.
+- Contraintes iOS/Android : permissions, Expo Notifications ou FCM, conformité App Store / Play Store.
+- Rédiger une spec courte (1 page) avant toute implémentation.
+
+**Hors périmètre** : implémentation code ; notifications in-app (toast) ; email marketing.
+
+**Critères d’acceptation**
+
+- [ ] Atelier produit tenu : liste d’événements validée ou rejetée par événement.
+- [ ] Spec V2 rédigée (déclencheurs, copy, opt-in, fréquence).
+- [ ] Décision go/no-go publication documentée (RGPD, consentement).
+
+**Définition of Done** : spec approuvée par le PO ; ticket d’implémentation V2 créé à partir de T-301.
+
+**Priorité :** après MVP stable.
 
 ---
 
 ### T-302 — Authentification sociale (Google / Apple) — V2
 
-**Labels :** `v2`, `auth`
+**Labels :** `v2`, `auth`  
+**Statut board :** `Backlog`
 
 **Corps :**
 
-Implémentation `linkWithCredential` / flux dédié selon `docs/firebase-auth-strategy.md`. Dépend d’arbitrage produit + config native Expo.
+**Objectif** : permettre la connexion via Google et/ou Apple en V2, en cohérence avec `docs/firebase-auth-strategy.md` (`linkWithCredential` ou flux dédié).
+
+**Périmètre**
+
+- Arbitrage produit : Google seul, Apple seul, ou les deux ; lien depuis compte anonyme existant.
+- Config native Expo (Google Sign-In, Apple Sign-In, entitlements iOS).
+- Implémentation Firebase Auth + gestion erreurs FR (réutiliser patterns T-201).
+- Tests : nouveau compte social, retour utilisateur, liaison avec profil Firestore existant.
+
+**Hors périmètre** : MVP email/password (T-101) ; Facebook / autres providers.
+
+**Critères d’acceptation**
+
+- [ ] Spec technique validée (flux, écrans, edge cases compte déjà existant).
+- [ ] Connexion Google et/ou Apple fonctionne sur iOS et Android (build dev).
+- [ ] Profil Firestore chargé comme pour l’auth email ; pas de régression T-101.
+
+**Définition of Done** : parcours social testé sur device ; doc stratégie auth mise à jour.
+
+**Fichiers** (indicatif post-spec)
+- `src/services/auth.service.ts`
+- `app/auth/**`
+- Config Expo / Firebase console
+
+**Dépend de :** T-101, `docs/firebase-auth-strategy.md`
 
 ---
 
 ### T-303 — Thème « analytics / confidentialité » (V2 ou légale)
 
-**Labels :** `v2`
+**Labels :** `v2`, `legal`  
+**Statut board :** `Backlog`
 
 **Corps :**
 
-Définir si tracking (analytics) et politique de confidentialité / écran paramètres sont requis pour ton objectif de publication — **ne pas supposer** ; issue de cadrage.
+**Objectif** : trancher si l’app a besoin d’analytics, d’une politique de confidentialité et d’un écran paramètres (consentement, suppression compte) pour la publication visée.
+
+**Périmètre**
+
+- Inventorier les données collectées aujourd’hui : Firebase Auth, Firestore, logs Expo, crash reports.
+- Décider : analytics oui/non (Firebase Analytics, autre) ; quelles métriques ; opt-in requis ou non.
+- Rédiger ou faire rédiger : politique de confidentialité, mentions légales si app FR/EU.
+- Écran paramètres minimal : lien politique, contact, suppression compte (si requis RGPD).
+
+**Hors périmètre** : implémentation analytics avant décision PO ; conseil juridique formel (recommander relecture pro si publication store).
+
+**Critères d’acceptation**
+
+- [ ] Tableau « donnée → finalité → base légale → durée » rempli par le PO.
+- [ ] Décision analytics documentée (go/no-go + outil choisi si go).
+- [ ] Si publication store : checklist confidentialité cochée (policy URL, consentement si tracking).
+
+**Définition of Done** : décisions écrites ; tickets d’implémentation créés uniquement si go explicite.
+
+**Priorité :** avant soumission App Store / Play Store si tracking ou données sensibles.
 
 ---
 
