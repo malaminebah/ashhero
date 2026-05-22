@@ -149,31 +149,74 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ## MVP — App (features existantes)
 
-Tickets : **T-111**, **T-112**, **T-113** (respiration combat).
+| Ticket | Statut board |
+|--------|--------------|
+| T-111 | **To Do** |
+| T-112 | **To Do** |
+| T-113 | **To Do** |
 
 ### T-111 — Relecture flux onboarding + persistance profil post-auth email
 
-**Labels :** `mvp`, `tracker`
+**Labels :** `mvp`, `tracker`, `auth`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-Vérifier que les étapes onboarding + `saveProfile` / chargement store restent cohérents après bascule auth email (pas de `initialState` trompeur, `CURSOR.md`).
+**Objectif** : garantir que le parcours onboarding et la persistance du profil restent cohérents après la bascule vers l’auth email (pas de valeurs trompeuses dans le store, pas de profil « fantôme »).
+
+**Périmètre**
+
+- Vérifier chaque step onboarding (`Step1` → `Step6`) : données collectées, reset, navigation.
+- Vérifier `useOnboardingSubmit` : `saveProfile`, `initialize` tracker, `setProfileResolved`.
+- Vérifier le chargement profil dans `app/_layout.tsx` après connexion / reconnexion (`getProfile`, `hasServerProfile`).
+- Vérifier conformité `CURSOR.md` : pas de `initialState` trompeur, sélecteurs Zustand atomiques.
+
+**Hors périmètre** : refonte des steps onboarding ; auth Google/Apple (V2).
+
+**Critères d’acceptation**
+
+- [ ] Inscription email → onboarding complet → profil visible dans les tabs sans reload manuel.
+- [ ] Reconnexion avec compte existant → profil Firestore rechargé, pas de retour onboarding si profil présent.
+- [ ] Déconnexion / reset profil → retour au bon écran sans état incohérent (`hasServerProfile`, stores reset).
+- [ ] `npx tsc --noEmit` OK ; aucun import Firebase dans les composants UI.
+
+**Définition of Done** : 3 parcours testés (nouveau compte, retour utilisateur, reset) ; comportement documenté si edge case assumé.
 
 ---
 
 ### T-112 — Parité combat / tracker avec règles Firestore
 
-**Labels :** `mvp`, `combat`, `firebase`
+**Labels :** `mvp`, `combat`, `firebase`, `tracker`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-Vérifier que les écritures `addCombat`, relapses, étapes respectent les règles `users/{uid}/**` une fois l’utilisateur authentifié par email.
+**Objectif** : confirmer que toutes les écritures tracker/combat respectent les règles Firestore `users/{uid}/**` pour un utilisateur authentifié par email.
+
+**Périmètre**
+
+- Vérifier `saveProfile`, `getProfile`, `addRelapse`, `addCombat`, `addEtape` dans `user.service.ts`.
+- Tester victoire/défaite combat (`useCombat` → Firestore).
+- Croiser avec `firestore.rules` versionné à la racine du dépôt.
+- Cas erreur réseau / permission denied : message UI ou log, pas de crash silencieux.
+
+**Hors périmètre** : changement de schéma Firestore ; règles admin/console hors repo.
+
+**Critères d’acceptation**
+
+- [ ] Un utilisateur email authentifié peut lire/écrire **uniquement** son document `users/{sonUid}`.
+- [ ] Combat gagné/perdu enregistre les données attendues sans erreur rules.
+- [ ] Relapse et étapes débloquées passent les rules en conditions réelles (device ou émulateur Firebase).
+- [ ] Aucune écriture avec un `uid` null ou mismatch auth.
+
+**Définition of Done** : tests manuels documentés ; rules déployées alignées sur `firestore.rules` du repo.
 
 ---
 
 ### T-113 — Combat : guidage respiration (« attaque respiratoire ») — compteurs inhale / exhale / pause
 
-**Labels :** `mvp`, `combat`, `ux-copy`
+**Labels :** `mvp`, `combat`, `ux-copy`  
+**Statut board :** `To Do`
 
 **Corps :**
 
@@ -385,33 +428,33 @@ Vérifier que les écritures `addCombat`, relapses, étapes respectent les règl
 
 ### T-119 — Combat : remplacer You / Opponent et copy EN → FR
 
-**Labels :** `mvp`, `combat`, `ux-copy`
+**Labels :** `mvp`, `combat`, `ux-copy`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-**Objectif** : uniformiser tous les textes combat en français (tutoiement), remplacer les libellés génériques « You » / « Opponent ».
+**Objectif** : uniformiser **tous** les textes visibles du modal combat en français (tutoiement), en remplaçant les libellés génériques anglais (« You », « Opponent », « Battle », etc.).
 
-**Textes à traiter**
+**Périmètre**
 
-| Actuel | Fichier | Proposition FR |
-|--------|---------|----------------|
-| `Battle` | `CombatModal.tsx` | `Combat` |
-| `Opponent` | `CombatModal.tsx` | `L'Envie` ou `Adversaire` |
-| `You` | `CombatModal.tsx` | `Toi` ou `Ton calme` |
-| `The Craving's turn…` | `CombatModal.tsx` | `Tour de l'Envie…` |
-| `Surrender` | `CombatModal.tsx` | `Abandonner` |
-| `Composure` | `CombatPlayerPanel.tsx` | `Ton calme` |
-| `The Craving` | `CombatMonster.tsx` | `L'Envie` |
-| `Your move:` / `You lose` | `CombatMessageBox.tsx` | `Ton coup :` / `Tu perds` |
-| `The Craving uses` / `loses` | `CombatMessageBox.tsx` | `L'Envie utilise` / `perd` |
-| Labels actions EN | `constants.ts` | `Respirer`, `Boire`, etc. |
-| Banners victoire/défaite EN | `VictoryBanner`, `DefeatBanner` | FR |
+- Titres et labels du modal : `CombatModal.tsx` (Battle, Opponent, You, tour ennemi, Surrender, sous-titre tour par tour).
+- Panneaux entités : nom boss / joueur si affiché (`CombatMonster`, `CombatPlayerPanel`).
+- Message box combat : coups joueur et riposte boss (`CombatMessageBox.tsx`).
+- Labels des 4 actions : `constants.ts` (`ACTION_LABELS`) — Respirer, Boire de l’eau, Se distraire, Attaque spéciale.
+- Banners fin de combat : victoire et défaite (`VictoryBanner`, `DefeatBanner`).
+- Messages statut FSM encore en EN dans `useTurnCombat` (ex. texte phase Respirer) si exposés à l’UI.
 
-**Critères d'acceptation**
-- [ ] Plus de « You », « Opponent », « Battle », « Surrender » visibles en combat
-- [ ] Ton cohérent (tutoiement, pas moralisateur)
-- [ ] Textes centralisés si possible (éviter strings éparpillées)
-- [ ] `npx tsc --noEmit` OK
+**Hors périmètre** : copy auth/onboarding (T-201, T-202) ; noms d’attaque boss déjà FR dans `constants.ts` (T-124).
+
+**Critères d’acceptation**
+
+- [ ] Aucune chaîne EN visible en combat (scan des fichiers `src/features/combat/**`).
+- [ ] Tutoiement cohérent, ton bienveillant, pas moralisateur.
+- [ ] Propositions FR validées ou arbitrées pour : « Toi » vs « Ton calme », « L’Envie » vs « Adversaire ».
+- [ ] Textes regroupés si possible (constantes ou fichier copy combat) — pas de duplication inutile.
+- [ ] `npx tsc --noEmit` OK.
+
+**Définition of Done** : relecture FR sur device ; combat entièrement en français ; PO valide le ton.
 
 **Fichiers**
 - `src/features/combat/components/CombatModal.tsx`
@@ -420,76 +463,88 @@ Vérifier que les écritures `addCombat`, relapses, étapes respectent les règl
 - `src/features/combat/components/CombatMessageBox.tsx`
 - `src/features/combat/components/VictoryBanner.tsx`
 - `src/features/combat/components/DefeatBanner.tsx`
-- `src/features/combat/constants.ts` (`ACTION_LABELS`)
+- `src/features/combat/constants.ts`
+- `src/features/combat/hooks/useTurnCombat.ts` (messages UI uniquement)
 
-**Statut board :** `To Do`  
-**Dépend de :** T-114 à T-118 (gameplay visuel stabilisé)
-
-**Définition of Done** : relecture FR ; combat entièrement en français.
+**Dépend de :** T-114 à T-118 validés (juice visuel stable).
 
 ---
 
 ### T-120 — Combat : passe design finale (polish UI)
 
-**Labels :** `mvp`, `combat`, `ui`, `polish`
+**Labels :** `mvp`, `combat`, `ui`, `polish`  
+**Statut board :** `To Do`
 
 **Corps :**
 
-**Objectif** : retouche visuelle globale une fois le combat fonctionnel et la copy FR OK (T-119). **À faire en dernier** après validation playtest T-114→119.
+**Objectif** : retouche visuelle globale du combat une fois la copy FR (T-119) et le juice (T-114→118) validés — alignement pixel art, lisibilité, responsive.
 
 **Périmètre**
-- [ ] Espacements finaux boss / joueur (alignement bordures gauche-droite)
-- [ ] Tailles sprites, barres PV, typo (mono / tracking)
-- [ ] Cohérence couleurs design system (`brand-accent`, `brand-bg2`, emerald joueur)
-- [ ] Message box : lisibilité, contraste, padding
-- [ ] Boutons actions : états disabled, hiérarchie visuelle
-- [ ] Fond arène : gradient ou texture légère si besoin
-- [ ] Victoire / défaite : harmoniser avec le reste du modal
-- [ ] iPhone SE + grand écran : pas de débordement
 
-**Hors périmètre**
-- Nouvelles mécaniques gameplay
-- Sprites/particules custom (voir T-121)
+- Espacements finaux boss (droite) / joueur (gauche) et hiérarchie visuelle entre les deux panneaux.
+- Tailles emoji/sprites, barres PV, typo mono / tracking cohérents avec le design system AshHero.
+- Message box : contraste, padding, lisibilité sur fond arène sombre.
+- Boutons d’action : états normal / disabled / pressed ; hiérarchie (Respirer vs actions instantanées).
+- Fond arène : affiner couleur ou gradient subtil si le fond plat `#05000a` ne suffit pas.
+- Banners victoire / défaite : harmoniser avec le modal combat.
+- Test layout iPhone SE (petit) et grand écran — pas de débordement ni chevauchement avec `AttackEffect`.
 
-**Critères d'acceptation**
-- [ ] 3 playtests sans régression UX
-- [ ] Aligné `CURSOR.md` (NativeWind, pixel art sombre)
-- [ ] Screenshots avant/après dans la PR (optionnel)
+**Hors périmètre** : nouvelles mécaniques gameplay ; sprites/particules custom (T-121) ; changement de copy (T-119).
+
+**Critères d’acceptation**
+
+- [ ] 3 playtests complets sans régression UX ni lag animation.
+- [ ] Rendu cohérent avec `CURSOR.md` (NativeWind, dark, violet royal, pixel art).
+- [ ] Boss et joueur lisibles d’un coup d’œil ; barres PV et chiffres HP clairs.
+- [ ] Screenshots avant/après joints à la PR ou au ticket (optionnel mais recommandé).
+
+**Définition of Done** : PO valide le rendu visuel sur device physique ; ticket passé en **Done**.
 
 **Fichiers** (selon retouches)
-- `CombatModal.tsx`, `CombatMonster.tsx`, `CombatPlayerPanel.tsx`
-- `CombatMessageBox.tsx`, `ActionButton.tsx`
-- `VictoryBanner.tsx`, `DefeatBanner.tsx`
+- `src/features/combat/components/CombatModal.tsx`
+- `src/features/combat/components/CombatMonster.tsx`
+- `src/features/combat/components/CombatPlayerPanel.tsx`
+- `src/features/combat/components/CombatMessageBox.tsx`
+- `src/features/combat/components/ActionButton.tsx`
+- `src/features/combat/components/VictoryBanner.tsx`
+- `src/features/combat/components/DefeatBanner.tsx`
 
-**Statut board :** `To Do` → `In Review` après implémentation → `Done` après validation visuelle PO  
 **Bloqué par :** T-119
-
-**Définition of Done** : PO valide le rendu visuel sur device.
 
 ---
 
 ### T-121 — Combat : sprites / particules d'attaque (optionnel)
 
-**Labels :** `combat`, `content`, `animation`
+**Labels :** `combat`, `content`, `animation`  
+**Statut board :** `Backlog`
 
 **Corps :**
 
-**Objectif** : remplacer les emojis d'attaque par sprites ou particules légères (fumée, éclair, eau) si le proto emoji (T-115) ne suffit pas.
+**Objectif** : remplacer ou compléter les emojis d’attaque (T-115) par des sprites ou particules légères (fumée, éclair, eau) si le proto emoji ne suffit pas au feeling produit.
 
-**Critères d'acceptation**
-- [ ] Asset list validée par le PO (fumée, eau, éclair, etc.)
-- [ ] Perf OK sur device milieu de gamme
-- [ ] Fallback emoji si asset manquant
-- [ ] Mapping actions conservé (breathe, water, distract, special, boss riposte)
+**Périmètre**
+
+- Liste d’assets validée par le PO : breathe (fumée/air), water (goutte), distract, special (éclair), boss riposte.
+- Intégration dans `AttackEffect` ou composant dédié — même durée et timing que l’anim emoji actuelle (~900 ms).
+- Fallback emoji si asset manquant ou perf insuffisante.
+- Conserver le mapping actions existant (pas de nouvelle mécanique).
+
+**Hors périmètre** : animations personnage full-frame ; SFX ; refonte layout combat.
+
+**Critères d’acceptation**
+
+- [ ] Assets listés et sourcés (pixel art cohérent AshHero).
+- [ ] Perf OK sur device milieu de gamme (pas de chute visible FPS pendant combat).
+- [ ] Chaque action affiche l’effet attendu ; fallback emoji testé.
+- [ ] Pas de régression sur T-116 (déclenchement FSM inchangé côté hook).
+
+**Définition of Done** : playtest visuel ; PO choisit emoji vs sprite par action ; pas de régression perf.
 
 **Fichiers**
 - `src/features/combat/components/AttackEffect.tsx` (ou remplacement)
-- Assets dans `assets/` ou équivalent
+- `assets/` (chemins à définir avec le PO)
 
-**Statut board :** `Backlog` — après T-120  
-**Priorité :** P3 (nice to have)
-
-**Définition of Done** : playtest visuel ; pas de régression perf.
+**Priorité :** P3 — après T-120
 
 ---
 
