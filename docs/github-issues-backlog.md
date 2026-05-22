@@ -2,6 +2,11 @@
 
 **Dépôt cible :** [malaminebah/ashhero](https://github.com/malaminebah/ashhero)
 
+> **Important — deux endroits distincts**
+> - **`docs/github-issues-backlog.md`** (ce fichier) = brouillon / source de vérité texte dans le repo Git.
+> - **Issues GitHub + Project board** = tickets visibles sur [github.com/malaminebah/ashhero/issues](https://github.com/malaminebah/ashhero/issues) — **non synchronisés automatiquement** quand ce fichier change.
+> - Après édition ici : mettre à jour les issues avec `gh issue edit` / `gh issue create`, ou coller manuellement dans l’UI GitHub.
+
 Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https://cli.github.com) avec les exemples en fin de fichier.
 
 **Labels suggérés (à créer une fois dans le dépôt) :** `mvp`, `v2`, `content`, `auth`, `firebase`, `tracker`, `combat`, `ux-copy`, `infra`, `blocked` (adapter à ton board).
