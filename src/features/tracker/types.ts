@@ -26,6 +26,7 @@ export type TrackerConfig = {
   level: number,
   combatsWon: number,
   combatsLost: number,
+  heroName: string | null,
 }
 
 
@@ -36,6 +37,7 @@ export type TrackerActions = {
   relapse: (currentDayCount: number) => void
   winCombat: (action: CombatAction, xpGained: number) => void
   loseCombat: () => void
+  setHeroName: (name: string) => void
 }
 
 export type Etape = {
@@ -64,4 +66,5 @@ export const trackerProfileFromStore = (s: TrackerStore): TrackerConfig => ({
   level: s.level,
   combatsWon: s.combatsWon,
   combatsLost: s.combatsLost,
+  heroName: s.heroName,
 })

@@ -20,12 +20,14 @@ function makeStore(overrides: Partial<TrackerStore> = {}): TrackerStore {
     level: 3,
     combatsWon: 5,
     combatsLost: 1,
+    heroName: null,
     initialize: noop,
     unlockEtape: noop,
     reset: noop,
     relapse: noop,
     winCombat: noop,
     loseCombat: noop,
+    setHeroName: noop,
     ...overrides,
   }
 }
@@ -55,6 +57,7 @@ describe('trackerProfileFromStore', () => {
       level: 3,
       combatsWon: 5,
       combatsLost: 1,
+      heroName: null,
     })
     expect(profile).not.toHaveProperty('initialize')
     expect(profile).not.toHaveProperty('winCombat')

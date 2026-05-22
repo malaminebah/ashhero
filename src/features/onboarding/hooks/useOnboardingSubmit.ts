@@ -22,6 +22,7 @@ function trackerProfileFromOnboardingState(): TrackerConfig {
     level: 1,
     combatsWon: 0,
     combatsLost: 0,
+    heroName: null,
   }
 }
 

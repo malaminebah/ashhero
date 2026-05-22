@@ -44,6 +44,10 @@ export const getProfile = async (
     vapeBottlePriceEuro:
       typeof data.vapeBottlePriceEuro === 'number' ? data.vapeBottlePriceEuro : null,
     vapeMlPerWeek: typeof data.vapeMlPerWeek === 'number' ? data.vapeMlPerWeek : null,
+    heroName:
+      typeof data.heroName === 'string' && data.heroName.trim().length > 0
+        ? data.heroName.trim().slice(0, 32)
+        : null,
   } as TrackerConfig
 }
 
