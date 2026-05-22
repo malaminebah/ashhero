@@ -25,7 +25,7 @@ export const DashboardHome = () => {
     >
       <View className="px-5 pt-12">
         <DashboardHeader level={level} />
-        <DashboardHero dayCount={dayCount} totalXp={xp} />
+        <DashboardHero dayCount={dayCount} totalXp={xp} level={level} />
         <DashboardStatsPair
           moneySaved={moneySaved}
           avoidedCount={cigarettesAvoided}

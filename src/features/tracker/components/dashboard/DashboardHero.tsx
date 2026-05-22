@@ -1,12 +1,14 @@
 import { View, Text } from 'react-native'
 import { DashboardXpBar } from './DashboardXpBar'
+import { PlayerHeroEmoji } from '../PlayerHeroEmoji'
 
 type Props = {
   dayCount: number
   totalXp: number
+  level: number
 }
 
-export const DashboardHero = ({ dayCount, totalXp }: Props) => (
+export const DashboardHero = ({ dayCount, totalXp, level }: Props) => (
   <View className="mb-8 items-center">
     <View
       className="mb-4 h-[140px] w-[140px] items-center justify-center rounded-2xl border-2 border-brand-accent/50 bg-brand-bg2"
@@ -18,9 +20,7 @@ export const DashboardHero = ({ dayCount, totalXp }: Props) => (
         elevation: 16,
       }}
     >
-      <Text className="text-7xl" style={{ lineHeight: 88 }}>
-        🤖
-      </Text>
+      <PlayerHeroEmoji level={level} variant="dashboard" />
     </View>
     <Text className="font-mono text-6xl font-black tracking-tighter text-brand-accent">
       {dayCount}

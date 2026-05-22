@@ -1,4 +1,5 @@
 import { View, Text, Platform } from 'react-native'
+import { PlayerHeroEmoji } from '../PlayerHeroEmoji'
 
 const nameSerif = Platform.select({
   ios: 'Georgia',
@@ -33,9 +34,7 @@ export const ProfileHeroCard = ({ level, xp }: Props) => (
           elevation: 8,
         }}
       >
-        <Text className="text-5xl" style={{ lineHeight: 56 }}>
-          🤖
-        </Text>
+        <PlayerHeroEmoji level={level} variant="profile" />
       </View>
       <View className="flex-1">
         <Text

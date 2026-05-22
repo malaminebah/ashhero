@@ -5,6 +5,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+import { PlayerHeroEmoji } from '@/src/features/tracker/components/PlayerHeroEmoji'
+import { useTrackerStore } from '@/src/features/tracker/store'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
 
 type Props = {
@@ -16,6 +18,7 @@ type Props = {
 }
 
 export const CombatPlayerPanel = ({ hp, maxHp, shakeKey }: Props) => {
+  const level = useTrackerStore((s) => s.level)
   const pct = Math.max(0, Math.min(100, (hp / maxHp) * 100))
   const clampedHp = Math.max(0, hp)
   const shakeStyle = useCombatShakeStyle(shakeKey)
@@ -32,7 +35,7 @@ export const CombatPlayerPanel = ({ hp, maxHp, shakeKey }: Props) => {
 
   return (
     <Animated.View style={shakeStyle} className="mb-6 w-full items-start pl-4">
-      <Text className="text-[64px] leading-[72px]">🛡️</Text>
+      <PlayerHeroEmoji level={level} variant="combat" />
       <View className="mt-3 w-full max-w-[240px]">
         <View className="mb-1 flex-row justify-between">
           <Text className="font-mono text-[10px] text-white/50">PV</Text>
