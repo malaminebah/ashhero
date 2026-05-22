@@ -160,6 +160,99 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 | T-112 | **To Do** |
 | T-113 | **To Do** |
 
+---
+
+## MVP — Avatar joueur (personnalisation)
+
+| Ticket | Statut board | Issue GitHub |
+|--------|--------------|--------------|
+| T-126 | **To Do** | [#25](https://github.com/malaminebah/ashhero/issues/25) |
+| T-127 | **To Do** | [#26](https://github.com/malaminebah/ashhero/issues/26) |
+| T-128 | **To Do** | [#27](https://github.com/malaminebah/ashhero/issues/27) |
+| T-129 | **To Do** | [#28](https://github.com/malaminebah/ashhero/issues/28) |
+
+**Epic :** choix d’avatar joueur — **4 emojis par palier de niveau**, persisté profil, visible dashboard / profil / combat.
+
+**Ordre d’implémentation :** T-126 → T-127 → T-128 → T-129
+
+### T-126 — Tracker : catalogue avatars — 4 emojis par palier de niveau
+
+**Labels :** `mvp`, `tracker`, `content`  
+**Statut board :** `To Do`  
+**Issue :** [#25](https://github.com/malaminebah/ashhero/issues/25)
+
+**Objectif** : définir le catalogue d’avatars — 4 emojis par palier — et les utilitaires (`getAvatarTierForLevel`, `getAvatarOptionsForTier`, `resolveHeroEmoji`).
+
+**Paliers proposés** (alignés sur `playerHeroEmoji.ts` actuel) :
+
+| Palier | Niveau min | Défaut actuel |
+|--------|------------|---------------|
+| 0 | 1 | 🤖 |
+| 1 | 2 | 💪 |
+| 2 | 4 | 🛡️ |
+| 3 | 7 | ⚔️ |
+| 4 | 10 | 👑 |
+
+**Critères d’acceptation**
+- [ ] 5 paliers × 4 emojis listés et validés PO
+- [ ] Utils typés + fallback si choix invalide
+- [ ] `npx tsc --noEmit` OK
+
+**Définition of Done** : catalogue centralisé ; T-127 peut consommer `avatarId`.
+
+---
+
+### T-127 — Tracker : persister `heroAvatarId` (Firestore + store)
+
+**Labels :** `mvp`, `tracker`, `firebase`  
+**Statut board :** `To Do`  
+**Issue :** [#26](https://github.com/malaminebah/ashhero/issues/26)
+
+**Objectif** : persister le choix d’avatar dans le profil (même pattern que `heroName`).
+
+**Critères d’acceptation**
+- [ ] Champ `heroAvatarId` dans types, store, `user.service.ts`
+- [ ] `setHeroAvatar` valide palier débloqué
+- [ ] Save/reload conserve le choix ; reset remet à null
+
+**Dépend de :** T-126
+
+---
+
+### T-128 — Tracker : UI sélecteur d’avatar (écran profil)
+
+**Labels :** `mvp`, `tracker`, `ux-copy`  
+**Statut board :** `To Do`  
+**Issue :** [#27](https://github.com/malaminebah/ashhero/issues/27)
+
+**Objectif** : grille 4 emojis par palier débloqué sur l’écran profil ; touch ≥ 44px ; copy FR.
+
+**Critères d’acceptation**
+- [ ] Paliers débloqués seulement
+- [ ] Sélection → store + Firestore (T-127)
+- [ ] Accessibilité + design pixel/violet
+
+**Dépend de :** T-126, T-127
+
+---
+
+### T-129 — Tracker : afficher avatar choisi (dashboard, profil, combat)
+
+**Labels :** `mvp`, `tracker`, `combat`  
+**Statut board :** `To Do`  
+**Issue :** [#28](https://github.com/malaminebah/ashhero/issues/28)
+
+**Objectif** : `PlayerHeroEmoji` lit `heroAvatarId` ; cohérence dashboard / profil / `CombatPlayerPanel`.
+
+**Critères d’acceptation**
+- [ ] Même emoji partout pour un profil
+- [ ] Changement profil visible combat sans reload
+- [ ] Fallback robuste
+
+**Dépend de :** T-126, T-127, T-128
+
+---
+
 ### T-111 — Relecture flux onboarding + persistance profil post-auth email
 
 **Labels :** `mvp`, `tracker`, `auth`  
