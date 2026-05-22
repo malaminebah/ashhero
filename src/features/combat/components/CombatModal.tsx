@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { Modal, View, Text, Pressable, ScrollView } from 'react-native'
+import { Modal, View, Text, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COMBAT_XP_BY_ACTION } from '@/src/features/tracker/combatXpTable'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { getDayCount } from '@/src/features/tracker/utils/calculations'
-import { combatActionLabel } from '../constants'
+import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
 import { useTurnCombat } from '../hooks/useTurnCombat'
 import { ActionButton } from './ActionButton'
 import { AttackEffect } from './AttackEffect'
@@ -16,6 +16,7 @@ import { DefeatBanner } from './DefeatBanner'
 import { VictoryBanner } from './VictoryBanner'
 
 const END_SCREEN_MS = 2200
+const ENEMY_TURN_LABEL = "L'Envie riposte…"
 
 type Props = {
   visible: boolean
@@ -99,6 +100,10 @@ export const CombatModal = ({ visible, onClose }: Props) => {
   const xpGained =
     victoryAction != null ? COMBAT_XP_BY_ACTION[victoryAction] : 0
 
+  const showEnemyRiposte =
+    phase === 'enemy_turn' ||
+    (phase === 'resolving_instant' && !showBreatheTimer)
+
   return (
     <Modal
       visible={visible}
@@ -107,16 +112,12 @@ export const CombatModal = ({ visible, onClose }: Props) => {
       onRequestClose={handleRequestClose}
     >
       <SafeAreaView className="flex-1 bg-[#05000a]">
-        <ScrollView
-          className="flex-1 px-5 pb-8 pt-4"
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text className="mb-3 text-center font-mono text-lg uppercase tracking-[0.2rem] text-white">
-            Battle
+        <View className="flex-1 px-5 pb-6 pt-4">
+          <Text className="mb-2 text-center font-mono text-lg uppercase tracking-[0.2rem] text-white">
+            Combat
           </Text>
-          <Text className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.15rem] text-white/40">
-            Each turn: your move, then the Craving strikes back.
+          <Text className="mb-3 text-center font-mono text-xs leading-5 text-white/60">
+            À chaque tour : ton action, puis la riposte de l&apos;Envie.
           </Text>
 
           {phase === 'victory' && victoryAction != null ? (
@@ -124,9 +125,9 @@ export const CombatModal = ({ visible, onClose }: Props) => {
           ) : phase === 'defeat' && defeatSource === 'riposte' ? (
             <DefeatBanner />
           ) : phase === 'defeat' && defeatSource === 'abandon' ? null : (
-            <>
-              <Text className="mb-2 text-center font-mono text-[10px] text-brand-accent">
-                Opponent
+            <View className="flex-1">
+              <Text className="mb-2 text-center font-mono text-xs text-white/80">
+                L&apos;Envie
               </Text>
               <CombatMonster
                 hp={bossHp}
@@ -134,8 +135,8 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                 shakeKey={bossShakeKey}
               />
 
-              <Text className="mb-2 mt-2 text-center font-mono text-[10px] text-emerald-400/90">
-                You
+              <Text className="mb-2 mt-2 text-center font-mono text-xs text-emerald-400/90">
+                Toi
               </Text>
               <CombatPlayerPanel
                 hp={playerHp}
@@ -150,9 +151,9 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                 visible={currentAttackEmoji != null}
               />
 
-              {phase === 'enemy_turn' ? (
-                <Text className="mb-4 text-center font-mono text-sm text-white/60">
-                  The Craving&apos;s turn…
+              {showEnemyRiposte ? (
+                <Text className="mb-3 text-center font-mono text-xs text-white/60">
+                  {ENEMY_TURN_LABEL}
                 </Text>
               ) : null}
 
@@ -160,47 +161,62 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                 <BreatheTimer onComplete={onBreatheComplete} />
               ) : null}
 
-              {showActionButtons ? (
-                <View>
-                  <ActionButton
-                    label={combatActionLabel('breathe')}
-                    onPress={chooseBreathe}
-                  />
-                  <ActionButton
-                    label={combatActionLabel('water')}
-                    onPress={() => chooseInstantAction('water')}
-                  />
-                  <ActionButton
-                    label={combatActionLabel('distract')}
-                    onPress={() => chooseInstantAction('distract')}
-                  />
-                  <ActionButton
-                    label={combatActionLabel('special')}
-                    onPress={() => chooseInstantAction('special')}
-                    disabled={!canUseSpecial}
-                  />
-                </View>
-              ) : null}
+              <View className="mt-auto gap-2 pt-2">
+                {showActionButtons ? (
+                  <>
+                    <ActionButton
+                      variant="primary"
+                      label={combatActionLabel('breathe')}
+                      onPress={chooseBreathe}
+                      accessibilityLabel="Respirer"
+                    />
+                    <ActionButton
+                      variant="secondary"
+                      label={combatActionLabel('water')}
+                      onPress={() => chooseInstantAction('water')}
+                      accessibilityLabel="Boire de l'eau"
+                    />
+                    <ActionButton
+                      variant="secondary"
+                      label={combatActionLabel('distract')}
+                      onPress={() => chooseInstantAction('distract')}
+                      accessibilityLabel="Se distraire"
+                    />
+                    <ActionButton
+                      variant="special"
+                      label={combatActionLabel('special')}
+                      onPress={() => chooseInstantAction('special')}
+                      disabled={!canUseSpecial}
+                      hint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
+                      accessibilityLabel={
+                        canUseSpecial
+                          ? 'Attaque spéciale'
+                          : `Attaque spéciale, débloquée après ${COMBAT_SPECIAL_LOCKED_HINT}`
+                      }
+                    />
+                  </>
+                ) : null}
 
-              {phase === 'resolving_instant' && !showBreatheTimer ? (
-                <Text className="text-center font-mono text-xs text-white/50">
-                  …
-                </Text>
-              ) : null}
-            </>
+                {showAbandon ? (
+                  <Pressable
+                    onPress={() => void onAbandon()}
+                    accessibilityRole="button"
+                    accessibilityLabel="Abandonner le combat"
+                    android_ripple={{ color: 'rgba(255,255,255,0.08)' }}
+                    className="mt-2 min-h-[48px] w-full items-center justify-center rounded-md border border-white/20 px-4 py-3"
+                    style={({ pressed }) =>
+                      pressed ? { opacity: 0.85, transform: [{ scale: 0.99 }] } : undefined
+                    }
+                  >
+                    <Text className="font-mono text-xs uppercase tracking-widest text-white/70">
+                      Abandonner
+                    </Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            </View>
           )}
-
-          {showAbandon ? (
-            <Pressable
-              onPress={() => void onAbandon()}
-              className="mt-8 w-full items-center rounded-xl border border-white/20 py-4 active:opacity-80"
-            >
-              <Text className="font-mono text-xs uppercase tracking-widest text-white/70">
-                Surrender
-              </Text>
-            </Pressable>
-          ) : null}
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </Modal>
   )
