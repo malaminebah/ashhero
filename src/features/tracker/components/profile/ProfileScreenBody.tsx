@@ -24,6 +24,8 @@ export const ProfileScreenBody = () => {
   const relapseCount = useTrackerStore((s) => s.relapseCount)
   const xp = useTrackerStore((s) => s.xp)
   const level = useTrackerStore((s) => s.level)
+  const heroName = useTrackerStore((s) => s.heroName)
+  const setHeroName = useTrackerStore((s) => s.setHeroName)
 
   const {
     moneySaved,
@@ -64,7 +66,12 @@ export const ProfileScreenBody = () => {
     <ScrollView className="flex-1 bg-brand-bg" showsVerticalScrollIndicator={false}>
       <View className="px-5 pb-10 pt-12">
         <ProfileHeader />
-        <ProfileHeroCard level={level} xp={xp} />
+        <ProfileHeroCard
+          level={level}
+          xp={xp}
+          heroName={heroName}
+          onSaveName={setHeroName}
+        />
         <ProfileStatsGrid
           dayCount={dayCount}
           moneySaved={moneySaved}
