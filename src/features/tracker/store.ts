@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { TrackerConfig, TrackerActions, trackerProfileFromStore } from './types'
+import { normalizeHeroName } from './utils/heroName'
 import { addRelapse, getCurrentUid, saveProfile } from '@/src/services'
 
 const initialState: TrackerConfig = {
@@ -20,6 +21,7 @@ const initialState: TrackerConfig = {
   level: 1,
   combatsWon: 0,
   combatsLost: 0,
+  heroName: null,
 }
 
 export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
@@ -61,6 +63,19 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         set((state) => ({
           combatsLost: state.combatsLost + 1,
         })),
+      setHeroName: (name) => {
+        const heroName = normalizeHeroName(name)
+        if (heroName === get().heroName) return
+        set({ heroName })
+        const uid = getCurrentUid()
+        if (!uid) {
+          console.warn('[tracker] setHeroName: uid null, Firestore not called')
+          return
+        }
+        void saveProfile(uid, trackerProfileFromStore(get())).catch((err) =>
+          console.warn('[tracker] setHeroName sync', err)
+        )
+      },
       reset: () => set(initialState),
     }),
     {
@@ -82,6 +97,7 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         level: state.level,
         combatsWon: state.combatsWon,
         combatsLost: state.combatsLost,
+        heroName: state.heroName,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return
@@ -92,6 +108,8 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         if (typeof state.level !== 'number') state.level = 1
         if (typeof state.combatsWon !== 'number') state.combatsWon = 0
         if (typeof state.combatsLost !== 'number') state.combatsLost = 0
+        if (typeof state.heroName !== 'string') state.heroName = null
+        else state.heroName = normalizeHeroName(state.heroName)
         if (typeof state.vapeBottleVolumeMl !== 'number') state.vapeBottleVolumeMl = null
         if (typeof state.vapeBottlePriceEuro !== 'number') state.vapeBottlePriceEuro = null
         if (typeof state.vapeMlPerWeek !== 'number') state.vapeMlPerWeek = null
