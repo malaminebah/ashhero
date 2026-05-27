@@ -863,22 +863,23 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ## MVP — Mood de la semaine (T-130 → T-138)
 
-| Ticket | Statut board | Commit |
-|--------|--------------|--------|
-| T-130 | **Backlog** | — |
-| T-131 | **Backlog** | — |
-| T-132 | **Backlog** | — |
-| T-133 | **Backlog** | — |
-| T-134 | **Backlog** | — |
-| T-135 | **Backlog** | — |
-| T-136 | **Backlog** | — |
-| T-137 | **Backlog** | — |
-| T-138 | **Backlog** | — |
+| Ticket | Statut board | Issue GitHub |
+|--------|--------------|--------------|
+| T-130 | **to review** | [#29](https://github.com/malaminebah/ashhero/issues/29) |
+| T-131 | **to review** | [#30](https://github.com/malaminebah/ashhero/issues/30) |
+| T-132 | **to review** | [#31](https://github.com/malaminebah/ashhero/issues/31) |
+| T-133 | **to review** | [#32](https://github.com/malaminebah/ashhero/issues/32) |
+| T-134 | **to review** | [#33](https://github.com/malaminebah/ashhero/issues/33) |
+| T-135 | **to review** | [#34](https://github.com/malaminebah/ashhero/issues/34) |
+| T-136 | **to review** | [#35](https://github.com/malaminebah/ashhero/issues/35) |
+| T-137 | **Backlog** | [#36](https://github.com/malaminebah/ashhero/issues/36) |
+| T-138 | **Backlog** | [#37](https://github.com/malaminebah/ashhero/issues/37) |
 
 ### T-130 — Mood : taxonomie émotions (6 primaires × 4 secondaires)
 
 **Labels :** `mvp`, `content`, `tracker`  
-**Statut board :** Backlog
+**Statut board :** to review  
+**Issue :** [#29](https://github.com/malaminebah/ashhero/issues/29)
 
 **Objectif** : définir la source de vérité des humeurs (labels FR, clés TS) pour le flow et Firestore.
 
@@ -899,7 +900,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-131 — Mood : schéma Firestore + service + rules
 
 **Labels :** `mvp`, `firebase`, `tracker`  
-**Statut board :** Backlog
+**Statut board :** to review  
+**Issue :** [#30](https://github.com/malaminebah/ashhero/issues/30)
 
 **Objectif** : persister une entrée d'humeur par jour et par utilisateur.
 
@@ -919,7 +921,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-132 — Mood : hook `useWeeklyMood`
 
 **Labels :** `mvp`, `tracker`, `firebase`  
-**Statut board :** Backlog  
+**Statut board :** to review  
+**Issue :** [#31](https://github.com/malaminebah/ashhero/issues/31)  
 **Dépend de :** T-130, T-131
 
 **Objectif** : API React pour la semaine courante (lun→dim).
@@ -939,7 +942,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-133 — Mood : composant `WeeklyMoodStrip` (Accueil)
 
 **Labels :** `mvp`, `tracker`, `ux-copy`  
-**Statut board :** Backlog  
+**Statut board :** to review  
+**Issue :** [#32](https://github.com/malaminebah/ashhero/issues/32)  
 **Dépend de :** T-132
 
 **Objectif** : strip pressable Lun→Dim sur l'écran Accueil.
@@ -959,7 +963,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-134 — Mood : navigation flow (Expo Router)
 
 **Labels :** `mvp`, `tracker`  
-**Statut board :** Backlog  
+**Statut board :** to review  
+**Issue :** [#33](https://github.com/malaminebah/ashhero/issues/33)  
 **Dépend de :** T-130
 
 **Objectif** : stack `app/mood/` — 2 étapes + retour Accueil.
@@ -977,7 +982,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-135 — Mood : écran émotion primaire
 
 **Labels :** `mvp`, `tracker`, `ux-copy`  
-**Statut board :** Backlog  
+**Statut board :** to review  
+**Issue :** [#34](https://github.com/malaminebah/ashhero/issues/34)  
 **Dépend de :** T-134, T-130
 
 **Objectif** : grille 6 cartes (calme, joie, tristesse, colère, peur, dégoût).
@@ -991,7 +997,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-136 — Mood : écran sous-émotion + enregistrement
 
 **Labels :** `mvp`, `tracker`, `firebase`  
-**Statut board :** Backlog  
+**Statut board :** to review  
+**Issue :** [#35](https://github.com/malaminebah/ashhero/issues/35)  
 **Dépend de :** T-132, T-134, T-135
 
 **Objectif** : afficher 4 sous-émotions filtrées ; sauver et retour Accueil.
@@ -1007,6 +1014,7 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 **Labels :** `mvp`, `tracker`, `ux-copy`  
 **Statut board :** Backlog  
+**Issue :** [#36](https://github.com/malaminebah/ashhero/issues/36)  
 **Dépend de :** T-132
 
 **Objectif** : historique semaine courante sur Profil.
@@ -1026,6 +1034,7 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 **Labels :** `mvp`, `tracker`  
 **Statut board :** Backlog  
+**Issue :** [#37](https://github.com/malaminebah/ashhero/issues/37)  
 **Dépend de :** T-131, T-136
 
 **Objectif** : robustesse UX et données.
