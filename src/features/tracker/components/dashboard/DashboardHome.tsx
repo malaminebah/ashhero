@@ -7,6 +7,7 @@ import { DashboardXpBar } from './DashboardXpBar'
 import { DashboardStatsPair } from './DashboardStatsPair'
 import { DashboardJalonsGrid } from './DashboardJalonsGrid'
 import { DashboardDailyBonus } from './DashboardDailyBonus'
+import { DashboardMoodSection } from '@/src/features/mood/components/DashboardMoodSection'
 
 export const DashboardHome = () => {
   const quitDate = useTrackerStore((s) => s.quitDate)
@@ -41,6 +42,7 @@ export const DashboardHome = () => {
           avoidedSubtitle={avoidedSubtitle}
         />
         <DashboardJalonsGrid hoursSinceQuit={hoursSinceQuit} />
+        <DashboardMoodSection />
         <DashboardDailyBonus />
       </View>
     </ScrollView>
