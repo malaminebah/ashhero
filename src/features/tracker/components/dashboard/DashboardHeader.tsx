@@ -1,27 +1,30 @@
-import { View, Text } from 'react-native'
-import { titleSerif } from '@/constants/theme'
+import { View, Text, Pressable } from 'react-native'
+import { useRouter } from 'expo-router'
+import { IconSymbol } from '@/components/ui/icon-symbol'
 
 type Props = {
   level: number
 }
 
-export const DashboardHeader = ({ level }: Props) => (
-  <View className="mb-6 flex-row items-start justify-between">
-    <View className="flex-1 pr-3">
-      <Text
-        className="text-3xl font-bold tracking-tight text-brand-accent"
-        style={{ fontFamily: titleSerif }}
+export const DashboardHeader = ({ level }: Props) => {
+  const router = useRouter()
+
+  return (
+    <View className="mb-6 flex-row items-center justify-between">
+      <View className="flex-row items-center rounded-lg border border-brand-success/45 bg-brand-success/10 px-3 py-2">
+        <Text className="font-mono text-[10px] font-bold text-brand-success">XP</Text>
+        <Text className="ml-2 font-mono text-[10px] font-bold uppercase tracking-wider text-white">
+          Niveau {level}
+        </Text>
+      </View>
+      <Pressable
+        onPress={() => router.push('/settings' as never)}
+        accessibilityRole="button"
+        accessibilityLabel="Réglages"
+        className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
       >
-        DASHBOARD
-      </Text>
-      <Text className="mt-1 font-mono text-[10px] uppercase tracking-[0.35rem] text-white/80">
-        TON AVENTURE
-      </Text>
+        <IconSymbol name="gearshape.fill" size={24} color="#f3e8ff" />
+      </Pressable>
     </View>
-    <View className="rounded-full border border-brand-gold/60 bg-brand-gold/15 px-4 py-2">
-      <Text className="font-mono text-sm font-bold text-brand-gold">
-        LVL {level}
-      </Text>
-    </View>
-  </View>
-)
+  )
+}

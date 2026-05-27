@@ -1,7 +1,10 @@
-/** Hour thresholds for the milestone grid (aligned with major recovery steps). */
 export const DASHBOARD_JALONS = [
-  { key: '1d', label: '1 JOUR', hours: 24, icon: '🌱' },
-  { key: '1w', label: '1 SEMAINE', hours: 168, icon: '⚔️' },
-  { key: '1m', label: '1 MOIS', hours: 672, icon: '🛡️' },
-  { key: '3m', label: '3 MOIS', hours: 2160, icon: '👑' },
+  { key: '3d', label: '3 JOURS', hours: 72 },
+  { key: '7d', label: '7 JOURS', hours: 168 },
+  { key: '14d', label: '14 JOURS', hours: 336 },
+  { key: '30d', label: '30 JOURS', hours: 720 },
+  { key: '60d', label: '60 JOURS', hours: 1440 },
+  { key: '90d', label: '90 JOURS', hours: 2160 },
+  { key: '180d', label: '180 JOURS', hours: 4320 },
+  { key: '365d', label: '1 AN', hours: 8760 },
 ] as const
