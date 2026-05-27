@@ -23,6 +23,8 @@ const MAPPING = {
   'person.fill': 'person',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'gearshape.fill': 'settings',
+  'gift.fill': 'card-giftcard',
 } as IconMapping
 
 /**
