@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback } from 'react'
 import { Modal, View, Text, Pressable, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { COMBAT_XP_BY_ACTION } from '@/src/features/tracker/combatXpTable'
 import { useTrackerStore } from '@/src/features/tracker/store'
-import { getDayCount } from '@/src/features/tracker/utils/calculations'
 import { displayHeroName } from '@/src/features/tracker/utils/heroName'
 import { PlayerHeroEmoji } from '@/src/features/tracker/components/PlayerHeroEmoji'
 import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
@@ -17,18 +17,15 @@ import { CombatMessageBox } from './CombatMessageBox'
 import { DefeatBanner } from './DefeatBanner'
 import { VictoryBanner } from './VictoryBanner'
 
-const END_SCREEN_MS = 2200
-
 type Props = {
   visible: boolean
   onClose: () => void
 }
 
 export const CombatModal = ({ visible, onClose }: Props) => {
-  const quitDate = useTrackerStore((s) => s.quitDate)
+  const router = useRouter()
   const level = useTrackerStore((s) => s.level)
   const heroName = useTrackerStore((s) => s.heroName)
-  const streakDays = getDayCount(quitDate)
   const heroLabel = displayHeroName(heroName).toUpperCase()
 
   const {
@@ -52,42 +49,17 @@ export const CombatModal = ({ visible, onClose }: Props) => {
     onBreatheComplete,
     chooseInstantAction,
     abandon,
+    reset,
   } = useTurnCombat({ enabled: visible })
 
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   const closeWithReset = useCallback(() => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current)
-      closeTimerRef.current = null
-    }
     onClose()
   }, [onClose])
 
-  useEffect(() => {
-    if (!visible && closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current)
-      closeTimerRef.current = null
-    }
-  }, [visible])
-
-  useEffect(() => {
-    const shouldAutoClose =
-      phase === 'victory' ||
-      (phase === 'defeat' && defeatSource === 'riposte')
-    if (!shouldAutoClose) return
-    if (closeTimerRef.current) clearTimeout(closeTimerRef.current)
-    closeTimerRef.current = setTimeout(() => {
-      closeTimerRef.current = null
-      closeWithReset()
-    }, END_SCREEN_MS)
-    return () => {
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current)
-        closeTimerRef.current = null
-      }
-    }
-  }, [phase, defeatSource, closeWithReset])
+  const onGoHome = useCallback(() => {
+    closeWithReset()
+    router.replace('/(tabs)/' as never)
+  }, [closeWithReset, router])
 
   const onAbandon = async () => {
     await abandon()
@@ -105,6 +77,8 @@ export const CombatModal = ({ visible, onClose }: Props) => {
   const xpGained =
     victoryAction != null ? COMBAT_XP_BY_ACTION[victoryAction] : 0
 
+  const isResultScreen = phase === 'victory' || phase === 'defeat'
+
   return (
     <Modal
       visible={visible}
@@ -118,25 +92,31 @@ export const CombatModal = ({ visible, onClose }: Props) => {
           contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
         >
-          <View className="mb-4 flex-row items-center justify-between pt-2">
-            <Pressable
-              onPress={handleRequestClose}
-              accessibilityRole="button"
-              accessibilityLabel="Fermer le combat"
-              className="h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] active:opacity-80"
-            >
-              <MaterialIcons name="close" size={20} color="#f3e8ff" />
-            </Pressable>
-            <Text className="font-mono text-xs uppercase tracking-wider text-white/70">
-              Tour : {turnCount} / ∞
-            </Text>
-          </View>
+          {!isResultScreen ? (
+            <View className="mb-4 flex-row items-center justify-between pt-2">
+              <Pressable
+                onPress={handleRequestClose}
+                accessibilityRole="button"
+                accessibilityLabel="Fermer le combat"
+                className="h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] active:opacity-80"
+              >
+                <MaterialIcons name="close" size={20} color="#f3e8ff" />
+              </Pressable>
+              <Text className="font-mono text-xs uppercase tracking-wider text-white/70">
+                Tour : {turnCount} / ∞
+              </Text>
+            </View>
+          ) : null}
 
           {phase === 'victory' && victoryAction != null ? (
-            <VictoryBanner xpGained={xpGained} streakDays={streakDays} />
-          ) : phase === 'defeat' && defeatSource === 'riposte' ? (
-            <DefeatBanner />
-          ) : phase === 'defeat' && defeatSource === 'abandon' ? null : (
+            <VictoryBanner
+              xpGained={xpGained}
+              level={level}
+              onContinue={closeWithReset}
+            />
+          ) : phase === 'defeat' && defeatSource != null ? (
+            <DefeatBanner onRetry={reset} onGoHome={onGoHome} />
+          ) : (
             <View className="flex-1">
               <View className="mb-3">
                 <Text className="mb-2 font-mono text-sm font-bold uppercase text-white">

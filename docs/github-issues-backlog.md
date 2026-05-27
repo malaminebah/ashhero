@@ -861,6 +861,186 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ---
 
+## MVP — Mood de la semaine (T-130 → T-138)
+
+| Ticket | Statut board | Commit |
+|--------|--------------|--------|
+| T-130 | **Backlog** | — |
+| T-131 | **Backlog** | — |
+| T-132 | **Backlog** | — |
+| T-133 | **Backlog** | — |
+| T-134 | **Backlog** | — |
+| T-135 | **Backlog** | — |
+| T-136 | **Backlog** | — |
+| T-137 | **Backlog** | — |
+| T-138 | **Backlog** | — |
+
+### T-130 — Mood : taxonomie émotions (6 primaires × 4 secondaires)
+
+**Labels :** `mvp`, `content`, `tracker`  
+**Statut board :** Backlog
+
+**Objectif** : définir la source de vérité des humeurs (labels FR, clés TS) pour le flow et Firestore.
+
+**Périmètre**
+- Fichier `src/features/mood/moodTaxonomy.ts` + `types.ts`
+- 6 primaires : calme, joie, tristesse, colère, peur, dégoût
+- 4 sous-émotions par primaire (clés stables + label affiché)
+
+**Hors périmètre** : édition admin des émotions ; vue mensuelle.
+
+**Critères d'acceptation**
+- [ ] Export typé `PrimaryMood`, `SubMood`, helpers `getSubMoods(primary)`
+- [ ] Labels UI en français
+- [ ] `npx tsc --noEmit` OK
+
+---
+
+### T-131 — Mood : schéma Firestore + service + rules
+
+**Labels :** `mvp`, `firebase`, `tracker`  
+**Statut board :** Backlog
+
+**Objectif** : persister une entrée d'humeur par jour et par utilisateur.
+
+**Périmètre**
+- Collection `users/{uid}/moodEntries/{date}` — docId = `YYYY-MM-DD` (fuseau local)
+- Champs : `date`, `weekId` (ISO `YYYY-Www`), `primary`, `sub`, `createdAt`
+- `src/services/mood.service.ts` : `saveMoodEntry`, `getMoodEntry`, `listMoodEntriesForWeek`
+- Règles Firestore : read/write owner only
+
+**Critères d'acceptation**
+- [ ] Double écriture même `date` → refus ou merge explicite documenté (v1 : refus)
+- [ ] Aucun import firebase dans composants UI
+- [ ] Rules déployables (`firestore.rules`)
+
+---
+
+### T-132 — Mood : hook `useWeeklyMood`
+
+**Labels :** `mvp`, `tracker`, `firebase`  
+**Statut board :** Backlog  
+**Dépend de :** T-130, T-131
+
+**Objectif** : API React pour la semaine courante (lun→dim).
+
+**Périmètre**
+- `src/features/mood/hooks/useWeeklyMood.ts`
+- Retourne : `weekDays`, `entriesByDate`, `canFillToday`, `todayEntry`, `saveEntry`, `isLoading`, `error`
+- Semaine ISO ; « aujourd'hui » = device local
+
+**Critères d'acceptation**
+- [ ] `canFillToday === false` si entrée existe pour la date du jour
+- [ ] Jours futurs non remplissables
+- [ ] v1 : jours passés non remplis non rétroactifs
+
+---
+
+### T-133 — Mood : composant `WeeklyMoodStrip` (Accueil)
+
+**Labels :** `mvp`, `tracker`, `ux-copy`  
+**Statut board :** Backlog  
+**Dépend de :** T-132
+
+**Objectif** : strip pressable Lun→Dim sur l'écran Accueil.
+
+**Périmètre**
+- `WeeklyMoodStrip.tsx` — 7 cellules, design system (`design-system/MASTER.md`)
+- États : vide / rempli (check vert) / aujourd'hui / disabled
+- Tap jour éligible → navigation flow mood
+
+**Critères d'acceptation**
+- [ ] Intégré dans `DashboardHome`
+- [ ] min 48px zone tactile ; accessibilité labels
+- [ ] NativeWind only
+
+---
+
+### T-134 — Mood : navigation flow (Expo Router)
+
+**Labels :** `mvp`, `tracker`  
+**Statut board :** Backlog  
+**Dépend de :** T-130
+
+**Objectif** : stack `app/mood/` — 2 étapes + retour Accueil.
+
+**Périmètre**
+- `app/mood/_layout.tsx`, `primary.tsx` (6 émotions), `detail.tsx` (4 sous-émotions + save)
+- Passage param `primary` entre écrans (typed routes si possible)
+
+**Critères d'acceptation**
+- [ ] Back natif fonctionnel
+- [ ] Pas de firebase dans les écrans — hook/service uniquement
+
+---
+
+### T-135 — Mood : écran émotion primaire
+
+**Labels :** `mvp`, `tracker`, `ux-copy`  
+**Statut board :** Backlog  
+**Dépend de :** T-134, T-130
+
+**Objectif** : grille 6 cartes (calme, joie, tristesse, colère, peur, dégoût).
+
+**Critères d'acceptation**
+- [ ] Une sélection → navigate vers détail avec primaire choisi
+- [ ] Style cohérent AshHero (dark, mono, bordures subtiles)
+
+---
+
+### T-136 — Mood : écran sous-émotion + enregistrement
+
+**Labels :** `mvp`, `tracker`, `firebase`  
+**Statut board :** Backlog  
+**Dépend de :** T-132, T-134, T-135
+
+**Objectif** : afficher 4 sous-émotions filtrées ; sauver et retour Accueil.
+
+**Critères d'acceptation**
+- [ ] Save via `useWeeklyMood` → Firestore
+- [ ] Feedback succès ; strip Accueil à jour au retour
+- [ ] Si déjà rempli aujourd'hui → message ou redirect (pas d'écrasement silencieux)
+
+---
+
+### T-137 — Mood : panneau « Mon mood » (Profil)
+
+**Labels :** `mvp`, `tracker`, `ux-copy`  
+**Statut board :** Backlog  
+**Dépend de :** T-132
+
+**Objectif** : historique semaine courante sur Profil.
+
+**Périmètre**
+- `MonMoodPanel.tsx` — liste ou strip étendu avec primaire + sous-label FR par jour
+
+**Critères d'acceptation**
+- [ ] Intégré dans `ProfileScreenBody`
+- [ ] Semaine courante uniquement (v1)
+
+**Hors périmètre v1** : vue mensuelle, graphiques.
+
+---
+
+### T-138 — Mood : edge cases (offline, double tap, fuseau)
+
+**Labels :** `mvp`, `tracker`  
+**Statut board :** Backlog  
+**Dépend de :** T-131, T-136
+
+**Objectif** : robustesse UX et données.
+
+**Périmètre**
+- Double soumission / loading state sur save
+- Message clair si offline (pas de crash)
+- Tests unitaires sur helpers date/semaine ISO si extraits
+
+**Critères d'acceptation**
+- [ ] Pas de double entrée même jour
+- [ ] Comportement documenté si réseau indisponible
+
+---
+
 ## Board « backlog » (Project GitHub)
 
 Créer le **même** backlog en Project v2 (colonnes gérables sur github.com) :
