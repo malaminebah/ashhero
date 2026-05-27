@@ -3,17 +3,18 @@ import type { BattleMessage } from '../battleMessage'
 
 type Props = {
   message: BattleMessage
+  showPrompt?: boolean
 }
 
 const boxClass =
-  'mb-4 min-h-[64px] justify-center rounded-md border-2 px-3 py-2'
+  'mb-3 min-h-[64px] justify-center rounded-lg border-2 border-brand-success/45 bg-black/50 px-3 py-3'
 
-export const CombatMessageBox = ({ message }: Props) => {
+export const CombatMessageBox = ({ message, showPrompt = true }: Props) => {
   if (message.kind === 'idle') {
     return (
-      <View className={`${boxClass} border-white/15 bg-black/40`}>
-        <Text className="text-center font-mono text-xs leading-5 text-white/60">
-          Choisis ton action…
+      <View className={boxClass}>
+        <Text className="text-center font-mono text-xs leading-5 text-white/75">
+          {showPrompt ? 'Que vas-tu faire ?' : '…'}
         </Text>
       </View>
     )
@@ -21,7 +22,7 @@ export const CombatMessageBox = ({ message }: Props) => {
 
   if (message.kind === 'status') {
     return (
-      <View className={`${boxClass} border-brand-accent/30 bg-brand-accent/10`}>
+      <View className={boxClass}>
         <Text className="text-center font-mono text-xs leading-5 text-white/80">
           {message.text}
         </Text>
@@ -31,27 +32,29 @@ export const CombatMessageBox = ({ message }: Props) => {
 
   if (message.kind === 'player_hit') {
     return (
-      <View className={`${boxClass} border-emerald-500/40 bg-emerald-950/40`}>
+      <View className={boxClass}>
         <Text className="text-center font-mono text-xs leading-5 text-white/90">
-          <Text className="text-emerald-300">Ton coup : </Text>
-          <Text className="font-bold text-white">{message.actionLabel}</Text>
-          {' ! '}
-          <Text className="text-white/80">
-            L&apos;Envie perd {message.damage} PV !
-          </Text>
+          Ton coup : {message.actionLabel} ! L&apos;Envie perd {message.damage} PV !
         </Text>
+        {showPrompt ? (
+          <Text className="mt-2 text-center font-mono text-xs leading-5 text-white/60">
+            Que vas-tu faire ?
+          </Text>
+        ) : null}
       </View>
     )
   }
 
   return (
-    <View className={`${boxClass} border-red-500/35 bg-red-950/35`}>
+    <View className={boxClass}>
       <Text className="text-center font-mono text-xs leading-5 text-white/90">
-        <Text className="text-red-300">L&apos;Envie utilise </Text>
-        <Text className="font-bold text-white">{message.attackName}</Text>
-        {' ! '}
-        <Text className="text-white/80">Tu perds {message.damage} PV !</Text>
+        L&apos;Envie utilise {message.attackName} ! Tu perds {message.damage} PV !
       </Text>
+      {showPrompt ? (
+        <Text className="mt-2 text-center font-mono text-xs leading-5 text-white/60">
+          Que vas-tu faire ?
+        </Text>
+      ) : null}
     </View>
   )
 }

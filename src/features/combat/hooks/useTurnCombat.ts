@@ -43,6 +43,7 @@ export function useTurnCombat({ enabled }: Options) {
   const [victoryAction, setVictoryAction] = useState<CombatAction | null>(null)
   const [defeatSource, setDefeatSource] = useState<'riposte' | 'abandon' | null>(null)
   const [currentAttackEmoji, setCurrentAttackEmoji] = useState<string | null>(null)
+  const [turnCount, setTurnCount] = useState(1)
 
   const endedRef = useRef(false)
   const inputLockRef = useRef(false)
@@ -78,6 +79,7 @@ export function useTurnCombat({ enabled }: Options) {
     setVictoryAction(null)
     setDefeatSource(null)
     setCurrentAttackEmoji(null)
+    setTurnCount(1)
   }, [clearEnemyTimer])
 
   useEffect(() => {
@@ -145,6 +147,7 @@ export function useTurnCombat({ enabled }: Options) {
         queueMicrotask(() => {
           inputLockRef.current = false
           setPhase('player_turn')
+          setTurnCount((c) => c + 1)
         })
       }
       return next
@@ -240,6 +243,7 @@ export function useTurnCombat({ enabled }: Options) {
     defeatSource,
     canUseSpecial,
     currentAttackEmoji,
+    turnCount,
     showActionButtons: phase === 'player_turn',
     showBreatheTimer: phase === 'breathe_pending',
     showAbandon: phase === 'player_turn' || phase === 'breathe_pending',

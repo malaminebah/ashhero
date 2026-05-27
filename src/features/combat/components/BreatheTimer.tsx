@@ -32,23 +32,21 @@ export const BreatheTimer = ({ onComplete }: Props) => {
   )
 
   return (
-    <View className="items-center py-6">
-      <View className="w-40 h-40 rounded-full border-4 border-brand-accent items-center justify-center p-2">
-        <View className="flex-row flex-wrap justify-center gap-1 w-32">
+    <View className="mb-4 items-center py-4">
+      <View className="h-36 w-36 items-center justify-center rounded-full border-2 border-brand-success/50 p-2">
+        <View className="w-32 flex-row flex-wrap justify-center gap-1">
           {Array.from({ length: SEGMENTS }, (_, i) => (
             <View
               key={i}
-              className={`w-3 h-3 ${i < filledSegments ? 'bg-brand-accent' : 'bg-white/10'}`}
+              className={`h-3 w-3 ${i < filledSegments ? 'bg-brand-success' : 'bg-white/10'}`}
             />
           ))}
         </View>
       </View>
-      <Text className="mt-6 font-mono text-xs tracking-widest text-brand-accent">
+      <Text className="mt-4 font-mono text-xs tracking-widest text-brand-success">
         Respire…
       </Text>
-      <Text className="text-white text-3xl font-mono mt-2 tabular-nums">
-        {remaining}s
-      </Text>
+      <Text className="mt-2 font-mono text-3xl tabular-nums text-white">{remaining}s</Text>
     </View>
   )
 }

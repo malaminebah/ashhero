@@ -5,7 +5,7 @@ export const COMBAT_BOSS_MAX_HP = 100
 
 export const DAMAGE_TO_BOSS: Record<CombatAction, number> = {
   breathe: 35,
-  water: 15,
+  water: 13,
   distract: 17,
   special: 70,
 }
@@ -15,6 +15,7 @@ export function rollBossRiposteDamage(): number {
 }
 
 export const BOSS_ATTACK_NAMES = [
+  'Souffle Tentation',
   "Poussée d'envie",
   'Envie de relâcher la pression',
   'Odeur de fumer',

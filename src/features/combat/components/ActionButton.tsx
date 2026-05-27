@@ -1,28 +1,44 @@
-import { Pressable, Text } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import type { ComponentProps } from 'react'
 
-type Variant = 'primary' | 'secondary' | 'special'
+type Variant = 'breathe' | 'water' | 'distract' | 'special'
 
 type Props = {
   label: string
   onPress: () => void
   disabled?: boolean
-  variant?: Variant
-  hint?: string
+  variant: Variant
+  badge?: string
+  lockHint?: string
   accessibilityLabel?: string
 }
 
 const variantClass: Record<Variant, string> = {
-  primary: 'border-2 border-brand-accent bg-brand-bg2',
-  secondary: 'border-2 border-brand-border bg-brand-bg2',
-  special: 'border-2 border-brand-gold bg-brand-bg2',
+  breathe: 'border-brand-success/45 bg-brand-success/10',
+  water: 'border-sky-500/40 bg-sky-950/40',
+  distract: 'border-white/15 bg-white/[0.04]',
+  special: 'border-brand-gold/45 bg-brand-gold/10',
+}
+
+const iconName: Record<
+  Variant,
+  ComponentProps<typeof MaterialCommunityIcons>['name']
+> = {
+  breathe: 'lungs',
+  water: 'water',
+  distract: 'gamepad-variant',
+  special: 'flash',
 }
 
 export const ActionButton = ({
   label,
   onPress,
   disabled = false,
-  variant = 'secondary',
-  hint,
+  variant,
+  badge,
+  lockHint,
   accessibilityLabel,
 }: Props) => (
   <Pressable
@@ -31,23 +47,33 @@ export const ActionButton = ({
     accessibilityRole="button"
     accessibilityLabel={accessibilityLabel ?? label}
     accessibilityState={{ disabled }}
-    android_ripple={{ color: 'rgba(168, 85, 247, 0.12)' }}
-    className={`min-h-[48px] w-full items-center justify-center rounded-md px-4 py-3 ${
+    className={`min-h-[52px] w-full flex-row items-center rounded-xl border px-4 py-3 ${
       variantClass[variant]
-    } ${disabled ? 'opacity-50' : ''}`}
-    style={({ pressed }) =>
-      pressed && !disabled ? { opacity: 0.88, transform: [{ scale: 0.99 }] } : undefined
-    }
+    } ${disabled ? 'opacity-50' : 'active:opacity-85'}`}
   >
+    <MaterialCommunityIcons
+      name={iconName[variant]}
+      size={22}
+      color={variant === 'special' ? '#fbbf24' : '#ecfdf5'}
+    />
     <Text
-      className={`font-mono text-xs uppercase tracking-[0.15rem] ${
+      className={`ml-3 flex-1 font-mono text-xs font-bold uppercase tracking-wide ${
         variant === 'special' && !disabled ? 'text-brand-gold' : 'text-white/90'
       }`}
     >
       {label}
     </Text>
-    {hint ? (
-      <Text className="mt-1 font-mono text-[10px] text-white/55">{hint}</Text>
+    {badge ? (
+      <View className="flex-row items-center gap-1 rounded-md bg-black/30 px-2 py-1">
+        <MaterialIcons name="schedule" size={12} color="rgba(255,255,255,0.55)" />
+        <Text className="font-mono text-[10px] text-white/60">{badge}</Text>
+      </View>
+    ) : null}
+    {disabled && lockHint ? (
+      <View className="flex-row items-center gap-1 rounded-md bg-black/30 px-2 py-1">
+        <MaterialIcons name="lock" size={12} color="rgba(255,255,255,0.45)" />
+        <Text className="font-mono text-[9px] text-white/50">{lockHint}</Text>
+      </View>
     ) : null}
   </Pressable>
 )

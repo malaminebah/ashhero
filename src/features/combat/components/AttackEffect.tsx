@@ -48,7 +48,7 @@ export const AttackEffect = ({ emoji, visible }: Props) => {
       className="absolute inset-0 items-center justify-center"
       pointerEvents="none"
     >
-      <Text className="text-[120px] leading-[120px]">{emoji}</Text>
+      <Text className="text-[80px] leading-[88px]">{emoji}</Text>
     </Animated.View>
   )
 }

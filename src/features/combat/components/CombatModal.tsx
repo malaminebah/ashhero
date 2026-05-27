@@ -1,22 +1,23 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { Modal, View, Text, Pressable } from 'react-native'
+import { Modal, View, Text, Pressable, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { COMBAT_XP_BY_ACTION } from '@/src/features/tracker/combatXpTable'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { getDayCount } from '@/src/features/tracker/utils/calculations'
+import { displayHeroName } from '@/src/features/tracker/utils/heroName'
+import { PlayerHeroEmoji } from '@/src/features/tracker/components/PlayerHeroEmoji'
 import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
 import { useTurnCombat } from '../hooks/useTurnCombat'
 import { ActionButton } from './ActionButton'
-import { AttackEffect } from './AttackEffect'
 import { BreatheTimer } from './BreatheTimer'
+import { CombatArenaView } from './CombatArenaView'
+import { CombatHpBar } from './CombatHpBar'
 import { CombatMessageBox } from './CombatMessageBox'
-import { CombatMonster } from './CombatMonster'
-import { CombatPlayerPanel } from './CombatPlayerPanel'
 import { DefeatBanner } from './DefeatBanner'
 import { VictoryBanner } from './VictoryBanner'
 
 const END_SCREEN_MS = 2200
-const ENEMY_TURN_LABEL = "L'Envie riposte…"
 
 type Props = {
   visible: boolean
@@ -25,7 +26,10 @@ type Props = {
 
 export const CombatModal = ({ visible, onClose }: Props) => {
   const quitDate = useTrackerStore((s) => s.quitDate)
+  const level = useTrackerStore((s) => s.level)
+  const heroName = useTrackerStore((s) => s.heroName)
   const streakDays = getDayCount(quitDate)
+  const heroLabel = displayHeroName(heroName).toUpperCase()
 
   const {
     phase,
@@ -40,6 +44,7 @@ export const CombatModal = ({ visible, onClose }: Props) => {
     defeatSource,
     canUseSpecial,
     currentAttackEmoji,
+    turnCount,
     showActionButtons,
     showBreatheTimer,
     showAbandon,
@@ -100,10 +105,6 @@ export const CombatModal = ({ visible, onClose }: Props) => {
   const xpGained =
     victoryAction != null ? COMBAT_XP_BY_ACTION[victoryAction] : 0
 
-  const showEnemyRiposte =
-    phase === 'enemy_turn' ||
-    (phase === 'resolving_instant' && !showBreatheTimer)
-
   return (
     <Modal
       visible={visible}
@@ -112,13 +113,24 @@ export const CombatModal = ({ visible, onClose }: Props) => {
       onRequestClose={handleRequestClose}
     >
       <SafeAreaView className="flex-1 bg-[#05000a]">
-        <View className="flex-1 px-5 pb-6 pt-4">
-          <Text className="mb-2 text-center font-mono text-lg uppercase tracking-[0.2rem] text-white">
-            Combat
-          </Text>
-          <Text className="mb-3 text-center font-mono text-xs leading-5 text-white/60">
-            À chaque tour : ton action, puis la riposte de l&apos;Envie.
-          </Text>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="mb-4 flex-row items-center justify-between pt-2">
+            <Pressable
+              onPress={handleRequestClose}
+              accessibilityRole="button"
+              accessibilityLabel="Fermer le combat"
+              className="h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] active:opacity-80"
+            >
+              <MaterialIcons name="close" size={20} color="#f3e8ff" />
+            </Pressable>
+            <Text className="font-mono text-xs uppercase tracking-wider text-white/70">
+              Tour : {turnCount} / ∞
+            </Text>
+          </View>
 
           {phase === 'victory' && victoryAction != null ? (
             <VictoryBanner xpGained={xpGained} streakDays={streakDays} />
@@ -126,58 +138,55 @@ export const CombatModal = ({ visible, onClose }: Props) => {
             <DefeatBanner />
           ) : phase === 'defeat' && defeatSource === 'abandon' ? null : (
             <View className="flex-1">
-              <Text className="mb-2 text-center font-mono text-xs text-white/80">
-                L&apos;Envie
-              </Text>
-              <CombatMonster
-                hp={bossHp}
-                maxHp={bossMaxHp}
-                shakeKey={bossShakeKey}
-              />
-
-              <Text className="mb-2 mt-2 text-center font-mono text-xs text-emerald-400/90">
-                Toi
-              </Text>
-              <CombatPlayerPanel
-                hp={playerHp}
-                maxHp={playerMaxHp}
-                shakeKey={playerShakeKey}
-              />
-
-              <CombatMessageBox message={battleMessage} />
-
-              <AttackEffect
-                emoji={currentAttackEmoji ?? ''}
-                visible={currentAttackEmoji != null}
-              />
-
-              {showEnemyRiposte ? (
-                <Text className="mb-3 text-center font-mono text-xs text-white/60">
-                  {ENEMY_TURN_LABEL}
+              <View className="mb-3">
+                <Text className="mb-2 font-mono text-sm font-bold uppercase text-white">
+                  L&apos;envie 👿
                 </Text>
-              ) : null}
+                <CombatHpBar hp={bossHp} maxHp={bossMaxHp} fillColor="#a855f7" />
+              </View>
 
-              {showBreatheTimer ? (
-                <BreatheTimer onComplete={onBreatheComplete} />
-              ) : null}
+              <CombatArenaView
+                level={level}
+                bossShakeKey={bossShakeKey}
+                playerShakeKey={playerShakeKey}
+                attackEmoji={currentAttackEmoji}
+              />
 
-              <View className="mt-auto gap-2 pt-2">
+              <View className="mb-4 flex-row items-center gap-2">
+                <Text className="font-mono text-sm font-bold uppercase text-white">
+                  {heroLabel}
+                </Text>
+                <PlayerHeroEmoji level={level} variant="profile" />
+              </View>
+              <View className="mb-4">
+                <CombatHpBar hp={playerHp} maxHp={playerMaxHp} fillColor="#22c55e" />
+              </View>
+
+              <CombatMessageBox
+                message={battleMessage}
+                showPrompt={phase === 'player_turn' && !showBreatheTimer}
+              />
+
+              {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
+
+              <View className="mt-2 gap-2">
                 {showActionButtons ? (
                   <>
                     <ActionButton
-                      variant="primary"
+                      variant="breathe"
                       label={combatActionLabel('breathe')}
                       onPress={chooseBreathe}
+                      badge="60s"
                       accessibilityLabel="Respirer"
                     />
                     <ActionButton
-                      variant="secondary"
+                      variant="water"
                       label={combatActionLabel('water')}
                       onPress={() => chooseInstantAction('water')}
                       accessibilityLabel="Boire de l'eau"
                     />
                     <ActionButton
-                      variant="secondary"
+                      variant="distract"
                       label={combatActionLabel('distract')}
                       onPress={() => chooseInstantAction('distract')}
                       accessibilityLabel="Se distraire"
@@ -187,7 +196,7 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                       label={combatActionLabel('special')}
                       onPress={() => chooseInstantAction('special')}
                       disabled={!canUseSpecial}
-                      hint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
+                      lockHint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
                       accessibilityLabel={
                         canUseSpecial
                           ? 'Attaque spéciale'
@@ -202,21 +211,17 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                     onPress={() => void onAbandon()}
                     accessibilityRole="button"
                     accessibilityLabel="Abandonner le combat"
-                    android_ripple={{ color: 'rgba(255,255,255,0.08)' }}
-                    className="mt-2 min-h-[48px] w-full items-center justify-center rounded-md border border-white/20 px-4 py-3"
-                    style={({ pressed }) =>
-                      pressed ? { opacity: 0.85, transform: [{ scale: 0.99 }] } : undefined
-                    }
+                    className="mt-3 items-center py-3 active:opacity-70"
                   >
-                    <Text className="font-mono text-xs uppercase tracking-widest text-white/70">
-                      Abandonner
+                    <Text className="font-mono text-[10px] uppercase tracking-wider text-white/45">
+                      Abandonner le combat
                     </Text>
                   </Pressable>
                 ) : null}
               </View>
             </View>
           )}
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </Modal>
   )
