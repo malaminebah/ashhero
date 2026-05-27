@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { View, Text, TextInput, Platform } from 'react-native'
+import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from 'react'
+import { View, Text, TextInput, Platform, Pressable } from 'react-native'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { PlayerHeroEmoji } from '../PlayerHeroEmoji'
 import {
   DEFAULT_HERO_NAME,
@@ -14,54 +15,51 @@ const nameSerif = Platform.select({
   default: 'serif',
 })
 
+export type ProfileHeroCardHandle = {
+  focusName: () => void
+}
+
 type Props = {
   level: number
-  xp: number
   heroName: string | null
   onSaveName: (name: string) => void
 }
 
-export const ProfileHeroCard = ({ level, xp, heroName, onSaveName }: Props) => {
-  const [draft, setDraft] = useState(() => displayHeroName(heroName))
+export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, Props>(
+  ({ level, heroName, onSaveName }, ref) => {
+    const inputRef = useRef<TextInput>(null)
+    const [draft, setDraft] = useState(() => displayHeroName(heroName))
 
-  useEffect(() => {
-    setDraft(displayHeroName(heroName))
-  }, [heroName])
+    useImperativeHandle(ref, () => ({
+      focusName: () => inputRef.current?.focus(),
+    }))
 
-  const commitName = () => {
-    if (normalizeHeroName(draft) === heroName) return
-    onSaveName(draft)
-  }
+    useEffect(() => {
+      setDraft(displayHeroName(heroName))
+    }, [heroName])
 
-  return (
-    <View
-      className="mb-8 rounded-2xl border border-brand-accent/35 bg-brand-bg2/80 p-4"
-      style={{
-        shadowColor: '#a855f7',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.35,
-        shadowRadius: 16,
-        elevation: 10,
-      }}
-    >
-      <View className="flex-row items-center gap-4">
+    const commitName = () => {
+      if (normalizeHeroName(draft) === heroName) return
+      onSaveName(draft)
+    }
+
+    return (
+      <View className="mb-5 flex-row items-center gap-4">
         <View
-          className="h-[88px] w-[88px] items-center justify-center rounded-xl border-2 border-brand-accent/45 bg-brand-bg"
+          className="h-[96px] w-[96px] items-center justify-center rounded-full border-2 border-brand-success/45 bg-brand-bg2"
           style={{
-            shadowColor: '#a855f7',
+            shadowColor: '#22c55e',
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.4,
-            shadowRadius: 12,
-            elevation: 8,
+            shadowRadius: 16,
+            elevation: 10,
           }}
         >
           <PlayerHeroEmoji level={level} variant="profile" />
         </View>
-        <View className="flex-1">
-          <Text className="mb-1 font-mono text-[9px] uppercase tracking-wider text-white/45">
-            Nom du héros
-          </Text>
+        <View className="relative flex-1">
           <TextInput
+            ref={inputRef}
             value={draft}
             onChangeText={setDraft}
             onBlur={commitName}
@@ -71,21 +69,21 @@ export const ProfileHeroCard = ({ level, xp, heroName, onSaveName }: Props) => {
             accessibilityLabel="Nom du héros"
             placeholder={DEFAULT_HERO_NAME}
             placeholderTextColor="rgba(255,255,255,0.35)"
-            className="rounded-md border border-white/10 bg-black/20 px-2 py-1.5 text-lg font-bold leading-6 text-white"
+            className="rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-4 pr-10 text-lg font-bold text-white"
             style={{ fontFamily: nameSerif }}
           />
-          <View className="mt-3 flex-row flex-wrap gap-2">
-            <View className="rounded-full border border-brand-accent/50 bg-brand-accent/20 px-3 py-1">
-              <Text className="font-mono text-[10px] font-bold uppercase tracking-wider text-brand-accent">
-                Niveau {level}
-              </Text>
-            </View>
-            <View className="rounded-full border border-brand-gold/50 bg-brand-gold/15 px-3 py-1">
-              <Text className="font-mono text-[10px] font-bold text-brand-gold">{xp} XP</Text>
-            </View>
-          </View>
+          <Pressable
+            onPress={() => inputRef.current?.focus()}
+            accessibilityRole="button"
+            accessibilityLabel="Modifier le nom"
+            className="absolute bottom-0 right-0 top-0 w-10 items-center justify-center"
+          >
+            <MaterialIcons name="edit" size={16} color="rgba(255,255,255,0.45)" />
+          </Pressable>
         </View>
       </View>
-    </View>
-  )
-}
+    )
+  }
+)
+
+ProfileHeroCard.displayName = 'ProfileHeroCard'

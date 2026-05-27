@@ -1,40 +1,39 @@
+import { useRef } from 'react'
 import { View, ScrollView, Pressable, Text } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { useOnboardingStore } from '@/src/features/onboarding/store'
 import { ButtonCraving, ButtonReset } from '@/src/features/tracker'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
 import { ProfileHeader } from './ProfileHeader'
-import { ProfileHeroCard } from './ProfileHeroCard'
+import {
+  ProfileHeroCard,
+  type ProfileHeroCardHandle,
+} from './ProfileHeroCard'
+import { ProfileProgressPair } from './ProfileProgressPair'
 import { ProfileStatsGrid } from './ProfileStatsGrid'
 import { ProfileBadgesGrid } from './ProfileBadgesGrid'
-import { ProfileHistorySection } from './ProfileHistorySection'
+import { ProfileAvatarsSection } from './ProfileAvatarsSection'
 import type { ProfileBadgeStats } from './badgeRules'
 
 export const ProfileScreenBody = () => {
   const router = useRouter()
-  const { signOut, pending: signOutPending } = useEmailAuthActions()
+  const heroRef = useRef<ProfileHeroCardHandle>(null)
   const reset = useTrackerStore((s) => s.reset)
   const smokingType = useTrackerStore((s) => s.smokingType)
   const combatsWon = useTrackerStore((s) => s.combatsWon)
   const combatsLost = useTrackerStore((s) => s.combatsLost)
-  const bestStreak = useTrackerStore((s) => s.bestStreak)
   const relapseCount = useTrackerStore((s) => s.relapseCount)
   const xp = useTrackerStore((s) => s.xp)
   const level = useTrackerStore((s) => s.level)
   const heroName = useTrackerStore((s) => s.heroName)
   const setHeroName = useTrackerStore((s) => s.setHeroName)
 
-  const {
-    moneySaved,
-    cigarettesAvoided,
-    dayCount,
-    equivalentAvoidedLabel,
-    lifeRegained,
-    lifeRegainedCardLabel,
-  } = useStats()
+  const { moneySaved, cigarettesAvoided, dayCount } = useStats()
+
+  const avoidedLabel =
+    smokingType === 'cigarette' ? 'Cigarettes évitées' : 'Puffs évitées'
 
   const badgeStats: ProfileBadgeStats = {
     dayCount,
@@ -57,60 +56,35 @@ export const ProfileScreenBody = () => {
     router.replace('/' as never)
   }
 
-  const onLogout = async () => {
-    const ok = await signOut()
-    if (ok) router.replace('/auth/login' as never)
-  }
-
   return (
     <ScrollView className="flex-1 bg-brand-bg" showsVerticalScrollIndicator={false}>
       <View className="px-5 pb-10 pt-12">
-        <ProfileHeader />
+        <ProfileHeader onEditPress={() => heroRef.current?.focusName()} />
         <ProfileHeroCard
+          ref={heroRef}
           level={level}
-          xp={xp}
           heroName={heroName}
           onSaveName={setHeroName}
         />
+        <ProfileProgressPair level={level} xp={xp} />
         <ProfileStatsGrid
           dayCount={dayCount}
           moneySaved={moneySaved}
           avoidedCount={cigarettesAvoided}
-          avoidedLabel={equivalentAvoidedLabel}
-          lifeRegainedMinutes={lifeRegained}
-          lifeRegainedLabel={lifeRegainedCardLabel}
+          avoidedLabel={avoidedLabel}
           combatsWon={combatsWon}
-          xp={xp}
-          level={level}
+          combatsLost={combatsLost}
+          relapseCount={relapseCount ?? 0}
         />
         <ProfileBadgesGrid stats={badgeStats} />
-        <ProfileHistorySection combatsWon={combatsWon} />
+        <ProfileAvatarsSection level={level} />
 
-        <View className="mt-2 rounded-xl border border-white/10 bg-white/[0.02] p-3">
-          <Text className="font-mono text-[9px] uppercase tracking-wider text-white/35">
-            Plus de stats
-          </Text>
-          <Text className="mt-1 font-mono text-[10px] text-white/50">
-            Défaites : {combatsLost} · Meilleure série : {bestStreak ?? 0} j · Rechutes :{' '}
-            {relapseCount ?? 0}
-          </Text>
-        </View>
-
-        <View className="mt-8 gap-3">
+        <View className="mt-6 gap-3">
           <ButtonCraving />
           <ButtonReset onAfterReset={onResetAll} />
-          <Pressable
-            onPress={onLogout}
-            disabled={signOutPending}
-            className="w-full items-center justify-center rounded-xl border border-white/15 py-3 active:opacity-90 disabled:opacity-50"
-          >
-            <Text className="font-mono text-xs uppercase tracking-[0.2rem] text-white/55">
-              {signOutPending ? '…' : 'Se déconnecter'}
-            </Text>
-          </Pressable>
         </View>
 
-        <Pressable onPress={onRestartFlow} className="mt-10 items-center py-3 active:opacity-80">
+        <Pressable onPress={onRestartFlow} className="mt-8 items-center py-3 active:opacity-80">
           <Text className="font-mono text-xs text-white/30">Recommencer le parcours (test)</Text>
         </Pressable>
       </View>

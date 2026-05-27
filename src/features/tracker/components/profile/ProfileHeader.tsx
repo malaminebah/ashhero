@@ -1,16 +1,28 @@
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { titleSerif } from '@/constants/theme'
 
-export const ProfileHeader = () => (
-  <View className="mb-6 items-center">
+type Props = {
+  onEditPress?: () => void
+}
+
+export const ProfileHeader = ({ onEditPress }: Props) => (
+  <View className="relative mb-6 items-center justify-center">
     <Text
-      className="text-center text-3xl font-bold tracking-tight text-brand-accent"
+      className="text-center text-2xl font-bold uppercase tracking-[0.08rem] text-white"
       style={{ fontFamily: titleSerif }}
     >
-      PROFIL
+      Mon héros
     </Text>
-    <Text className="mt-2 font-mono text-[10px] uppercase tracking-[0.35rem] text-white/75">
-      TON HÉROS
-    </Text>
+    {onEditPress ? (
+      <Pressable
+        onPress={onEditPress}
+        accessibilityRole="button"
+        accessibilityLabel="Modifier le nom du héros"
+        className="absolute right-0 top-0 h-10 w-10 items-center justify-center active:opacity-70"
+      >
+        <MaterialIcons name="edit" size={20} color="rgba(255,255,255,0.75)" />
+      </Pressable>
+    ) : null}
   </View>
 )
