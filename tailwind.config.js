@@ -22,6 +22,7 @@ module.exports = {
           accentDeep: "#4c1d95",
           gold: "#fbbf24",
           red: "#ef4444",
+          success: "#22c55e",
         },
       },
       backgroundColor: {
