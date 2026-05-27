@@ -1,5 +1,6 @@
 import { Tabs, useRouter } from 'expo-router'
 import React, { useEffect } from 'react'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 import { HapticTab } from '@/components/haptic-tab'
 import { IconSymbol } from '@/components/ui/icon-symbol'
@@ -35,7 +36,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'HOME',
+          title: 'ACCUEIL',
           tabBarIcon: ({ color }) => (
             <IconSymbol size={26} name="house.fill" color={color} />
           ),
@@ -46,7 +47,7 @@ export default function TabLayout() {
         options={{
           title: 'COMBAT',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="shield.lefthalf.filled" color={color} />
+            <MaterialCommunityIcons name="sword-cross" size={26} color={color} />
           ),
         }}
       />
