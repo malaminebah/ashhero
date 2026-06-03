@@ -13,13 +13,12 @@ export const MoodTodayCard = ({ canFillToday, todayLabel }: Props) => {
 
   return (
     <Pressable
-      onPress={() => canFillToday && router.push('/mood' as never)}
-      disabled={!canFillToday}
+      onPress={() =>
+        router.push((canFillToday ? '/mood' : '/mood/history') as never)
+      }
       accessibilityRole="button"
       accessibilityLabel="Suivi d'humeur"
-      className={`mb-4 flex-row items-center rounded-2xl border border-white/10 bg-white/[0.04] p-4 ${
-        canFillToday ? 'active:opacity-85' : ''
-      }`}
+      className="mb-4 flex-row items-center rounded-2xl border border-white/10 bg-white/[0.04] p-4 active:opacity-85"
     >
       <View className="relative mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-brand-bg2">
         <MaterialCommunityIcons name="weather-partly-cloudy" size={28} color="#7dd3fc" />
@@ -39,7 +38,9 @@ export const MoodTodayCard = ({ canFillToday, todayLabel }: Props) => {
       </View>
       {canFillToday ? (
         <MaterialIcons name="chevron-right" size={22} color="rgba(255,255,255,0.35)" />
-      ) : null}
+      ) : (
+        <MaterialIcons name="bar-chart" size={20} color="rgba(255,255,255,0.35)" />
+      )}
     </Pressable>
   )
 }

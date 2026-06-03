@@ -49,13 +49,13 @@ export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: Props) => {
   const filledCount = weekDays.filter((d) => entriesByDate[d.date]).length
 
   return (
-    <View className="mb-6 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-      <Pressable
-        onPress={() => router.push('/mood/history' as never)}
-        accessibilityRole="button"
-        accessibilityLabel="Voir le graphique de la semaine"
-        className="mb-4 flex-row items-center justify-between active:opacity-85"
-      >
+    <Pressable
+      onPress={() => router.push('/mood/history' as never)}
+      accessibilityRole="button"
+      accessibilityLabel="Voir le graphique de la semaine"
+      className="mb-6 rounded-2xl border border-white/10 bg-white/[0.04] p-4 active:opacity-90"
+    >
+      <View className="mb-4 flex-row items-center justify-between">
         <Text className="font-mono text-sm font-bold text-white">Ma semaine</Text>
         <View className="flex-row items-center gap-2">
           <View className="flex-row items-center rounded-full border border-brand-success/35 bg-brand-success/10 px-2.5 py-1">
@@ -66,15 +66,13 @@ export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: Props) => {
           </View>
           <MaterialIcons name="chevron-right" size={20} color="rgba(255,255,255,0.35)" />
         </View>
-      </Pressable>
+      </View>
 
       <View className="flex-row justify-between">
         {weekDays.map((day) => {
           const entry = entriesByDate[day.date]
-          const openFillFlow = day.isToday && !entry && !day.isFuture
-
-          const content = (
-            <>
+          return (
+            <View key={day.date} className="items-center">
               <Text
                 className={`mb-2 font-mono text-[9px] ${
                   day.isToday ? 'font-bold text-white' : 'text-white/45'
@@ -83,30 +81,10 @@ export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: Props) => {
                 {day.weekdayLabel}
               </Text>
               <MoodDot entry={entry} isToday={day.isToday} isFuture={day.isFuture} />
-            </>
-          )
-
-          if (openFillFlow) {
-            return (
-              <Pressable
-                key={day.date}
-                onPress={() => router.push('/mood' as never)}
-                accessibilityRole="button"
-                accessibilityLabel={`Renseigner humeur ${day.weekdayLabel}`}
-                className="items-center active:opacity-80"
-              >
-                {content}
-              </Pressable>
-            )
-          }
-
-          return (
-            <View key={day.date} className="items-center">
-              {content}
             </View>
           )
         })}
       </View>
-    </View>
+    </Pressable>
   )
 }
