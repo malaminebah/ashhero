@@ -1050,6 +1050,28 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ---
 
+### T-139 — Combat : boss en 2 phases
+
+**Labels :** `v2`, `combat`
+**Statut board :** Backlog
+**Dépend de :** T-138
+
+**Objectif** : intensifier le combat en donnant au boss une seconde phase plus agressive.
+
+**Périmètre**
+- À 50 % PV (`bossHp <= bossMaxHp / 2`), le boss change de nom et d'emoji.
+- Riposte renforcée : +4 dégâts ajoutés à la plage de base.
+- Transition signalée via le `CombatMessageBox` (ex. « L'Envie s'intensifie ! »).
+
+**Hors périmètre** : nouvelles attaques typées, animations dédiées, 3ᵉ phase.
+
+**Critères d'acceptation**
+- [ ] Le boss change visuellement (nom + emoji) au passage sous 50 % PV
+- [ ] La riposte inflige +4 dégâts en phase 2
+- [ ] Une seule transition par combat (pas de bascule répétée)
+
+---
+
 ## Board « backlog » (Project GitHub)
 
 Créer le **même** backlog en Project v2 (colonnes gérables sur github.com) :
