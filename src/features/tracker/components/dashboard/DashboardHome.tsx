@@ -5,6 +5,7 @@ import { DashboardHeader } from './DashboardHeader'
 import { DashboardHero } from './DashboardHero'
 import { DashboardXpBar } from './DashboardXpBar'
 import { DashboardStatsPair } from './DashboardStatsPair'
+import { DashboardDefenseBadges } from './DashboardDefenseBadges'
 import { DashboardJalonsGrid } from './DashboardJalonsGrid'
 import { DashboardDailyBonus } from './DashboardDailyBonus'
 import { DashboardMoodSection } from '@/src/features/mood/components/DashboardMoodSection'
@@ -41,6 +42,7 @@ export const DashboardHome = () => {
           avoidedTitle={avoidedTitle}
           avoidedSubtitle={avoidedSubtitle}
         />
+        <DashboardDefenseBadges dayCount={dayCount} />
         <DashboardJalonsGrid hoursSinceQuit={hoursSinceQuit} />
         <DashboardMoodSection />
         <DashboardDailyBonus />

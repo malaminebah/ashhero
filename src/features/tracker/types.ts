@@ -68,6 +68,7 @@ export type DashboardStatsPairParams = {
   avoidedSubtitle: string
 }
 export type DashboardJalonsGridParams = { hoursSinceQuit: number }
+export type DashboardDefenseBadgesParams = { dayCount: number }
 
 export type EtapeBarParams = {
   currentEtape: Etape | null
