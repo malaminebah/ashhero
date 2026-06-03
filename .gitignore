@@ -64,3 +64,6 @@ coverage/
 .cursorrules
 .cursorignore
 
+# Agent rules — local only (not versioned)
+CURSOR.md
+
