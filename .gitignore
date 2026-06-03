@@ -67,3 +67,21 @@ coverage/
 # Agent rules — local only (not versioned)
 CURSOR.md
 
+# RPG icon sheet — source + generated slices (scripts/slice-icon-sheet.py)
+assets/icons-source-sheet.png
+assets/icons/manifest.json
+assets/icons/materials/
+assets/icons/food/
+assets/icons/magic/
+assets/icons/crafting/
+# Subsets below: only commit icons referenced in code (requires)
+assets/icons/armor/
+assets/icons/weapons/
+assets/icons/misc/
+assets/icons/potions/
+assets/icons/combat/
+
+# Soldier variants not used (app uses Soldier.png spritesheet)
+assets/caracter/Soldier-*.png
+!assets/caracter/Soldier.png
+
