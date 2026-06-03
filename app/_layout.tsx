@@ -1,15 +1,20 @@
 import '../global.css'
+import '@/constants/setupDefaultFont'
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
+import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useEffect, useRef, useState } from 'react'
+
+SplashScreen.preventAutoHideAsync()
 import { getProfile, onAuthReady } from '@/src/services'
 import { useOnboardingStore } from '@/src/features/onboarding/store'
 import { useTrackerStore } from '@/src/features/tracker/store'
@@ -21,6 +26,10 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    M5x7: require('@/assets/fonts/m5x7.ttf'),
+  })
+
   const colorScheme = useColorScheme()
   const initialize = useTrackerStore((s) => s.initialize)
   const resetTracker = useTrackerStore((s) => s.reset)
@@ -36,6 +45,10 @@ export default function RootLayout() {
     useTrackerStore.persist.hasHydrated()
   )
   const prevUidRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (fontsLoaded) void SplashScreen.hideAsync()
+  }, [fontsLoaded])
 
   useEffect(() => {
     return onAuthReady((userUid) => {
@@ -108,6 +121,8 @@ export default function RootLayout() {
     profileRetryNonce,
     setProfileResolved,
   ])
+
+  if (!fontsLoaded) return null
 
   if (isLoading) {
     return (

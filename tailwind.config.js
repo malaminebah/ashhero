@@ -36,6 +36,10 @@ module.exports = {
         muted: "rgba(243,232,255,0.4)",
         dim: "rgba(243,232,255,0.2)",
       },
+      fontFamily: {
+        sans: ["M5x7"],
+        mono: ["M5x7"],
+      },
     },
   },
   plugins: [],

@@ -1,30 +1,13 @@
-import { Platform } from 'react-native'
+/** PostScript name must match `useFonts` key in `app/_layout.tsx`. */
+export const PIXEL_FONT = 'M5x7' as const
 
-/**
- * Violet / Royal theme — tracker app mockup.
- * Use these tokens for visual consistency.
- * Tailwind classes map to tailwind.config.js
- */
-
-/** Fonts for template components (ThemedText, explore, etc.) */
-/** Mockup-style titles (Dashboard, Profile, onboarding). */
-export const titleSerif = Platform.select({
-  ios: 'Georgia',
-  android: 'serif',
-  default: 'serif',
-}) as string
+/** @deprecated Prefer `PIXEL_FONT` or `font-mono` (Tailwind → M5x7). */
+export const titleSerif = PIXEL_FONT
 
 export const Fonts = {
-  rounded: Platform.select({
-    ios: 'System',
-    android: 'sans-serif',
-    default: 'sans-serif',
-  }),
-  mono: Platform.select({
-    ios: 'Menlo',
-    android: 'monospace',
-    default: 'monospace',
-  }),
+  pixel: PIXEL_FONT,
+  rounded: PIXEL_FONT,
+  mono: PIXEL_FONT,
 } as const
 
 export const THEME = {
