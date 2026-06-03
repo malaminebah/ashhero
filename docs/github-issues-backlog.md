@@ -350,8 +350,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 | T-124 | **In Review** | Rebalance dégâts + noms boss FR (`7d7b8b4`) |
 | T-125 | **In Review** | Rebalance XP combat (`024f0f2`) |
 | T-119 | **To Do** | Copy FR UI combat |
-| T-120 | **To Do** | Polish design final |
-| T-121 | **Backlog** | Sprites / particules |
+| T-120 | **to review** | Polish design final — [#20](https://github.com/malaminebah/ashhero/issues/20) |
+| T-121 | **to review** | Sprites / particules — [#21](https://github.com/malaminebah/ashhero/issues/21) |
 
 ### T-114 — Combat : améliorer cadre vertical (pixel art + espacement)
 
@@ -571,7 +571,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-120 — Combat : passe design finale (polish UI)
 
 **Labels :** `mvp`, `combat`, `ui`, `polish`  
-**Statut board :** `To Do`
+**Statut board :** to review  
+**Issue :** [#20](https://github.com/malaminebah/ashhero/issues/20)
 
 **Corps :**
 
@@ -614,7 +615,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-121 — Combat : sprites / particules d'attaque (optionnel)
 
 **Labels :** `combat`, `content`, `animation`  
-**Statut board :** `Backlog`
+**Statut board :** to review  
+**Issue :** [#21](https://github.com/malaminebah/ashhero/issues/21)
 
 **Corps :**
 
@@ -729,7 +731,8 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-203 — Assets pixel art / illustration (liste manquante)
 
 **Labels :** `content`  
-**Statut board :** `To Do`
+**Statut board :** to review  
+**Issue :** [#8](https://github.com/malaminebah/ashhero/issues/8)
 
 **Corps :**
 
@@ -1050,10 +1053,41 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ---
 
+### T-140 — Theme : police pixel M5x7 globale
+
+**Labels :** `mvp`, `ui`  
+**Statut board :** to review  
+**Issue :** [#38](https://github.com/malaminebah/ashhero/issues/38)
+
+**Objectif** : charger M5x7 via Expo et l’appliquer par défaut (Text, Tailwind).
+
+---
+
+### T-141 — Tracker : badges défense Accueil (pixel)
+
+**Labels :** `mvp`, `tracker`  
+**Statut board :** to review  
+**Issue :** [#39](https://github.com/malaminebah/ashhero/issues/39)
+
+**Objectif** : rangée « Badges de défense » (7 / 14 / 21 j) sur le dashboard.
+
+---
+
+### T-142 — Tracker : badges profil en icônes RPG
+
+**Labels :** `mvp`, `tracker`  
+**Statut board :** to review  
+**Issue :** [#40](https://github.com/malaminebah/ashhero/issues/40)
+
+**Objectif** : badges profil en slices du sheet RPG (plus d’emojis).
+
+---
+
 ### T-139 — Combat : boss en 2 phases
 
-**Labels :** `v2`, `combat`
-**Statut board :** Backlog
+**Labels :** `v2`, `combat`  
+**Statut board :** Backlog  
+**Issue :** [#41](https://github.com/malaminebah/ashhero/issues/41)  
 **Dépend de :** T-138
 
 **Objectif** : intensifier le combat en donnant au boss une seconde phase plus agressive.
