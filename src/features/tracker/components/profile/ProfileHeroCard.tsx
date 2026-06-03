@@ -1,5 +1,6 @@
 import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from 'react'
-import { View, Text, TextInput, Platform, Pressable } from 'react-native'
+import { titleSerif } from '@/constants/theme'
+import { View, Text, TextInput, Pressable } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { PlayerHeroEmoji } from '../PlayerHeroEmoji'
 import {
@@ -8,12 +9,6 @@ import {
   HERO_NAME_MAX_LEN,
   normalizeHeroName,
 } from '../../utils/heroName'
-
-const nameSerif = Platform.select({
-  ios: 'Georgia',
-  android: 'serif',
-  default: 'serif',
-})
 
 import type { ProfileHeroCardHandle, ProfileHeroCardParams } from '../../types'
 
@@ -64,7 +59,7 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
             placeholder={DEFAULT_HERO_NAME}
             placeholderTextColor="rgba(255,255,255,0.35)"
             className="rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-4 pr-10 text-lg font-bold text-white"
-            style={{ fontFamily: nameSerif }}
+            style={{ fontFamily: titleSerif }}
           />
           <Pressable
             onPress={() => inputRef.current?.focus()}

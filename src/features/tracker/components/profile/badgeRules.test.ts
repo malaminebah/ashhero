@@ -16,56 +16,30 @@ function badge(id: string) {
   return b
 }
 
-describe('PROFILE_BADGES (unlock rules)', () => {
-  it(`
-    Given 0 vape-free days and no wins
-    When we evaluate "First Day"
-    Then the badge stays locked
-  `, () => {
-    expect(badge('first').isUnlocked(base())).toBe(false)
+describe('PROFILE_BADGES', () => {
+  it('exposes 15 badges', () => {
+    expect(PROFILE_BADGES).toHaveLength(15)
   })
 
-  it(`
-    Given at least 1 vape-free day
-    When we evaluate "First Day"
-    Then the badge unlocks
-  `, () => {
-    expect(badge('first').isUnlocked({ ...base(), dayCount: 1 })).toBe(true)
+  it('jour1 unlocks from day 1', () => {
+    expect(badge('jour1').isUnlocked(base())).toBe(false)
+    expect(badge('jour1').isUnlocked({ ...base(), dayCount: 1 })).toBe(true)
   })
 
-  it(`
-    Given exactly 2 combat wins
-    When we evaluate "Fighter" (threshold 1) and "Warrior" (threshold 3)
-    Then Fighter unlocks, Warrior does not
-  `, () => {
+  it('combat1 before combat3', () => {
     const stats = { ...base(), combatsWon: 2 }
-    expect(badge('fighter').isUnlocked(stats)).toBe(true)
-    expect(badge('warrior').isUnlocked(stats)).toBe(false)
+    expect(badge('combat1').isUnlocked(stats)).toBe(true)
+    expect(badge('combat3').isUnlocked(stats)).toBe(false)
   })
 
-  it(`
-    Given level 5 and enough money saved
-    When we evaluate "Master" and "Thrifty"
-    Then both unlock
-  `, () => {
+  it('niv5 and eco50', () => {
     const stats = { ...base(), level: 5, moneySaved: 50 }
-    expect(badge('master').isUnlocked(stats)).toBe(true)
-    expect(badge('thrifty').isUnlocked(stats)).toBe(true)
+    expect(badge('niv5').isUnlocked(stats)).toBe(true)
+    expect(badge('eco50').isUnlocked(stats)).toBe(true)
   })
 
-  it(`
-    Given 1999 XP
-    When we evaluate "Legend" (threshold 2000)
-    Then the badge stays locked
-  `, () => {
-    expect(badge('legend').isUnlocked({ ...base(), xp: 1999 })).toBe(false)
-  })
-
-  it(`
-    Given 2000 XP
-    When we evaluate "Legend"
-    Then the badge unlocks
-  `, () => {
-    expect(badge('legend').isUnlocked({ ...base(), xp: 2000 })).toBe(true)
+  it('xp2000 threshold', () => {
+    expect(badge('xp2000').isUnlocked({ ...base(), xp: 1999 })).toBe(false)
+    expect(badge('xp2000').isUnlocked({ ...base(), xp: 2000 })).toBe(true)
   })
 })
