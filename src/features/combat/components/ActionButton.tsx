@@ -2,20 +2,9 @@ import { Pressable, Text, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import type { ComponentProps } from 'react'
+import type { CombatActionButtonParams, CombatActionVariant } from '../types'
 
-type Variant = 'breathe' | 'water' | 'distract' | 'special'
-
-type Props = {
-  label: string
-  onPress: () => void
-  disabled?: boolean
-  variant: Variant
-  badge?: string
-  lockHint?: string
-  accessibilityLabel?: string
-}
-
-const variantClass: Record<Variant, string> = {
+const variantClass: Record<CombatActionVariant, string> = {
   breathe: 'border-brand-success/45 bg-brand-success/10',
   water: 'border-sky-500/40 bg-sky-950/40',
   distract: 'border-white/15 bg-white/[0.04]',
@@ -23,7 +12,7 @@ const variantClass: Record<Variant, string> = {
 }
 
 const iconName: Record<
-  Variant,
+  CombatActionVariant,
   ComponentProps<typeof MaterialCommunityIcons>['name']
 > = {
   breathe: 'lungs',
@@ -40,24 +29,27 @@ export const ActionButton = ({
   badge,
   lockHint,
   accessibilityLabel,
-}: Props) => (
+  compact = false,
+}: CombatActionButtonParams) => (
   <Pressable
     onPress={onPress}
     disabled={disabled}
     accessibilityRole="button"
     accessibilityLabel={accessibilityLabel ?? label}
     accessibilityState={{ disabled }}
-    className={`min-h-[52px] w-full flex-row items-center rounded-xl border px-4 py-3 ${
-      variantClass[variant]
-    } ${disabled ? 'opacity-50' : 'active:opacity-85'}`}
+    className={`w-full flex-row items-center rounded-lg border px-3 ${
+      compact ? 'min-h-[48px] py-2.5' : 'min-h-[52px] rounded-xl px-4 py-3'
+    } ${variantClass[variant]} ${disabled ? 'opacity-50' : 'active:opacity-85'}`}
   >
     <MaterialCommunityIcons
       name={iconName[variant]}
-      size={22}
+      size={compact ? 18 : 22}
       color={variant === 'special' ? '#fbbf24' : '#ecfdf5'}
     />
     <Text
-      className={`ml-3 flex-1 font-mono text-xs font-bold uppercase tracking-wide ${
+      className={`ml-2 flex-1 font-mono font-bold uppercase tracking-wide ${
+        compact ? 'text-[10px]' : 'text-xs'
+      } ${
         variant === 'special' && !disabled ? 'text-brand-gold' : 'text-white/90'
       }`}
     >

@@ -1,12 +1,11 @@
 import { useCallback } from 'react'
-import { Modal, View, Text, Pressable, ScrollView } from 'react-native'
+import { Modal, View, Text, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { COMBAT_XP_BY_ACTION } from '@/src/features/tracker/combatXpTable'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { displayHeroName } from '@/src/features/tracker/utils/heroName'
-import { PlayerHeroEmoji } from '@/src/features/tracker/components/PlayerHeroEmoji'
 import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
 import { useTurnCombat } from '../hooks/useTurnCombat'
 import { ActionButton } from './ActionButton'
@@ -15,18 +14,16 @@ import { CombatArenaView } from './CombatArenaView'
 import { CombatHpBar } from './CombatHpBar'
 import { CombatMessageBox } from './CombatMessageBox'
 import { DefeatBanner } from './DefeatBanner'
+import { FloatingDamage } from './FloatingDamage'
 import { VictoryBanner } from './VictoryBanner'
+import type { CombatModalParams } from '../types'
 
-type Props = {
-  visible: boolean
-  onClose: () => void
-}
-
-export const CombatModal = ({ visible, onClose }: Props) => {
+export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
   const router = useRouter()
   const level = useTrackerStore((s) => s.level)
   const heroName = useTrackerStore((s) => s.heroName)
   const heroLabel = displayHeroName(heroName).toUpperCase()
+  const heroDialogName = displayHeroName(heroName)
 
   const {
     phase,
@@ -41,6 +38,7 @@ export const CombatModal = ({ visible, onClose }: Props) => {
     defeatSource,
     canUseSpecial,
     currentAttackEmoji,
+    floatDamage,
     turnCount,
     showActionButtons,
     showBreatheTimer,
@@ -87,13 +85,21 @@ export const CombatModal = ({ visible, onClose }: Props) => {
       onRequestClose={handleRequestClose}
     >
       <SafeAreaView className="flex-1 bg-[#05000a]">
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingBottom: 24 }}
-          showsVerticalScrollIndicator={false}
-        >
-          {!isResultScreen ? (
-            <View className="mb-4 flex-row items-center justify-between pt-2">
+        {isResultScreen ? (
+          <View className="flex-1 px-5 pb-6">
+            {phase === 'victory' && victoryAction != null ? (
+              <VictoryBanner
+                xpGained={xpGained}
+                level={level}
+                onContinue={closeWithReset}
+              />
+            ) : phase === 'defeat' && defeatSource != null ? (
+              <DefeatBanner onRetry={reset} onGoHome={onGoHome} />
+            ) : null}
+          </View>
+        ) : (
+          <View className="flex-1 px-4 pb-4">
+            <View className="mb-2 flex-row items-center justify-between pt-1">
               <Pressable
                 onPress={handleRequestClose}
                 accessibilityRole="button"
@@ -103,28 +109,11 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                 <MaterialIcons name="close" size={20} color="#f3e8ff" />
               </Pressable>
               <Text className="font-mono text-xs uppercase tracking-wider text-white/70">
-                Tour : {turnCount} / ∞
+                Tour {turnCount}
               </Text>
             </View>
-          ) : null}
 
-          {phase === 'victory' && victoryAction != null ? (
-            <VictoryBanner
-              xpGained={xpGained}
-              level={level}
-              onContinue={closeWithReset}
-            />
-          ) : phase === 'defeat' && defeatSource != null ? (
-            <DefeatBanner onRetry={reset} onGoHome={onGoHome} />
-          ) : (
-            <View className="flex-1">
-              <View className="mb-3">
-                <Text className="mb-2 font-mono text-sm font-bold uppercase text-white">
-                  L&apos;envie 👿
-                </Text>
-                <CombatHpBar hp={bossHp} maxHp={bossMaxHp} fillColor="#a855f7" />
-              </View>
-
+            <View className="relative mb-2 min-h-[220px] flex-1">
               <CombatArenaView
                 level={level}
                 bossShakeKey={bossShakeKey}
@@ -132,76 +121,101 @@ export const CombatModal = ({ visible, onClose }: Props) => {
                 attackEmoji={currentAttackEmoji}
               />
 
-              <View className="mb-4 flex-row items-center gap-2">
-                <Text className="font-mono text-sm font-bold uppercase text-white">
-                  {heroLabel}
-                </Text>
-                <PlayerHeroEmoji level={level} variant="profile" />
+              <View className="absolute left-2 top-2 z-10 max-w-[55%]">
+                <CombatHpBar
+                  overlay
+                  name="L'ENVIE"
+                  level={level + 1}
+                  hp={bossHp}
+                  maxHp={bossMaxHp}
+                  fillColor="#a855f7"
+                />
               </View>
-              <View className="mb-4">
-                <CombatHpBar hp={playerHp} maxHp={playerMaxHp} fillColor="#22c55e" />
+
+              <View className="absolute bottom-2 right-2 z-10 max-w-[55%] items-end">
+                <CombatHpBar
+                  overlay
+                  name={heroLabel}
+                  level={level}
+                  hp={playerHp}
+                  maxHp={playerMaxHp}
+                  fillColor="#22c55e"
+                />
               </View>
 
-              <CombatMessageBox
-                message={battleMessage}
-                showPrompt={phase === 'player_turn' && !showBreatheTimer}
-              />
-
-              {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
-
-              <View className="mt-2 gap-2">
-                {showActionButtons ? (
-                  <>
-                    <ActionButton
-                      variant="breathe"
-                      label={combatActionLabel('breathe')}
-                      onPress={chooseBreathe}
-                      badge="60s"
-                      accessibilityLabel="Respirer"
-                    />
-                    <ActionButton
-                      variant="water"
-                      label={combatActionLabel('water')}
-                      onPress={() => chooseInstantAction('water')}
-                      accessibilityLabel="Boire de l'eau"
-                    />
-                    <ActionButton
-                      variant="distract"
-                      label={combatActionLabel('distract')}
-                      onPress={() => chooseInstantAction('distract')}
-                      accessibilityLabel="Se distraire"
-                    />
-                    <ActionButton
-                      variant="special"
-                      label={combatActionLabel('special')}
-                      onPress={() => chooseInstantAction('special')}
-                      disabled={!canUseSpecial}
-                      lockHint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
-                      accessibilityLabel={
-                        canUseSpecial
-                          ? 'Attaque spéciale'
-                          : `Attaque spéciale, débloquée après ${COMBAT_SPECIAL_LOCKED_HINT}`
-                      }
-                    />
-                  </>
-                ) : null}
-
-                {showAbandon ? (
-                  <Pressable
-                    onPress={() => void onAbandon()}
-                    accessibilityRole="button"
-                    accessibilityLabel="Abandonner le combat"
-                    className="mt-3 items-center py-3 active:opacity-70"
-                  >
-                    <Text className="font-mono text-[10px] uppercase tracking-wider text-white/45">
-                      Abandonner le combat
-                    </Text>
-                  </Pressable>
-                ) : null}
-              </View>
+              {floatDamage != null ? <FloatingDamage floatDamage={floatDamage} /> : null}
             </View>
-          )}
-        </ScrollView>
+
+            <CombatMessageBox
+              message={battleMessage}
+              heroName={heroDialogName}
+              showPrompt={phase === 'player_turn' && !showBreatheTimer}
+            />
+
+            {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
+
+            {showActionButtons ? (
+              <View className="mt-2 flex-row flex-wrap justify-between gap-y-2">
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="breathe"
+                    label={combatActionLabel('breathe')}
+                    onPress={chooseBreathe}
+                    badge="60s"
+                    accessibilityLabel="Respirer"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="water"
+                    label={combatActionLabel('water')}
+                    onPress={() => chooseInstantAction('water')}
+                    accessibilityLabel="Boire de l'eau"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="distract"
+                    label={combatActionLabel('distract')}
+                    onPress={() => chooseInstantAction('distract')}
+                    accessibilityLabel="Se distraire"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="special"
+                    label={combatActionLabel('special')}
+                    onPress={() => chooseInstantAction('special')}
+                    disabled={!canUseSpecial}
+                    lockHint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
+                    accessibilityLabel={
+                      canUseSpecial
+                        ? 'Attaque spéciale'
+                        : `Attaque spéciale, débloquée après ${COMBAT_SPECIAL_LOCKED_HINT}`
+                    }
+                  />
+                </View>
+              </View>
+            ) : null}
+
+            {showAbandon ? (
+              <Pressable
+                onPress={() => void onAbandon()}
+                accessibilityRole="button"
+                accessibilityLabel="Abandonner le combat"
+                className="mt-2 items-center py-2 active:opacity-70"
+              >
+                <Text className="font-mono text-[10px] uppercase tracking-wider text-white/45">
+                  Abandonner le combat
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+        )}
       </SafeAreaView>
     </Modal>
   )
