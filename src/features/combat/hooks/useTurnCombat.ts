@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import * as Haptics from 'expo-haptics'
 import { useCombat } from '@/src/features/tracker/hooks/useCombat'
 import type { CombatAction } from '@/src/features/tracker/types'
-import type { BattleMessage } from '../battleMessage'
+import type { BattleMessage, CombatPhase, FloatDamagePayload } from '../types'
+
+export type { CombatPhase } from '../types'
 import {
   COMBAT_BOSS_MAX_HP,
   COMBAT_PLAYER_MAX_HP,
@@ -13,13 +15,7 @@ import {
   rollBossRiposteDamage,
 } from '../constants'
 
-export type CombatPhase =
-  | 'player_turn'
-  | 'resolving_instant'
-  | 'breathe_pending'
-  | 'enemy_turn'
-  | 'victory'
-  | 'defeat'
+const INTRO_DURATION_MS = 1500
 
 /** Wait after your hit (message + boss shake) before switching to the enemy phase. */
 const PAUSE_AFTER_PLAYER_HIT_MS = 750
@@ -34,7 +30,7 @@ type Options = {
 export function useTurnCombat({ enabled }: Options) {
   const { handleVictory, handleDefeat, canUseSpecial } = useCombat()
 
-  const [phase, setPhase] = useState<CombatPhase>('player_turn')
+  const [phase, setPhase] = useState<CombatPhase>('entering')
   const [playerHp, setPlayerHp] = useState(COMBAT_PLAYER_MAX_HP)
   const [bossHp, setBossHp] = useState(COMBAT_BOSS_MAX_HP)
   const [battleMessage, setBattleMessage] = useState<BattleMessage>({ kind: 'idle' })
@@ -50,6 +46,9 @@ export function useTurnCombat({ enabled }: Options) {
   const enemyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const enemyWindupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const emojiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const introTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const floatTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [floatDamage, setFloatDamage] = useState<FloatDamagePayload | null>(null)
 
   const clearEnemyTimer = useCallback(() => {
     if (enemyTimerRef.current) {
@@ -64,22 +63,48 @@ export function useTurnCombat({ enabled }: Options) {
       clearTimeout(emojiTimerRef.current)
       emojiTimerRef.current = null
     }
+    if (introTimerRef.current) {
+      clearTimeout(introTimerRef.current)
+      introTimerRef.current = null
+    }
+    if (floatTimerRef.current) {
+      clearTimeout(floatTimerRef.current)
+      floatTimerRef.current = null
+    }
+  }, [])
+
+  const showFloatDamage = useCallback((target: 'boss' | 'player', amount: number) => {
+    if (floatTimerRef.current) {
+      clearTimeout(floatTimerRef.current)
+      floatTimerRef.current = null
+    }
+    setFloatDamage({ target, amount, key: Date.now() })
+    floatTimerRef.current = setTimeout(() => {
+      floatTimerRef.current = null
+      setFloatDamage(null)
+    }, 1100)
   }, [])
 
   const reset = useCallback(() => {
     clearEnemyTimer()
     endedRef.current = false
     inputLockRef.current = false
-    setPhase('player_turn')
+    setPhase('entering')
     setPlayerHp(COMBAT_PLAYER_MAX_HP)
     setBossHp(COMBAT_BOSS_MAX_HP)
-    setBattleMessage({ kind: 'idle' })
+    setBattleMessage({ kind: 'status', text: "L'Envie apparaît !" })
     setBossShakeKey(0)
     setPlayerShakeKey(0)
     setVictoryAction(null)
     setDefeatSource(null)
     setCurrentAttackEmoji(null)
+    setFloatDamage(null)
     setTurnCount(1)
+    introTimerRef.current = setTimeout(() => {
+      introTimerRef.current = null
+      setPhase('player_turn')
+      setBattleMessage({ kind: 'idle' })
+    }, INTRO_DURATION_MS)
   }, [clearEnemyTimer])
 
   useEffect(() => {
@@ -138,6 +163,7 @@ export function useTurnCombat({ enabled }: Options) {
       damage: dmg,
     })
     setPlayerShakeKey((k) => k + 1)
+    showFloatDamage('player', dmg)
 
     setPlayerHp((prev) => {
       const next = Math.max(0, prev - dmg)
@@ -152,7 +178,7 @@ export function useTurnCombat({ enabled }: Options) {
       }
       return next
     })
-  }, [finalizeDefeat, showAttackEmoji])
+  }, [finalizeDefeat, showAttackEmoji, showFloatDamage])
 
   const scheduleEnemyTurn = useCallback(() => {
     clearEnemyTimer()
@@ -182,6 +208,7 @@ export function useTurnCombat({ enabled }: Options) {
         damage,
       })
       setBossShakeKey((k) => k + 1)
+      showFloatDamage('boss', damage)
       setBossHp((prev) => {
         const next = Math.max(0, prev - damage)
         if (next === 0) {
@@ -192,7 +219,7 @@ export function useTurnCombat({ enabled }: Options) {
         return next
       })
     },
-    [finalizeVictory, scheduleEnemyTurn, showAttackEmoji]
+    [finalizeVictory, scheduleEnemyTurn, showAttackEmoji, showFloatDamage]
   )
 
   const chooseInstantAction = useCallback(
@@ -225,7 +252,7 @@ export function useTurnCombat({ enabled }: Options) {
 
   const abandon = useCallback(async () => {
     if (endedRef.current) return
-    if (phase === 'victory' || phase === 'defeat') return
+    if (phase === 'entering' || phase === 'victory' || phase === 'defeat') return
     clearEnemyTimer()
     await finalizeDefeat('abandon')
   }, [phase, clearEnemyTimer, finalizeDefeat])
@@ -243,6 +270,7 @@ export function useTurnCombat({ enabled }: Options) {
     defeatSource,
     canUseSpecial,
     currentAttackEmoji,
+    floatDamage,
     turnCount,
     showActionButtons: phase === 'player_turn',
     showBreatheTimer: phase === 'breathe_pending',
