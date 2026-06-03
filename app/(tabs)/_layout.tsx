@@ -1,12 +1,12 @@
 import { Tabs, useRouter } from 'expo-router'
 import React, { useEffect } from 'react'
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 import { HapticTab } from '@/components/haptic-tab'
-import { IconSymbol } from '@/components/ui/icon-symbol'
+import { TabBarPixelIcon } from '@/components/ui/tab-bar-pixel-icon'
 import { Colors, THEME } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { TAB_BAR_ICONS } from '@/src/features/navigation/tabBarIcons'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
@@ -30,15 +30,15 @@ export default function TabLayout() {
           borderTopColor: THEME.border,
           borderTopWidth: 1,
         },
-        tabBarLabelStyle: { fontFamily: 'monospace', fontSize: 10 },
+        tabBarLabelStyle: { fontFamily: 'M5x7', fontSize: 10 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: 'ACCUEIL',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="house.fill" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarPixelIcon source={TAB_BAR_ICONS.home} focused={focused} />
           ),
         }}
       />
@@ -46,8 +46,8 @@ export default function TabLayout() {
         name="combat"
         options={{
           title: 'COMBAT',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="sword-cross" size={26} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarPixelIcon source={TAB_BAR_ICONS.combat} focused={focused} />
           ),
         }}
       />
@@ -55,8 +55,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'PROFIL',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="person.fill" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarPixelIcon source={TAB_BAR_ICONS.profile} focused={focused} />
           ),
         }}
       />
