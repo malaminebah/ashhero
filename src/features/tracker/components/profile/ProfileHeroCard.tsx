@@ -15,17 +15,11 @@ const nameSerif = Platform.select({
   default: 'serif',
 })
 
-export type ProfileHeroCardHandle = {
-  focusName: () => void
-}
+import type { ProfileHeroCardHandle, ProfileHeroCardParams } from '../../types'
 
-type Props = {
-  level: number
-  heroName: string | null
-  onSaveName: (name: string) => void
-}
+export type { ProfileHeroCardHandle } from '../../types'
 
-export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, Props>(
+export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCardParams>(
   ({ level, heroName, onSaveName }, ref) => {
     const inputRef = useRef<TextInput>(null)
     const [draft, setDraft] = useState(() => displayHeroName(heroName))

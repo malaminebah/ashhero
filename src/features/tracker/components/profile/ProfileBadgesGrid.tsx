@@ -1,10 +1,7 @@
 import { View, Text, ScrollView } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { PROFILE_BADGES, type ProfileBadgeStats } from './badgeRules'
-
-type Props = {
-  stats: ProfileBadgeStats
-}
+import { PROFILE_BADGES } from './badgeRules'
+import type { ProfileBadgesGridParams } from '../../types'
 
 function HexBadge({ active, icon }: { active: boolean; icon: string }) {
   return (
@@ -29,7 +26,7 @@ function HexBadge({ active, icon }: { active: boolean; icon: string }) {
   )
 }
 
-export const ProfileBadgesGrid = ({ stats }: Props) => {
+export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
   const visible = PROFILE_BADGES.slice(0, 4)
 
   return (

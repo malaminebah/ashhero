@@ -2,12 +2,9 @@ import { View, Text } from 'react-native'
 import { PlayerHeroEmoji } from '../PlayerHeroEmoji'
 import { getCheerMessage } from '../../utils/cheerMessage'
 
-type Props = {
-  dayCount: number
-  level: number
-}
+import type { DashboardHeroParams } from '../../types'
 
-export const DashboardHero = ({ dayCount, level }: Props) => (
+export const DashboardHero = ({ dayCount, level }: DashboardHeroParams) => (
   <View className="mb-6 items-center">
     <View
       className="mb-5 h-[168px] w-[168px] items-center justify-center rounded-full border-2 border-brand-success/35 bg-brand-bg2"

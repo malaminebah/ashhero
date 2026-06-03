@@ -2,11 +2,9 @@ import { View, Text, Pressable } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { titleSerif } from '@/constants/theme'
 
-type Props = {
-  onEditPress?: () => void
-}
+import type { ProfileHeaderParams } from '../../types'
 
-export const ProfileHeader = ({ onEditPress }: Props) => (
+export const ProfileHeader = ({ onEditPress }: ProfileHeaderParams) => (
   <View className="relative mb-6 items-center justify-center">
     <Text
       className="text-center text-2xl font-bold uppercase tracking-[0.08rem] text-white"

@@ -2,11 +2,9 @@ import { View, Text, ScrollView } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { DASHBOARD_JALONS } from './jalonsConfig'
 
-type Props = {
-  hoursSinceQuit: number
-}
+import type { DashboardJalonsGridParams } from '../../types'
 
-export const DashboardJalonsGrid = ({ hoursSinceQuit }: Props) => {
+export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParams) => {
   const unlockedCount = DASHBOARD_JALONS.filter((j) => hoursSinceQuit >= j.hours).length
 
   return (

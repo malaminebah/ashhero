@@ -1,11 +1,8 @@
 import { View, Text } from 'react-native'
 
-type Props = {
-  combatsWon: number
-}
+import type { ProfileHistorySectionParams } from '../../types'
 
-/** Placeholder history UI; day-by-day sync with Firestore can come later. */
-export const ProfileHistorySection = ({ combatsWon }: Props) => (
+export const ProfileHistorySection = ({ combatsWon }: ProfileHistorySectionParams) => (
   <View className="mb-6">
     <Text className="mb-3 font-mono text-[10px] uppercase tracking-[0.25rem] text-white/70">
       Historique

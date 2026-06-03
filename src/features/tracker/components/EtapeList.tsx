@@ -4,12 +4,9 @@ import { etapes } from '../utils/calculations'
 import { EtapesRow } from './EtapesRow'
 import type { Etape } from '../types'
 
-type Props = {
-  currentEtape: Etape | null
-  nextEtape: Etape | null
-}
+import type { EtapeListParams } from '../types'
 
-export const EtapeList = ({ currentEtape, nextEtape }: Props) => {
+export const EtapeList = ({ currentEtape, nextEtape }: EtapeListParams) => {
   const doneCount = currentEtape ? etapes.filter((e) => e.hours <= currentEtape.hours).length : 0
 
   return (

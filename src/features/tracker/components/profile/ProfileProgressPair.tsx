@@ -3,12 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 const XP_PER_SEGMENT = 100
 
-type Props = {
-  level: number
-  xp: number
-}
+import type { ProfileProgressPairParams } from '../../types'
 
-export const ProfileProgressPair = ({ level, xp }: Props) => {
+export const ProfileProgressPair = ({ level, xp }: ProfileProgressPairParams) => {
   const inSegment = xp % XP_PER_SEGMENT
   const nextCap = Math.floor(xp / XP_PER_SEGMENT) * XP_PER_SEGMENT + XP_PER_SEGMENT
   const pct = Math.min(100, (inSegment / XP_PER_SEGMENT) * 100)

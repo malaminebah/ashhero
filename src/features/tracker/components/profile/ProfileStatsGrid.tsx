@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import type { ProfileStatsGridParams } from '../../types'
 
 type CellProps = {
   value: string | number
@@ -16,16 +17,6 @@ function StatCell({ value, label }: CellProps) {
   )
 }
 
-type Props = {
-  dayCount: number
-  moneySaved: number
-  avoidedCount: number
-  avoidedLabel: string
-  combatsWon: number
-  combatsLost: number
-  relapseCount: number
-}
-
 export const ProfileStatsGrid = ({
   dayCount,
   moneySaved,
@@ -34,7 +25,7 @@ export const ProfileStatsGrid = ({
   combatsWon,
   combatsLost,
   relapseCount,
-}: Props) => {
+}: ProfileStatsGridParams) => {
   const moneyLabel = moneySaved.toLocaleString('fr-FR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

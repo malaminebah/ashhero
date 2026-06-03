@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
 import type { Etape } from '../types'
 
-type Props = {
-  currentEtape: Etape | null
-  nextEtape: Etape | null
-  percentageComplete: number
-}
+import type { EtapeBarParams } from '../types'
 
-export const EtapeBarComponent = ({ currentEtape, nextEtape, percentageComplete }: Props) => {
+export const EtapeBarComponent = ({
+  currentEtape,
+  nextEtape,
+  percentageComplete,
+}: EtapeBarParams) => {
   const pct = Math.min(100, (percentageComplete ?? 0) * 100)
 
   return (

@@ -2,11 +2,9 @@ import { View, Text, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import { IconSymbol } from '@/components/ui/icon-symbol'
 
-type Props = {
-  level: number
-}
+import type { DashboardHeaderParams } from '../../types'
 
-export const DashboardHeader = ({ level }: Props) => {
+export const DashboardHeader = ({ level }: DashboardHeaderParams) => {
   const router = useRouter()
 
   return (

@@ -3,11 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 const XP_PER_SEGMENT = 100
 
-type Props = {
-  totalXp: number
-}
+import type { DashboardXpBarParams } from '../../types'
 
-export const DashboardXpBar = ({ totalXp }: Props) => {
+export const DashboardXpBar = ({ totalXp }: DashboardXpBarParams) => {
   const inSegment = totalXp % XP_PER_SEGMENT
   const nextCap = Math.floor(totalXp / XP_PER_SEGMENT) * XP_PER_SEGMENT + XP_PER_SEGMENT
   const pct = Math.min(100, (inSegment / XP_PER_SEGMENT) * 100)

@@ -1,4 +1,5 @@
-import { SmokingType } from "../onboarding/types"
+import { SmokingType } from '../onboarding/types'
+import type { ProfileBadgeStats } from './components/profile/badgeRules'
 
 export type CombatAction = 'breathe' | 'water' | 'distract' | 'special'
 
@@ -50,6 +51,62 @@ export type Etape = {
 export type TrackerStore = TrackerConfig & TrackerActions
 
 /** Maps store state to a plain `TrackerConfig` for Firestore (strips Zustand actions). */
+export type PlayerHeroVariant = 'dashboard' | 'profile' | 'combat'
+
+export type PlayerHeroEmojiParams = {
+  level: number
+  variant?: PlayerHeroVariant
+}
+
+export type DashboardHeaderParams = { level: number }
+export type DashboardHeroParams = { dayCount: number; level: number }
+export type DashboardXpBarParams = { totalXp: number }
+export type DashboardStatsPairParams = {
+  moneySaved: number
+  avoidedCount: number
+  avoidedTitle: string
+  avoidedSubtitle: string
+}
+export type DashboardJalonsGridParams = { hoursSinceQuit: number }
+
+export type EtapeBarParams = {
+  currentEtape: Etape | null
+  nextEtape: Etape | null
+  percentageComplete: number
+}
+
+export type EtapeListParams = {
+  currentEtape: Etape | null
+  nextEtape: Etape | null
+}
+
+export type ProfileHeroCardHandle = { focusName: () => void }
+
+export type ProfileHeroCardParams = {
+  level: number
+  heroName: string | null
+  onSaveName: (name: string) => void
+}
+
+export type ProfileHeaderParams = { onEditPress?: () => void }
+export type ProfileProgressPairParams = { level: number; xp: number }
+export type ProfileAvatarsSectionParams = { level: number }
+export type ProfileHistorySectionParams = { combatsWon: number }
+
+export type ProfileStatsGridParams = {
+  dayCount: number
+  moneySaved: number
+  avoidedCount: number
+  avoidedLabel: string
+  combatsWon: number
+  combatsLost: number
+  relapseCount: number
+}
+
+export type ProfileBadgesGridParams = {
+  stats: ProfileBadgeStats
+}
+
 export const trackerProfileFromStore = (s: TrackerStore): TrackerConfig => ({
   smokingType: s.smokingType,
   quantityPerDay: s.quantityPerDay,

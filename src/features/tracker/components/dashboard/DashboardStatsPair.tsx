@@ -1,12 +1,7 @@
 import { View, Text } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
-type Props = {
-  moneySaved: number
-  avoidedCount: number
-  avoidedTitle: string
-  avoidedSubtitle: string
-}
+import type { DashboardStatsPairParams } from '../../types'
 
 const MiniTrend = ({ variant }: { variant: 'line' | 'bars' }) => {
   const heights =
@@ -30,7 +25,7 @@ export const DashboardStatsPair = ({
   avoidedCount,
   avoidedTitle,
   avoidedSubtitle,
-}: Props) => {
+}: DashboardStatsPairParams) => {
   const moneyLabel = moneySaved.toLocaleString('fr-FR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

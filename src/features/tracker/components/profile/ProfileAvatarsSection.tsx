@@ -8,11 +8,9 @@ const AVATAR_TIERS = [
   { emoji: '👑', minLevel: 10 },
 ] as const
 
-type Props = {
-  level: number
-}
+import type { ProfileAvatarsSectionParams } from '../../types'
 
-export const ProfileAvatarsSection = ({ level }: Props) => {
+export const ProfileAvatarsSection = ({ level }: ProfileAvatarsSectionParams) => {
   const currentIndex = AVATAR_TIERS.reduce(
     (acc, tier, i) => (level >= tier.minLevel ? i : acc),
     0
