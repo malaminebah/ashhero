@@ -3,13 +3,9 @@ import { titleSerif } from '@/constants/theme'
 
 const TOTAL = 6
 
-type Props = {
-  step: number
-  title: string
-  subtitle?: string
-}
+import type { OnboardingHeaderParams } from '../types'
 
-export const OnboardingHeader = ({ step, title, subtitle }: Props) => (
+export const OnboardingHeader = ({ step, title, subtitle }: OnboardingHeaderParams) => (
   <View className="mb-8">
     <Text className="font-mono text-[10px] uppercase tracking-[0.35rem] text-white/55">
       Onboarding · Étape {step}/{TOTAL}

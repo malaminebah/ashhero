@@ -1,11 +1,8 @@
 import { Pressable, Text } from 'react-native'
 
-type Props = {
-  label: string
-  onPress: () => void
-}
+import type { OnboardingPrimaryButtonParams } from '../types'
 
-export const OnboardingPrimaryButton = ({ label, onPress }: Props) => (
+export const OnboardingPrimaryButton = ({ label, onPress }: OnboardingPrimaryButtonParams) => (
   <Pressable
     onPress={onPress}
     className="w-full items-center justify-center rounded-2xl bg-brand-accent py-4 active:opacity-90"

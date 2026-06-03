@@ -1,18 +1,13 @@
 import { Pressable, Text, View } from 'react-native'
 
-type Props = {
-  emoji?: string
-  label: string
-  variant?: 'primary' | 'outline'
-  onPress: () => void
-}
+import type { OnboardingChoiceCardParams } from '../types'
 
 export const OnboardingChoiceCard = ({
   emoji,
   label,
   variant = 'outline',
   onPress,
-}: Props) => (
+}: OnboardingChoiceCardParams) => (
   <Pressable
     onPress={onPress}
     className={`mb-3 w-full flex-row items-center gap-4 rounded-2xl border-2 px-4 py-4 active:opacity-90 ${

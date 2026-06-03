@@ -12,3 +12,23 @@ export type OnboardingData = {
   quitDate: Date | null
   isFirstTime: boolean| null
 }
+
+export type OnboardingChoiceVariant = 'primary' | 'outline'
+
+export type OnboardingHeaderParams = {
+  step: number
+  title: string
+  subtitle?: string
+}
+
+export type OnboardingPrimaryButtonParams = {
+  label: string
+  onPress: () => void
+}
+
+export type OnboardingChoiceCardParams = {
+  emoji?: string
+  label: string
+  variant?: OnboardingChoiceVariant
+  onPress: () => void
+}
