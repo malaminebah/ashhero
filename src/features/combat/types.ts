@@ -21,22 +21,36 @@ export type FloatDamagePayload = {
 
 export type CombatActionVariant = 'breathe' | 'water' | 'distract' | 'special'
 
+import type { AttackEffectKey } from './attackFxSheet'
+export type { AttackEffectKey }
+
 export type CombatModalParams = {
   visible: boolean
   onClose: () => void
 }
 
+import type { PlayerSoldierAnim } from './soldierSheet'
+export type { PlayerSoldierAnim }
+
 export type CombatArenaViewParams = {
-  level: number
+  bossDefeated: boolean
   bossShakeKey: number
   playerShakeKey: number
-  attackEmoji: string | null
+  attackEffect: AttackEffectKey | null
+  playerAnim: PlayerSoldierAnim
 }
+
+export type PlayerSoldierSpriteParams = {
+  anim: PlayerSoldierAnim
+}
+
+import type { CombatHpBarVariant } from './hpBarSheet'
+export type { CombatHpBarVariant }
 
 export type CombatHpBarParams = {
   hp: number
   maxHp: number
-  fillColor: string
+  variant: CombatHpBarVariant
   overlay?: boolean
   name?: string
   level?: number
@@ -64,8 +78,7 @@ export type CombatActionButtonParams = {
 }
 
 export type AttackEffectParams = {
-  emoji: string
-  visible: boolean
+  effect: AttackEffectKey | null
 }
 
 export type BreatheTimerParams = {

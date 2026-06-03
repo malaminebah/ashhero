@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Modal, View, Text, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -8,6 +8,7 @@ import { useTrackerStore } from '@/src/features/tracker/store'
 import { displayHeroName } from '@/src/features/tracker/utils/heroName'
 import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
 import { useTurnCombat } from '../hooks/useTurnCombat'
+import { getPlayerSoldierAnim } from '../utils/playerSoldierAnim'
 import { ActionButton } from './ActionButton'
 import { BreatheTimer } from './BreatheTimer'
 import { CombatArenaView } from './CombatArenaView'
@@ -37,7 +38,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     victoryAction,
     defeatSource,
     canUseSpecial,
-    currentAttackEmoji,
+    currentAttackEffect,
     floatDamage,
     turnCount,
     showActionButtons,
@@ -77,6 +78,11 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
 
   const isResultScreen = phase === 'victory' || phase === 'defeat'
 
+  const playerAnim = useMemo(
+    () => getPlayerSoldierAnim(phase, playerHp, currentAttackEffect),
+    [phase, playerHp, currentAttackEffect]
+  )
+
   return (
     <Modal
       visible={visible}
@@ -113,37 +119,40 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
               </Text>
             </View>
 
-            <View className="relative mb-2 min-h-[220px] flex-1">
+            <View className="mb-2 min-h-[200px] flex-1">
               <CombatArenaView
-                level={level}
+                bossDefeated={bossHp <= 0}
                 bossShakeKey={bossShakeKey}
                 playerShakeKey={playerShakeKey}
-                attackEmoji={currentAttackEmoji}
-              />
+                attackEffect={currentAttackEffect}
+                playerAnim={playerAnim}
+              >
+                <View className="absolute left-3 top-3 z-10">
+                  <CombatHpBar
+                    overlay
+                    variant="boss"
+                    name="L'ENVIE"
+                    level={level + 1}
+                    hp={bossHp}
+                    maxHp={bossMaxHp}
+                  />
+                </View>
 
-              <View className="absolute left-2 top-2 z-10 max-w-[55%]">
-                <CombatHpBar
-                  overlay
-                  name="L'ENVIE"
-                  level={level + 1}
-                  hp={bossHp}
-                  maxHp={bossMaxHp}
-                  fillColor="#a855f7"
-                />
-              </View>
+                <View className="absolute bottom-3 right-3 z-10 items-end">
+                  <CombatHpBar
+                    overlay
+                    variant="player"
+                    name={heroLabel}
+                    level={level}
+                    hp={playerHp}
+                    maxHp={playerMaxHp}
+                  />
+                </View>
 
-              <View className="absolute bottom-2 right-2 z-10 max-w-[55%] items-end">
-                <CombatHpBar
-                  overlay
-                  name={heroLabel}
-                  level={level}
-                  hp={playerHp}
-                  maxHp={playerMaxHp}
-                  fillColor="#22c55e"
-                />
-              </View>
-
-              {floatDamage != null ? <FloatingDamage floatDamage={floatDamage} /> : null}
+                {floatDamage != null ? (
+                  <FloatingDamage floatDamage={floatDamage} />
+                ) : null}
+              </CombatArenaView>
             </View>
 
             <CombatMessageBox

@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-
+import { PlayerSoldierSprite } from './PlayerSoldierSprite'
 import type { DefeatBannerParams } from '../types'
 
 export const DefeatBanner = ({ onRetry, onGoHome }: DefeatBannerParams) => (
@@ -12,11 +12,7 @@ export const DefeatBanner = ({ onRetry, onGoHome }: DefeatBannerParams) => (
     </View>
 
     <View className="mb-2 w-full items-center">
-      <View className="flex-row items-center justify-center gap-2">
-        <Text className="text-2xl opacity-50">💨</Text>
-        <Text className="text-6xl leading-[68px]">👾</Text>
-        <Text className="text-2xl opacity-50">💨</Text>
-      </View>
+      <PlayerSoldierSprite anim="death" />
     </View>
 
     <Text className="mt-4 text-center font-mono text-sm text-white/75">

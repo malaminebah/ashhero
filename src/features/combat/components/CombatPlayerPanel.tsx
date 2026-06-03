@@ -15,7 +15,7 @@ export const CombatPlayerPanel = ({ hp, maxHp, shakeKey }: CombatPlayerPanelPara
   const level = useTrackerStore((s) => s.level)
   const pct = Math.max(0, Math.min(100, (hp / maxHp) * 100))
   const clampedHp = Math.max(0, hp)
-  const shakeStyle = useCombatShakeStyle(shakeKey)
+  const shakeStyle = useCombatShakeStyle(shakeKey, 'right')
 
   const hpWidth = useSharedValue(pct)
 

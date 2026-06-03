@@ -1,7 +1,8 @@
 import type { CombatAction } from '@/src/features/tracker/types'
 
 export const COMBAT_PLAYER_MAX_HP = 100
-export const COMBAT_BOSS_MAX_HP = 100
+/** 6 bar frames × 13 (eau) = one sprite step per standard hit. */
+export const COMBAT_BOSS_MAX_HP = 78
 
 export const DAMAGE_TO_BOSS: Record<CombatAction, number> = {
   breathe: 35,

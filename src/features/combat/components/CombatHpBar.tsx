@@ -1,49 +1,86 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
+import { Image } from 'expo-image'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+import { hpBarFillFrame } from '../hpBarFrame'
+import {
+  HP_BAR_DISPLAY_SCALE,
+  HP_BAR_FILL_X,
+  HP_BAR_FRAME_H,
+  HP_BAR_FRAME_W,
+  HP_BAR_SHEET_H,
+  HP_BAR_SHEET_W,
+  HP_BAR_Y,
+  hpBarsSheet,
+} from '../hpBarSheet'
 import type { CombatHpBarParams } from '../types'
+
+const viewportW = Math.round(HP_BAR_FRAME_W * HP_BAR_DISPLAY_SCALE)
+const viewportH = Math.round(HP_BAR_FRAME_H * HP_BAR_DISPLAY_SCALE)
 
 export const CombatHpBar = ({
   hp,
   maxHp,
-  fillColor,
+  variant,
   overlay,
   name,
   level,
 }: CombatHpBarParams) => {
-  const pct = Math.max(0, Math.min(100, (hp / maxHp) * 100))
   const clampedHp = Math.max(0, hp)
-  const hpWidth = useSharedValue(pct)
+  const targetFrame = useMemo(() => hpBarFillFrame(clampedHp, maxHp), [clampedHp, maxHp])
+  const [frame, setFrame] = useState(targetFrame)
+  const opacity = useSharedValue(1)
 
   useEffect(() => {
-    hpWidth.value = withTiming(pct, { duration: 400 })
-  }, [pct, hpWidth])
+    setFrame(targetFrame)
+    opacity.value = withTiming(0.85, { duration: 80 }, () => {
+      opacity.value = withTiming(1, { duration: 200 })
+    })
+  }, [targetFrame, opacity])
 
-  const barStyle = useAnimatedStyle(() => ({
-    width: `${hpWidth.value}%`,
+  const animatedWrap = useAnimatedStyle(() => ({
+    opacity: opacity.value,
   }))
+
+  const scale = HP_BAR_DISPLAY_SCALE
+  const offsetX = -HP_BAR_FILL_X[frame] * scale
+  const offsetY = -HP_BAR_Y[variant] * scale
+
+  const bar = (
+    <Animated.View style={animatedWrap}>
+      <View style={{ width: viewportW, height: viewportH, overflow: 'hidden' }}>
+        <Image
+          source={hpBarsSheet}
+          style={{
+            width: HP_BAR_SHEET_W * scale,
+            height: HP_BAR_SHEET_H * scale,
+            transform: [{ translateX: offsetX }, { translateY: offsetY }],
+          }}
+          contentFit="fill"
+        />
+      </View>
+    </Animated.View>
+  )
 
   if (overlay) {
     return (
-      <View className="rounded-md border border-white/20 bg-black/55 px-2 py-1.5">
+      <View>
         <View className="mb-1 flex-row items-center justify-between gap-2">
           {name ? (
-            <Text className="font-mono text-[9px] font-bold uppercase text-white">
+            <Text className="font-mono text-[10px] font-bold uppercase text-white">
               {name}
             </Text>
           ) : null}
           {level != null ? (
-            <Text className="font-mono text-[9px] text-white/55">N.{level}</Text>
+            <Text className="font-mono text-[10px] text-white/55">N.{level}</Text>
           ) : null}
         </View>
-        <View className="h-2 w-full min-w-[120px] overflow-hidden rounded-sm border border-white/15 bg-black/60">
-          <Animated.View style={[barStyle, { height: '100%', backgroundColor: fillColor }]} />
-        </View>
-        <Text className="mt-0.5 text-right font-mono text-[9px] text-white/80">
+        {bar}
+        <Text className="mt-0.5 text-right font-mono text-[10px] text-white/80">
           {clampedHp}/{maxHp}
         </Text>
       </View>
@@ -58,9 +95,7 @@ export const CombatHpBar = ({
           {clampedHp} / {maxHp}
         </Text>
       </View>
-      <View className="h-3 w-full overflow-hidden rounded-sm border border-white/15 bg-black/50">
-        <Animated.View style={[barStyle, { height: '100%', backgroundColor: fillColor }]} />
-      </View>
+      {bar}
     </View>
   )
 }

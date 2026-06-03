@@ -12,7 +12,7 @@ import type { CombatMonsterParams } from '../types'
 export const CombatMonster = ({ hp, maxHp, shakeKey }: CombatMonsterParams) => {
   const pct = Math.max(0, Math.min(100, (hp / maxHp) * 100))
   const clampedHp = Math.max(0, hp)
-  const shakeStyle = useCombatShakeStyle(shakeKey)
+  const shakeStyle = useCombatShakeStyle(shakeKey, 'left')
 
   const hpWidth = useSharedValue(pct)
 

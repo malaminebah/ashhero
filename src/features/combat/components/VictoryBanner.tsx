@@ -1,4 +1,4 @@
-import { PlayerHeroEmoji } from '@/src/features/tracker/components/PlayerHeroEmoji'
+import { PlayerSoldierSprite } from './PlayerSoldierSprite'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Pressable, Text, View } from 'react-native'
@@ -7,7 +7,7 @@ import type { VictoryBannerParams } from '../types'
 
 const coinReward = (xp: number) => Math.max(10, Math.round(xp * 0.6))
 
-export const VictoryBanner = ({ xpGained, level, onContinue }: VictoryBannerParams) => {
+export const VictoryBanner = ({ xpGained, onContinue }: VictoryBannerParams) => {
   const coins = coinReward(xpGained)
 
   return (
@@ -20,7 +20,7 @@ export const VictoryBanner = ({ xpGained, level, onContinue }: VictoryBannerPara
 
       <View className="mb-5 w-full items-center">
         <View className="flex-row items-end justify-center gap-3">
-          <PlayerHeroEmoji level={level} variant="combat" />
+          <PlayerSoldierSprite anim="idle" />
           <Text className="mb-2 text-4xl">🎁</Text>
         </View>
         <Text className="mt-1 text-lg">✨</Text>
