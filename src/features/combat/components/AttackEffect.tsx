@@ -7,13 +7,9 @@ import Animated, {
   withSequence,
   Easing,
 } from 'react-native-reanimated'
+import type { AttackEffectParams } from '../types'
 
-type Props = {
-  emoji: string
-  visible: boolean
-}
-
-export const AttackEffect = ({ emoji, visible }: Props) => {
+export const AttackEffect = ({ emoji, visible }: AttackEffectParams) => {
   const opacity = useSharedValue(0)
   const scale = useSharedValue(0.5)
 

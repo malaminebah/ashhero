@@ -9,15 +9,9 @@ import { PlayerHeroEmoji } from '@/src/features/tracker/components/PlayerHeroEmo
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
 
-type Props = {
-  hp: number
-  maxHp: number
-  /** Increments on each hit taken by the player (triggers shake animation). */
-  shakeKey: number
-  label?: string
-}
+import type { CombatPlayerPanelParams } from '../types'
 
-export const CombatPlayerPanel = ({ hp, maxHp, shakeKey }: Props) => {
+export const CombatPlayerPanel = ({ hp, maxHp, shakeKey }: CombatPlayerPanelParams) => {
   const level = useTrackerStore((s) => s.level)
   const pct = Math.max(0, Math.min(100, (hp / maxHp) * 100))
   const clampedHp = Math.max(0, hp)

@@ -3,15 +3,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Pressable, Text, View } from 'react-native'
 
-type Props = {
-  xpGained: number
-  level: number
-  onContinue: () => void
-}
+import type { VictoryBannerParams } from '../types'
 
 const coinReward = (xp: number) => Math.max(10, Math.round(xp * 0.6))
 
-export const VictoryBanner = ({ xpGained, level, onContinue }: Props) => {
+export const VictoryBanner = ({ xpGained, level, onContinue }: VictoryBannerParams) => {
   const coins = coinReward(xpGained)
 
   return (

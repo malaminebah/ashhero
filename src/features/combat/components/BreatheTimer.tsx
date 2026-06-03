@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { View, Text } from 'react-native'
+import type { BreatheTimerParams } from '../types'
 
 const TOTAL_SECONDS = 60
 const SEGMENTS = 12
 
-type Props = {
-  onComplete: () => void
-}
-
-export const BreatheTimer = ({ onComplete }: Props) => {
+export const BreatheTimer = ({ onComplete }: BreatheTimerParams) => {
   const [remaining, setRemaining] = useState(TOTAL_SECONDS)
   const onCompleteRef = useRef(onComplete)
   const completedRef = useRef(false)

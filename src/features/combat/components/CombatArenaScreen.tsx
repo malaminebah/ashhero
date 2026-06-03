@@ -3,11 +3,9 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Pressable, Text, View } from 'react-native'
 
-type Props = {
-  onLaunchCombat: () => void
-}
+import type { CombatArenaScreenParams } from '../types'
 
-export const CombatArenaScreen = ({ onLaunchCombat }: Props) => (
+export const CombatArenaScreen = ({ onLaunchCombat }: CombatArenaScreenParams) => (
   <View className="flex-1 bg-brand-bg">
     <View className="h-[42%] min-h-[240px] max-h-[360px] w-full overflow-hidden"></View>
 

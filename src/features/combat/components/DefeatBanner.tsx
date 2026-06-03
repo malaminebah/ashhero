@@ -1,12 +1,9 @@
 import { View, Text, Pressable } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 
-type Props = {
-  onRetry: () => void
-  onGoHome: () => void
-}
+import type { DefeatBannerParams } from '../types'
 
-export const DefeatBanner = ({ onRetry, onGoHome }: Props) => (
+export const DefeatBanner = ({ onRetry, onGoHome }: DefeatBannerParams) => (
   <View className="flex-1 items-center justify-center px-2 py-6">
     <View className="mb-5 rounded-lg border-2 border-brand-red bg-brand-red px-10 py-2.5">
       <Text className="font-mono text-base font-bold uppercase tracking-wider text-white">

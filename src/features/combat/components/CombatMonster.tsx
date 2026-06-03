@@ -7,14 +7,9 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
 
-type Props = {
-  hp: number
-  maxHp: number
-  /** Increments on each hit taken by the boss (triggers shake animation). */
-  shakeKey: number
-}
+import type { CombatMonsterParams } from '../types'
 
-export const CombatMonster = ({ hp, maxHp, shakeKey }: Props) => {
+export const CombatMonster = ({ hp, maxHp, shakeKey }: CombatMonsterParams) => {
   const pct = Math.max(0, Math.min(100, (hp / maxHp) * 100))
   const clampedHp = Math.max(0, hp)
   const shakeStyle = useCombatShakeStyle(shakeKey)
