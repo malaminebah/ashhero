@@ -12,7 +12,7 @@ import { useWeeklyMood } from '@/src/features/mood/hooks/useWeeklyMood'
 export default function MoodDetailScreen() {
   const router = useRouter()
   const { primary: primaryParam } = useLocalSearchParams<{ primary: string }>()
-  const { saveToday, isSaving, canFillToday } = useWeeklyMood()
+  const { saveToday, isSaving, canFillToday, error } = useWeeklyMood()
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
 
   const primary = primaryParam as PrimaryMood | undefined
@@ -94,6 +94,10 @@ export default function MoodDetailScreen() {
             )
           })}
         </View>
+
+        {error ? (
+          <Text className="mt-4 font-mono text-sm text-red-300">{error}</Text>
+        ) : null}
 
         <Pressable
           onPress={() => void onSave()}
