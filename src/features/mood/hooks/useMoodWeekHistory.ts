@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
-import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { getCurrentUid } from '@/src/services'
 import { listMoodEntries } from '@/src/services/mood.service'
 import type { MoodEntry } from '../types'
 import {
@@ -9,7 +9,6 @@ import {
 } from '../utils/weekDates'
 
 export function useMoodWeekHistory(initialOffset = 0) {
-  const uid = useSessionStore((s) => s.uid)
   const [weekOffset, setWeekOffset] = useState(initialOffset)
   const [entriesByDate, setEntriesByDate] = useState<Record<string, MoodEntry>>({})
   const [isLoading, setIsLoading] = useState(true)
@@ -20,9 +19,11 @@ export function useMoodWeekHistory(initialOffset = 0) {
   const canGoNext = weekOffset < 0
 
   const refresh = useCallback(async () => {
+    const uid = getCurrentUid()
     if (!uid) {
       setEntriesByDate({})
       setIsLoading(false)
+      setError('Connecte-toi pour voir ton historique.')
       return
     }
     setIsLoading(true)
@@ -36,7 +37,7 @@ export function useMoodWeekHistory(initialOffset = 0) {
     } finally {
       setIsLoading(false)
     }
-  }, [uid, weekDays])
+  }, [weekDays])
 
   useFocusEffect(
     useCallback(() => {

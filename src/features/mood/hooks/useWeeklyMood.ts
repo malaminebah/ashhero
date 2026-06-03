@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
-import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { getCurrentUid } from '@/src/services'
 import {
   getMoodEntry,
   listMoodEntries,
@@ -16,7 +16,6 @@ type SaveInput = {
 }
 
 export function useWeeklyMood() {
-  const uid = useSessionStore((s) => s.uid)
   const weekDays = useMemo(() => getCurrentWeekDays(), [])
   const todayKey = formatLocalDate(new Date())
 
@@ -26,9 +25,11 @@ export function useWeeklyMood() {
   const [isSaving, setIsSaving] = useState(false)
 
   const refresh = useCallback(async () => {
+    const uid = getCurrentUid()
     if (!uid) {
       setEntriesByDate({})
       setIsLoading(false)
+      setError('Connecte-toi pour enregistrer ton humeur.')
       return
     }
     setIsLoading(true)
@@ -42,7 +43,7 @@ export function useWeeklyMood() {
     } finally {
       setIsLoading(false)
     }
-  }, [uid, weekDays])
+  }, [weekDays])
 
   useFocusEffect(
     useCallback(() => {
@@ -56,7 +57,11 @@ export function useWeeklyMood() {
 
   const saveToday = useCallback(
     async ({ primary, sub }: SaveInput) => {
-      if (!uid) throw new Error('Non connecté')
+      const uid = getCurrentUid()
+      if (!uid) {
+        setError('Connecte-toi pour enregistrer ton humeur.')
+        throw new Error('Non connecté')
+      }
       if (!canFillToday) throw new MoodAlreadyFilledError(todayKey)
 
       setIsSaving(true)
@@ -78,14 +83,19 @@ export function useWeeklyMood() {
         if (e instanceof MoodAlreadyFilledError) {
           setError('Tu as déjà renseigné ton humeur aujourd’hui.')
         } else {
-          setError('Enregistrement impossible. Réessaie.')
+          const msg = e instanceof Error ? e.message : 'Enregistrement impossible.'
+          setError(
+            msg.includes('permission') || msg.includes('Permission')
+              ? 'Firestore : permission refusée. Déploie les rules.'
+              : 'Enregistrement impossible. Réessaie.'
+          )
         }
         throw e
       } finally {
         setIsSaving(false)
       }
     },
-    [uid, canFillToday, todayKey]
+    [canFillToday, todayKey]
   )
 
   return {
