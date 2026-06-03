@@ -64,5 +64,3 @@ coverage/
 .cursorrules
 .cursorignore
 
-# Optional policy doc often named for Cursor; remove from here if you want it versioned
-CURSOR.md
