@@ -21,3 +21,22 @@ export type WeekDayCell = {
   isFuture: boolean
   isPast: boolean
 }
+
+export type MoodTodayCardParams = {
+  canFillToday: boolean
+  todayLabel?: string
+}
+
+export type MoodWeekChartParams = {
+  weekDays: WeekDayCell[]
+  entriesByDate: Record<string, MoodEntry>
+}
+
+export type WeeklyMoodStripParams = {
+  weekDays: WeekDayCell[]
+  entriesByDate: Record<string, MoodEntry>
+}
+
+export type MoodFlowProgressParams = {
+  step: 1 | 2
+}

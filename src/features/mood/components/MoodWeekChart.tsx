@@ -1,16 +1,10 @@
 import { View, Text } from 'react-native'
 import { getPrimaryMood, getSubMoodLabel } from '../moodTaxonomy'
-import type { MoodEntry } from '../types'
-import type { WeekDayCell } from '../types'
+import type { MoodWeekChartParams } from '../types'
 
 const CHART_HEIGHT = 140
 
-type Props = {
-  weekDays: WeekDayCell[]
-  entriesByDate: Record<string, MoodEntry>
-}
-
-export const MoodWeekChart = ({ weekDays, entriesByDate }: Props) => {
+export const MoodWeekChart = ({ weekDays, entriesByDate }: MoodWeekChartParams) => {
   const filled = weekDays.filter((d) => entriesByDate[d.date]).length
 
   return (

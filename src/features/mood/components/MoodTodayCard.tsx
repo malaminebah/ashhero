@@ -3,12 +3,9 @@ import { useRouter } from 'expo-router'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
-type Props = {
-  canFillToday: boolean
-  todayLabel?: string
-}
+import type { MoodTodayCardParams } from '../types'
 
-export const MoodTodayCard = ({ canFillToday, todayLabel }: Props) => {
+export const MoodTodayCard = ({ canFillToday, todayLabel }: MoodTodayCardParams) => {
   const router = useRouter()
 
   return (

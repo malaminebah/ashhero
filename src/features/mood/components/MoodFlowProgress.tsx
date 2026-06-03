@@ -1,10 +1,8 @@
 import { View, Text } from 'react-native'
 
-type Props = {
-  step: 1 | 2
-}
+import type { MoodFlowProgressParams } from '../types'
 
-export const MoodFlowProgress = ({ step }: Props) => (
+export const MoodFlowProgress = ({ step }: MoodFlowProgressParams) => (
   <View className="mb-6 h-1 w-full overflow-hidden rounded-full bg-white/10">
     <View
       className="h-full bg-brand-success"

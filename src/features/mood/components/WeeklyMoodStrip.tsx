@@ -2,13 +2,7 @@ import { View, Text, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { getPrimaryMood } from '../moodTaxonomy'
-import type { MoodEntry } from '../types'
-import type { WeekDayCell } from '../types'
-
-type Props = {
-  weekDays: WeekDayCell[]
-  entriesByDate: Record<string, MoodEntry>
-}
+import type { MoodEntry, WeeklyMoodStripParams } from '../types'
 
 function MoodDot({ entry, isToday, isFuture }: {
   entry: MoodEntry | undefined
@@ -44,7 +38,7 @@ function MoodDot({ entry, isToday, isFuture }: {
   )
 }
 
-export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: Props) => {
+export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: WeeklyMoodStripParams) => {
   const router = useRouter()
   const filledCount = weekDays.filter((d) => entriesByDate[d.date]).length
 
