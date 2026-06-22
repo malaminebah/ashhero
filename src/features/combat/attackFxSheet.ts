@@ -6,7 +6,9 @@ export const ATTACK_FX_COLS = 12
 export const ATTACK_FX_ROWS = 9
 export const ATTACK_FX_FRAME_SIZE = 64
 export const ATTACK_FX_FRAME_COUNT = 12
-export const ATTACK_FX_FRAME_MS = 75
+export const ATTACK_FX_FRAME_MS = 65
+
+export const ATTACK_FX_DURATION_MS = ATTACK_FX_FRAME_COUNT * ATTACK_FX_FRAME_MS
 export const ATTACK_FX_DISPLAY_SCALE = 2.2
 
 export type AttackEffectKey = CombatAction | 'boss'

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 import { Image } from 'expo-image'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+import { FlowText } from '@/components/ui/flow-text'
 import { hpBarFillFrame } from '../hpBarFrame'
 import {
   HP_BAR_DISPLAY_SCALE,
@@ -69,20 +70,18 @@ export const CombatHpBar = ({
   if (overlay) {
     return (
       <View>
-        <View className="mb-1 flex-row items-center justify-between gap-2">
+        <View className="mb-1 flex-row items-center justify-between gap-2 rounded-md bg-black/35 px-2 py-0.5">
           {name ? (
-            <Text className="font-mono text-[10px] font-bold uppercase text-white">
-              {name}
-            </Text>
+            <FlowText className="text-[10px] font-bold uppercase text-white">{name}</FlowText>
           ) : null}
           {level != null ? (
-            <Text className="font-mono text-[10px] text-white/55">N.{level}</Text>
+            <FlowText className="text-[10px] text-white/80">N.{level}</FlowText>
           ) : null}
         </View>
         {bar}
-        <Text className="mt-0.5 text-right font-mono text-[10px] text-white/80">
+        <FlowText className="mt-0.5 text-right text-[10px] font-bold text-white">
           {clampedHp}/{maxHp}
-        </Text>
+        </FlowText>
       </View>
     )
   }
@@ -90,10 +89,10 @@ export const CombatHpBar = ({
   return (
     <View className="w-full">
       <View className="mb-1 flex-row items-center justify-between">
-        <Text className="font-mono text-[10px] uppercase text-white/55">PV</Text>
-        <Text className="font-mono text-[10px] text-white">
+        <FlowText className="text-[10px] uppercase text-flow-muted">PV</FlowText>
+        <FlowText className="text-[10px] text-flow-text">
           {clampedHp} / {maxHp}
-        </Text>
+        </FlowText>
       </View>
       {bar}
     </View>

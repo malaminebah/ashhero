@@ -1,21 +1,27 @@
-import { Image } from 'expo-image'
 import { View } from 'react-native'
 import { FlowText } from '@/components/ui/flow-text'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
+import { ARENA_SPRITE_LAYOUT } from '../arenaAssets'
 import type { CombatArenaScreenParams } from '../types'
-
-const arenaSwordHero = require('@/assets/icons/weapons/r117_c08.png')
+import { ArenaBackgroundPanel } from './ArenaBackgroundPanel'
+import { BossSprite } from './BossSprite'
+import { PlayerSoldierSprite } from './PlayerSoldierSprite'
 
 export const CombatArenaScreen = ({ onLaunchCombat }: CombatArenaScreenParams) => (
   <View className="flex-1 bg-flow-bg">
-    <View className="h-[42%] min-h-[240px] max-h-[360px] w-full overflow-hidden" />
-
-    <View className="flex-1 items-center px-6 pt-2">
-      <View className="mb-4 h-20 w-20 items-center justify-center rounded-[28px] bg-flow-mascot">
-        <Image source={arenaSwordHero} style={{ width: 48, height: 48 }} contentFit="contain" />
+    <ArenaBackgroundPanel variant="banner" tone="flow" className="rounded-b-3xl border-b border-flow-border">
+      <View style={{ position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.player }}>
+        <PlayerSoldierSprite anim="idle" />
       </View>
-      <FlowText className="text-2xl font-bold text-flow-text">Arène</FlowText>
-      <FlowText className="mt-4 max-w-[300px] text-center text-[15px] leading-6 text-flow-muted">
+
+      <View style={{ position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.boss }}>
+        <BossSprite anim="idle" />
+      </View>
+    </ArenaBackgroundPanel>
+
+    <View className="flex-1 items-center px-6 pt-8">
+      <FlowText className="text-[22px] font-bold text-flow-text">Arène</FlowText>
+      <FlowText className="mt-3 max-w-[300px] text-center text-[15px] leading-6 text-flow-muted">
         Affronte l&apos;envie, gagne de l&apos;XP et deviens plus fort chaque jour.
       </FlowText>
 

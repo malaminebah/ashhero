@@ -32,16 +32,40 @@ export type CombatModalParams = {
 import type { PlayerSoldierAnim } from './soldierSheet'
 export type { PlayerSoldierAnim }
 
+import type { BossAnim } from './bossSheet'
+export type { BossAnim }
+
 export type CombatArenaViewParams = {
   bossDefeated: boolean
   bossShakeKey: number
   playerShakeKey: number
   attackEffect: AttackEffectKey | null
   playerAnim: PlayerSoldierAnim
+  bossAnim: BossAnim
 }
 
 export type PlayerSoldierSpriteParams = {
   anim: PlayerSoldierAnim
+}
+
+export type BossSpriteParams = {
+  anim: BossAnim
+  muted?: boolean
+}
+
+export type SheetSpriteParams = {
+  sheet: number
+  frameSize: number
+  sheetH: number
+  sheetCols: number
+  displayScale: number
+  row: number
+  frames: number
+  frameMs: number
+  loop: boolean
+  animKey: string
+  accessibilityLabel: string
+  muted?: boolean
 }
 
 import type { CombatHpBarVariant } from './hpBarSheet'
@@ -94,6 +118,12 @@ export type VictoryBannerParams = {
 export type DefeatBannerParams = {
   onRetry: () => void
   onGoHome: () => void
+}
+
+export type CombatResultBackdropParams = {
+  heroAnim: PlayerSoldierAnim
+  showBoss?: boolean
+  bossMuted?: boolean
 }
 
 export type CombatArenaScreenParams = {

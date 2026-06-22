@@ -1,11 +1,14 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
+import { FlowText } from '@/components/ui/flow-text'
 import type { CombatMessageBoxParams } from '../types'
 
+// min-h-[72px] locks the height across all message states (idle+prompt ~68px, player_hit ~64px)
+// so the flex-1 arena above doesn't jump when the message changes on attack.
 const boxClass =
-  'mb-3 min-h-[64px] justify-center rounded-none border-4 border-white/70 bg-[#08000f] px-3 py-3'
+  'mb-3 min-h-[72px] justify-center rounded-2xl border border-flow-border bg-flow-secondary px-4 py-3'
 
 const Prompt = () => (
-  <Text className="mt-1 text-right font-mono text-xs text-brand-accent">▶</Text>
+  <FlowText className="mt-1 text-right text-xs text-flow-cta">▶</FlowText>
 )
 
 export const CombatMessageBox = ({
@@ -21,9 +24,9 @@ export const CombatMessageBox = ({
   if (message.kind === 'idle') {
     return (
       <View className={boxClass}>
-        <Text className="text-left font-mono text-xs leading-5 text-white/75">
+        <FlowText className="text-left text-xs leading-5 text-flow-muted">
           {showPrompt ? idlePrompt : '…'}
-        </Text>
+        </FlowText>
         {showPrompt ? <Prompt /> : null}
       </View>
     )
@@ -32,9 +35,9 @@ export const CombatMessageBox = ({
   if (message.kind === 'status') {
     return (
       <View className={boxClass}>
-        <Text className="text-left font-mono text-xs leading-5 text-white/80">
+        <FlowText className="text-left text-xs leading-5 text-flow-text">
           {message.text}
-        </Text>
+        </FlowText>
         {showPrompt ? <Prompt /> : null}
       </View>
     )
@@ -43,10 +46,10 @@ export const CombatMessageBox = ({
   if (message.kind === 'player_hit') {
     return (
       <View className={boxClass}>
-        <Text className="text-left font-mono text-xs leading-5 text-white/90">
+        <FlowText className="text-left text-xs leading-5 text-flow-text">
           Tu utilises {message.actionLabel} !{'\n'}C&apos;est super efficace ! L&apos;Envie subit{' '}
           {message.damage} dégâts !
-        </Text>
+        </FlowText>
         {showPrompt ? <Prompt /> : null}
       </View>
     )
@@ -54,9 +57,9 @@ export const CombatMessageBox = ({
 
   return (
     <View className={boxClass}>
-      <Text className="text-left font-mono text-xs leading-5 text-white/90">
+      <FlowText className="text-left text-xs leading-5 text-flow-text">
         L&apos;Envie utilise {message.attackName} !{'\n'}C&apos;est super efficace !
-      </Text>
+      </FlowText>
       {showPrompt ? <Prompt /> : null}
     </View>
   )

@@ -1,16 +1,13 @@
 import type { PropsWithChildren } from 'react'
-import { Image } from 'expo-image'
-import { LinearGradient } from 'expo-linear-gradient'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 import Animated from 'react-native-reanimated'
+import { ARENA_SPRITE_LAYOUT } from '../arenaAssets'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
 import { AttackEffect } from './AttackEffect'
+import { ArenaBackgroundPanel } from './ArenaBackgroundPanel'
+import { BossSprite } from './BossSprite'
 import { PlayerSoldierSprite } from './PlayerSoldierSprite'
 import type { CombatArenaViewParams } from '../types'
-
-const arenaBackground = require('@/assets/combat/arena-bg.png')
-const bossSprite = require('@/assets/combat/boss-idle.png')
-const ARENA_ASPECT = 1024 / 682
 
 export const CombatArenaView = ({
   bossDefeated,
@@ -18,55 +15,38 @@ export const CombatArenaView = ({
   playerShakeKey,
   attackEffect,
   playerAnim,
+  bossAnim,
   children,
 }: PropsWithChildren<CombatArenaViewParams>) => {
   const bossShake = useCombatShakeStyle(bossShakeKey, 'left')
   const playerShake = useCombatShakeStyle(playerShakeKey, 'right')
 
   return (
-    <View className="w-full max-h-full flex-1 items-center justify-center">
-      <View
-        className="relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#08000f]"
-        style={{ aspectRatio: ARENA_ASPECT, maxHeight: '100%' }}
+    <View className="max-h-full w-full flex-1 items-center justify-center">
+      <ArenaBackgroundPanel
+        variant="fill"
+        tone="game"
+        className="rounded-2xl border border-white/10 bg-brand-bg"
       >
-        <Image
-          source={arenaBackground}
-          style={StyleSheet.absoluteFill}
-          contentFit="cover"
-          contentPosition="center"
-          accessibilityIgnoresInvertColors
-        />
-        <LinearGradient
-          colors={['rgba(8,0,15,0.55)', 'transparent', 'rgba(8,0,15,0.25)']}
-          locations={[0, 0.35, 1]}
-          style={StyleSheet.absoluteFill}
-          pointerEvents="none"
-        />
-
         <Animated.View
-          style={playerShake}
-          className="absolute bottom-6 left-2 z-10 items-center"
+          style={[playerShake, { position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.player }]}
+          className="items-center"
         >
           <PlayerSoldierSprite anim={playerAnim} />
         </Animated.View>
 
         {!bossDefeated ? (
           <Animated.View
-            style={bossShake}
-            className="absolute right-3 top-20 z-10 items-center justify-center"
+            style={[bossShake, { position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.boss }]}
+            className="items-center justify-center"
           >
-            <Image
-              source={bossSprite}
-              style={{ width: 120, height: 120 }}
-              contentFit="contain"
-              accessibilityLabel="L'Envie"
-            />
+            <BossSprite anim={bossAnim} />
           </Animated.View>
         ) : null}
 
         <AttackEffect effect={attackEffect} />
         {children}
-      </View>
+      </ArenaBackgroundPanel>
     </View>
   )
 }

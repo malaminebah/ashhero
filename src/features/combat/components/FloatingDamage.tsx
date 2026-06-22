@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { Text } from 'react-native'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
+import { FlowText } from '@/components/ui/flow-text'
 import type { FloatingDamageParams } from '../types'
 
 export const FloatingDamage = ({ floatDamage }: FloatingDamageParams) => {
@@ -46,7 +46,7 @@ export const FloatingDamage = ({ floatDamage }: FloatingDamageParams) => {
       className={`z-20 ${positionClass}`}
       pointerEvents="none"
     >
-      <Text className="font-mono text-3xl font-bold text-red-400">-{amount}</Text>
+      <FlowText className="text-3xl font-bold text-red-500">-{amount}</FlowText>
     </Animated.View>
   )
 }

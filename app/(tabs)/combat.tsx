@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { CombatArenaScreen } from '@/src/features/combat/components/CombatArenaScreen'
-import { CombatModal } from '@/src/features/tracker'
+import { CombatModal } from '@/src/features/combat/components/CombatModal'
 
 export default function CombatScreen() {
   const [open, setOpen] = useState(false)
