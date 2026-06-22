@@ -1,6 +1,7 @@
 import { useRef } from 'react'
-import { View, ScrollView, Pressable, Text } from 'react-native'
+import { View, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
+import { FlowText } from '@/components/ui/flow-text'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { useOnboardingStore } from '@/src/features/onboarding/store'
 import { ButtonCraving, ButtonReset } from '@/src/features/tracker'
@@ -57,8 +58,8 @@ export const ProfileScreenBody = () => {
   }
 
   return (
-    <ScrollView className="flex-1 bg-brand-bg" showsVerticalScrollIndicator={false}>
-      <View className="px-5 pb-10 pt-12">
+    <ScrollView className="flex-1 bg-flow-bg" showsVerticalScrollIndicator={false}>
+      <View className="px-6 pb-10 pt-12">
         <ProfileHeader onEditPress={() => heroRef.current?.focusName()} />
         <ProfileHeroCard
           ref={heroRef}
@@ -85,7 +86,7 @@ export const ProfileScreenBody = () => {
         </View>
 
         <Pressable onPress={onRestartFlow} className="mt-8 items-center py-3 active:opacity-80">
-          <Text className="font-mono text-xs text-white/30">Recommencer le parcours (test)</Text>
+          <FlowText className="text-xs text-flow-faint">Recommencer le parcours (test)</FlowText>
         </Pressable>
       </View>
     </ScrollView>

@@ -1,4 +1,6 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
+import { flowShadow } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 import type { ProfileStatsGridParams } from '../../types'
 
 type CellProps = {
@@ -8,11 +10,14 @@ type CellProps = {
 
 function StatCell({ value, label }: CellProps) {
   return (
-    <View className="min-h-[76px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-1.5 py-3">
-      <Text className="text-center font-mono text-lg font-bold text-white">{value}</Text>
-      <Text className="mt-1.5 text-center font-mono text-[7px] uppercase leading-3 tracking-[0.08rem] text-white/50">
+    <View
+      className="min-h-[76px] flex-1 items-center justify-center rounded-2xl border border-flow-border bg-flow-bg px-1.5 py-3"
+      style={flowShadow.card}
+    >
+      <FlowText className="text-center text-lg font-bold text-flow-text">{value}</FlowText>
+      <FlowText className="mt-1.5 text-center text-[10px] leading-3 text-flow-muted">
         {label}
-      </Text>
+      </FlowText>
     </View>
   )
 }
@@ -33,9 +38,7 @@ export const ProfileStatsGrid = ({
 
   return (
     <View className="mb-8">
-      <Text className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.25rem] text-white/80">
-        Tes stats
-      </Text>
+      <FlowText className="mb-3 text-sm font-bold text-flow-text">Tes stats</FlowText>
       <View className="gap-2">
         <View className="flex-row gap-2">
           <StatCell value={dayCount} label="Jours sans vape" />

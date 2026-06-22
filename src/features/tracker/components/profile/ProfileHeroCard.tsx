@@ -1,8 +1,8 @@
 import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from 'react'
-import { titleSerif } from '@/constants/theme'
-import { View, Text, TextInput, Pressable } from 'react-native'
+import { View, TextInput, Pressable, type TextStyle } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { PlayerHeroEmoji } from '../PlayerHeroEmoji'
+import { FLOW, flowFontFamily } from '@/constants/flowTheme'
+import { OnboardingMascot } from '@/src/features/onboarding/components/OnboardingMascot'
 import {
   DEFAULT_HERO_NAME,
   displayHeroName,
@@ -14,8 +14,10 @@ import type { ProfileHeroCardHandle, ProfileHeroCardParams } from '../../types'
 
 export type { ProfileHeroCardHandle } from '../../types'
 
+const inputStyle: TextStyle = { fontFamily: flowFontFamily.sans }
+
 export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCardParams>(
-  ({ level, heroName, onSaveName }, ref) => {
+  ({ heroName, onSaveName }, ref) => {
     const inputRef = useRef<TextInput>(null)
     const [draft, setDraft] = useState(() => displayHeroName(heroName))
 
@@ -34,18 +36,7 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
 
     return (
       <View className="mb-5 flex-row items-center gap-4">
-        <View
-          className="h-[96px] w-[96px] items-center justify-center rounded-full border-2 border-brand-success/45 bg-brand-bg2"
-          style={{
-            shadowColor: '#22c55e',
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.4,
-            shadowRadius: 16,
-            elevation: 10,
-          }}
-        >
-          <PlayerHeroEmoji level={level} variant="profile" />
-        </View>
+        <OnboardingMascot anim="idle" size="sm" />
         <View className="relative flex-1">
           <TextInput
             ref={inputRef}
@@ -57,9 +48,9 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
             returnKeyType="done"
             accessibilityLabel="Nom du héros"
             placeholder={DEFAULT_HERO_NAME}
-            placeholderTextColor="rgba(255,255,255,0.35)"
-            className="rounded-xl border border-white/10 bg-white/[0.06] py-3 pl-4 pr-10 text-lg font-bold text-white"
-            style={{ fontFamily: titleSerif }}
+            placeholderTextColor={FLOW.faint}
+            className="rounded-2xl border border-flow-border bg-flow-bg py-3 pl-4 pr-10 text-lg font-bold text-flow-text"
+            style={inputStyle}
           />
           <Pressable
             onPress={() => inputRef.current?.focus()}
@@ -67,7 +58,7 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
             accessibilityLabel="Modifier le nom"
             className="absolute bottom-0 right-0 top-0 w-10 items-center justify-center"
           >
-            <MaterialIcons name="edit" size={16} color="rgba(255,255,255,0.45)" />
+            <MaterialIcons name="edit" size={16} color={FLOW.faint} />
           </Pressable>
         </View>
       </View>
