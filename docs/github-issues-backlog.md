@@ -13,6 +13,31 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 ---
 
+## Handoff PO — synthèse board (2026-06-22)
+
+> **Action PO** : valider les critères « Validation PO » / playtest, puis déplacer la colonne Project.  
+> Code livré en session dev ; **non commité** tant que PO n’a pas relu.
+
+| Ticket | Colonne **cible** si PO OK | Code | Bloquant PO |
+|--------|----------------------------|------|-------------|
+| T-101, T-102, T-103, T-122, T-123 | **Done** | ✅ | Parcours auth + reset email + persistance session |
+| T-111 | **In Review** → **Done** | ✅ | 3 parcours (nouveau / retour / reset) sur device |
+| T-112 | **In Review** → **Done** | ✅ revue code | Exécuter `docs/firestore-smoke-test.md` + rules déployées |
+| T-113 | **In Review** → **Done** | ✅ | Playtest respiration combat (3s/3s/1s) |
+| T-114 → T-118, T-124, T-125 | **Done** | ✅ | Playtest device (haptics T-118) |
+| T-119 | **In Review** | ~✅ | Relecture copy combat FR |
+| T-130 → T-136 | **In Review** | ✅ | Playtest mood semaine |
+| T-126 → T-129 | **To Do** | ❌ | Epic avatar — placeholder profil |
+| T-137, T-138 | **Backlog** / **To Do** | partiel | Panneau profil mood + edge cases |
+| T-201, T-202 | **In Review** | partiel | Relecture copy globale |
+| T-203 | **To Do** | ❌ | Inventaire assets PO |
+| T-140 → T-142 | **In Review** | partiel | Font / badges — validation visuelle |
+| **T-304** *(nouveau)* | **To Do** | ❌ | Soumission stores (EAS, bundle ID, légal) |
+
+**Livraisons dev session (non listées dans commits ci-dessous)** : sync session auth, guards onboarding/auth, design Flow (auth, mood, combat shell), T-113 breathe cycle, fix `tsc`, `.env.example`, smoke test Firestore doc.
+
+---
+
 ## Tableau commits → tickets (dernières livraisons)
 
 | Commit | Ticket | Statut board |
@@ -156,9 +181,9 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 | Ticket | Statut board |
 |--------|--------------|
-| T-111 | **To Do** |
-| T-112 | **To Do** |
-| T-113 | **To Do** |
+| T-111 | **In Review** |
+| T-112 | **In Review** |
+| T-113 | **In Review** |
 
 ---
 
@@ -256,7 +281,7 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-111 — Relecture flux onboarding + persistance profil post-auth email
 
 **Labels :** `mvp`, `tracker`, `auth`  
-**Statut board :** `To Do`
+**Statut board :** `In Review`
 
 **Corps :**
 
@@ -264,7 +289,7 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 **Périmètre**
 
-- Vérifier chaque step onboarding (`Step1` → `Step6`) : données collectées, reset, navigation.
+- Vérifier chaque step onboarding (`Step1` → `Step5`) : données collectées, reset, navigation.
 - Vérifier `useOnboardingSubmit` : `saveProfile`, `initialize` tracker, `setProfileResolved`.
 - Vérifier le chargement profil dans `app/_layout.tsx` après connexion / reconnexion (`getProfile`, `hasServerProfile`).
 - Vérifier conformité `CURSOR.md` : pas de `initialState` trompeur, sélecteurs Zustand atomiques.
@@ -273,10 +298,12 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 **Critères d’acceptation**
 
-- [ ] Inscription email → onboarding complet → profil visible dans les tabs sans reload manuel.
-- [ ] Reconnexion avec compte existant → profil Firestore rechargé, pas de retour onboarding si profil présent.
-- [ ] Déconnexion / reset profil → retour au bon écran sans état incohérent (`hasServerProfile`, stores reset).
-- [ ] `npx tsc --noEmit` OK ; aucun import Firebase dans les composants UI.
+- [x] Code : sync `sessionStore` après login/register/signOut (`useEmailAuthActions`)
+- [x] Code : guards onboarding (uid, profil existant) + `deleteProfile` au reset
+- [ ] **PO** : Inscription email → onboarding complet → profil visible dans les tabs sans reload manuel
+- [ ] **PO** : Reconnexion avec compte existant → profil Firestore rechargé, pas de retour onboarding si profil présent
+- [ ] **PO** : Déconnexion / reset profil → retour au bon écran sans état incohérent
+- [x] `npx tsc --noEmit` OK ; aucun import Firebase dans les composants UI
 
 **Définition of Done** : 3 parcours testés (nouveau compte, retour utilisateur, reset) ; comportement documenté si edge case assumé.
 
@@ -285,7 +312,7 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-112 — Parité combat / tracker avec règles Firestore
 
 **Labels :** `mvp`, `combat`, `firebase`, `tracker`  
-**Statut board :** `To Do`
+**Statut board :** `In Review`
 
 **Corps :**
 
@@ -302,10 +329,11 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 **Critères d’acceptation**
 
-- [ ] Un utilisateur email authentifié peut lire/écrire **uniquement** son document `users/{sonUid}`.
-- [ ] Combat gagné/perdu enregistre les données attendues sans erreur rules.
-- [ ] Relapse et étapes débloquées passent les rules en conditions réelles (device ou émulateur Firebase).
-- [ ] Aucune écriture avec un `uid` null ou mismatch auth.
+- [x] Revue code : écritures passent par services + `getCurrentUid()` (pas d’uid null silencieux sur flux nominal)
+- [ ] **PO** : Un utilisateur email authentifié peut lire/écrire **uniquement** son document `users/{sonUid}`
+- [ ] **PO** : Combat gagné/perdu enregistre les données attendues sans erreur rules
+- [ ] **PO** : Relapse, étapes, mood passent les rules (checklist `docs/firestore-smoke-test.md`)
+- [ ] Rules déployées alignées sur `firestore.rules` du repo
 
 **Définition of Done** : tests manuels documentés ; rules déployées alignées sur `firestore.rules` du repo.
 
@@ -314,7 +342,7 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 ### T-113 — Combat : guidage respiration (« attaque respiratoire ») — compteurs inhale / exhale / pause
 
 **Labels :** `mvp`, `combat`, `ux-copy`  
-**Statut board :** `To Do`
+**Statut board :** `In Review`
 
 **Corps :**
 
@@ -324,17 +352,23 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 - Compteur (ou équivalent UX) qui indique au minimum une **inspiration de ~3 s** — libellés et comportement synchronisés sur le **timer réel** (pas uniquement une phrase statique).
 - Pendant l’expiration : afficher explicitement que l’utilisateur doit **expirer** et **combien de temps** (compte à rebours ou durée fixe lisible selon la spec combat actuelle).
-- **À clarifier en spec / copy** : le **temps entre la fin de l’expiration et le début de l’inspiration suivante** est **volontaire** et **correct** au regard de la méthode (pause contrôlée vs enchaînement immédiat). Documenter la valeur attendue (ex. 0 s, X s) dans l’issue ou dans `CURSOR.md` une fois arbitré produit / médecine comportementale.
+- **Pause post-expiration** : **1 s** volontaire avant la prochaine inspiration (`breatheCycle.ts` — arbitrage produit V1).
 
 **Hors périmètre** *(à ajuster si besoin)* : son haptique, voix hors-app, autres attaques non-respiration.
 
 **Critères d’acceptation**
 
-- [ ] L’utilisateur voit une durée ou un compte à rebours cohérent pour la phase **inspirer (~3 s)**.
-- [ ] Pour la phase **expirer**, l’interface indique **qu’expirer** et **pour combien de temps** (sans ambiguïté avec « retenir son souffle » si ce n’est pas le cas produit).
-- [ ] Une mention ou un libellé (ou une note produit reliée au ticket) **clarifie** le **temps entre fin d’expiration et début d’inspiration** ; si cette pause existe, elle est affichée ou expliquée de façon alignée avec le timer.
+- [x] Durée / compte à rebours phase **inspirer (3 s)** — `BreatheTimer` + `BREATHE_PHASE_LABEL`
+- [x] Phase **expirer (3 s)** avec libellé explicite
+- [x] Pause **1 s** affichée entre expiration et inspiration suivante
+- [ ] **PO** : Playtest combat réel — affichage aligné ressenti utilisateur
+- [x] `npx tsc --noEmit` OK ; tests `breatheCycle.test.ts`
 
 **Définition of Done** : comportement vérifié sur un passage combat réel ; textes FR relus ; pas de divergence entre affichage et logique timer.
+
+**Fichiers**
+- `src/features/combat/breatheCycle.ts`
+- `src/features/combat/components/BreatheTimer.tsx`
 
 ---
 
@@ -758,6 +792,38 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 **Fichiers**
 - `docs/assets-inventory.md` (optionnel, si créé)
 - Référence croisée : `assets/`, composants avec emoji placeholder
+
+---
+
+## MVP — Infra store (soumission)
+
+| Ticket | Statut board |
+|--------|--------------|
+| T-304 | **To Do** |
+
+### T-304 — Infra : build EAS + identité app + checklist stores
+
+**Labels :** `mvp`, `infra`  
+**Statut board :** `To Do`
+
+**Objectif** : permettre un build installable TestFlight / Play Internal et préparer la soumission store.
+
+**Périmètre**
+- Renommer app (`AshHero`), `ios.bundleIdentifier`, `android.package`
+- `eas.json` + profils build
+- `.env.example` documenté (✅) + secrets EAS
+- Politique confidentialité URL + liens depuis welcome/settings
+- Suppression compte (RGPD) — écran réglages
+
+**Hors périmètre** : analytics (T-303), social login (T-302)
+
+**Critères d'acceptation**
+- [ ] `eas build` iOS + Android réussit
+- [ ] Bundle ID / package uniques enregistrés
+- [ ] URL politique accessible depuis l'app
+- [ ] Checklist T-303 tranchée ou report V2 documenté
+
+**Dépend de :** T-111, T-112 validés PO
 
 ---
 
