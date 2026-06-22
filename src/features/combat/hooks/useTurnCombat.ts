@@ -3,8 +3,7 @@ import * as Haptics from 'expo-haptics'
 import { useCombat } from '@/src/features/tracker/hooks/useCombat'
 import type { CombatAction } from '@/src/features/tracker/types'
 import {
-  ATTACK_FX_FRAME_COUNT,
-  ATTACK_FX_FRAME_MS,
+  ATTACK_FX_DURATION_MS,
   type AttackEffectKey,
 } from '../attackFxSheet'
 import type { BattleMessage, CombatPhase, FloatDamagePayload } from '../types'
@@ -146,7 +145,7 @@ export function useTurnCombat({ enabled }: Options) {
     [handleDefeat]
   )
 
-  const attackFxDurationMs = ATTACK_FX_FRAME_COUNT * ATTACK_FX_FRAME_MS
+  const attackFxDurationMs = ATTACK_FX_DURATION_MS
 
   const showAttackEffect = useCallback(
     (effect: AttackEffectKey) => {
