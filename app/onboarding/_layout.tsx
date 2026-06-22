@@ -1,16 +1,28 @@
 import React from 'react'
-import { Stack, usePathname } from 'expo-router'
+import { Redirect, Stack, usePathname } from 'expo-router'
 import { View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSessionStore } from '@/src/features/auth/sessionStore'
 
 const STEPS = ['step1', 'step2', 'step3', 'step4', 'step5']
 
 export default function OnboardingLayout() {
   const pathname = usePathname()
+  const uid = useSessionStore((s) => s.uid)
+  const authReady = useSessionStore((s) => s.authReady)
+  const hasServerProfile = useSessionStore((s) => s.hasServerProfile)
   const currentStep = pathname.split('/').pop()
   const stepIndex = STEPS.indexOf(currentStep ?? '')
   const progress = stepIndex >= 0 ? (stepIndex + 1) / STEPS.length : 0
+
+  if (authReady && !uid) {
+    return <Redirect href={'/auth/login' as never} />
+  }
+
+  if (authReady && hasServerProfile === true) {
+    return <Redirect href={'/(tabs)' as never} />
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-flow-bg" edges={['top']}>

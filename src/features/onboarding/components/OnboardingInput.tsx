@@ -11,7 +11,7 @@ type OnboardingInputParams = {
   keyboardType?: 'default' | 'decimal-pad' | 'email-address'
   secureTextEntry?: boolean
   autoCapitalize?: 'none' | 'sentences'
-  autoComplete?: 'email' | 'password' | 'off'
+  autoComplete?: 'email' | 'password' | 'new-password' | 'off'
 }
 
 export const OnboardingInput = ({
