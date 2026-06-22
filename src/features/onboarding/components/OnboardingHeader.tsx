@@ -1,17 +1,22 @@
-import { View, Text } from 'react-native'
-
-const TOTAL = 6
+import { View } from 'react-native'
 
 import type { OnboardingHeaderParams } from '../types'
+import { OnboardingText } from './OnboardingText'
+
+const TOTAL = 5
 
 export const OnboardingHeader = ({ step, title, subtitle }: OnboardingHeaderParams) => (
   <View className="mb-8 items-center">
-    <Text className="text-xs text-white/40">
+    <OnboardingText className="text-xs text-flow-faint">
       Étape {step} sur {TOTAL}
-    </Text>
-    <Text className="mt-3 text-center text-2xl font-bold leading-8 text-white">{title}</Text>
+    </OnboardingText>
+    <OnboardingText className="mt-3 text-center text-[22px] font-bold leading-8 text-flow-text">
+      {title}
+    </OnboardingText>
     {subtitle ? (
-      <Text className="mt-3 text-center text-sm leading-6 text-white/55">{subtitle}</Text>
+      <OnboardingText className="mt-3 text-center text-[15px] leading-6 text-flow-muted">
+        {subtitle}
+      </OnboardingText>
     ) : null}
   </View>
 )

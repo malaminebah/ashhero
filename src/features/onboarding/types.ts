@@ -28,6 +28,7 @@ export type OnboardingPrimaryButtonParams = {
   label: string
   onPress: () => void
   disabled?: boolean
+  loading?: boolean
 }
 
 export type OnboardingSecondaryButtonParams = {

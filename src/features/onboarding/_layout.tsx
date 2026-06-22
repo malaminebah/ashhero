@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, usePathname } from 'expo-router'
 
-const STEPS = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6']
+const STEPS = ['step1', 'step2', 'step3', 'step4', 'step5']
 
 export default function OnboardingLayout() {
   const pathname = usePathname()
@@ -26,7 +26,6 @@ export default function OnboardingLayout() {
         <Stack.Screen name="step3" options={{ headerShown: false }} />
         <Stack.Screen name="step4" options={{ headerShown: false }} />
         <Stack.Screen name="step5" options={{ headerShown: false }} />
-        <Stack.Screen name="step6" options={{ headerShown: false }} />
       </Stack>
       </View>
     </SafeAreaView>
