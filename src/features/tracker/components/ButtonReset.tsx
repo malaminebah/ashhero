@@ -1,25 +1,23 @@
-import React from 'react'
-import { Pressable, Text } from 'react-native'
+import { Pressable } from 'react-native'
+import { FlowText } from '@/components/ui/flow-text'
 import { useTrackerStore } from '../store'
 
-type ButtonResetProps = {
+type ButtonResetParams = {
   onAfterReset?: () => void
 }
 
-export const ButtonReset = ({ onAfterReset }: ButtonResetProps) => {
+export const ButtonReset = ({ onAfterReset }: ButtonResetParams) => {
   const reset = useTrackerStore((s) => s.reset)
+
   return (
     <Pressable
       onPress={() => {
         reset()
         onAfterReset?.()
       }}
-      className="w-full py-3 rounded-xl items-center justify-center border border-brand-red/60 bg-brand-red/10 mt-2 active:opacity-90"
+      className="mt-2 w-full items-center justify-center rounded-full border border-flow-border bg-flow-secondary py-3 active:opacity-90"
     >
-      <Text className="text-brand-red text-xs font-mono tracking-[0.2rem] uppercase">
-        Reset all
-      </Text>
+      <FlowText className="text-sm font-bold text-flow-muted">Reset all</FlowText>
     </Pressable>
   )
 }
-

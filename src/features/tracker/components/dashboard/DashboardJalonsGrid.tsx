@@ -1,5 +1,7 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { FLOW } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 import { DASHBOARD_JALONS } from './jalonsConfig'
 
 import type { DashboardJalonsGridParams } from '../../types'
@@ -10,12 +12,10 @@ export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParam
   return (
     <View className="mb-6">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="font-mono text-[10px] font-bold uppercase tracking-[0.25rem] text-white/80">
-          Tes jalons
-        </Text>
-        <Text className="font-mono text-[10px] text-white/45">
+        <FlowText className="text-sm font-bold text-flow-text">Tes jalons</FlowText>
+        <FlowText className="text-xs text-flow-faint">
           {unlockedCount} / {DASHBOARD_JALONS.length} débloqués
-        </Text>
+        </FlowText>
       </View>
       <ScrollView
         horizontal
@@ -27,24 +27,24 @@ export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParam
           return (
             <View
               key={j.key}
-              className={`w-[72px] items-center rounded-xl border px-2 py-3 ${
+              className={`w-[72px] items-center rounded-2xl border px-2 py-3 ${
                 active
-                  ? 'border-brand-success/50 bg-brand-success/10'
-                  : 'border-white/10 bg-white/[0.02]'
+                  ? 'border-flow-cta/35 bg-flow-secondary'
+                  : 'border-flow-border bg-flow-bg'
               }`}
             >
-              <Text
-                className={`text-center font-mono text-[9px] font-bold uppercase tracking-wide ${
-                  active ? 'text-brand-success' : 'text-white/35'
+              <FlowText
+                className={`text-center text-[10px] font-bold ${
+                  active ? 'text-flow-cta' : 'text-flow-faint'
                 }`}
               >
                 {j.label}
-              </Text>
+              </FlowText>
               <View className="mt-2 h-5 items-center justify-center">
                 {active ? (
-                  <MaterialIcons name="check-circle" size={18} color="#22c55e" />
+                  <MaterialIcons name="check-circle" size={18} color={FLOW.cta} />
                 ) : (
-                  <MaterialIcons name="lock" size={16} color="rgba(255,255,255,0.3)" />
+                  <MaterialIcons name="lock" size={16} color={FLOW.faint} />
                 )}
               </View>
             </View>

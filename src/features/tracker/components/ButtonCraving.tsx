@@ -1,21 +1,18 @@
-import React from 'react'
-import { Pressable, Text } from 'react-native'
+import { Pressable } from 'react-native'
+import { FlowText } from '@/components/ui/flow-text'
 import { useTrackerStore } from '../store'
 import { getDayCount } from '../utils/calculations'
 
-
 export const ButtonCraving = () => {
-  const quiteDate = useTrackerStore( s => s.quitDate)
-  const relapse = useTrackerStore( s => s.relapse)
+  const quiteDate = useTrackerStore((s) => s.quitDate)
+  const relapse = useTrackerStore((s) => s.relapse)
+
   return (
     <Pressable
-      onPress={ () => relapse(getDayCount(quiteDate))}
-      className="w-full py-4 rounded-xl items-center justify-center border border-brand-red/50 bg-transparent mt-2 active:opacity-90"
+      onPress={() => relapse(getDayCount(quiteDate))}
+      className="mt-2 w-full items-center justify-center rounded-full border border-red-300 bg-red-50 py-4 active:opacity-90"
     >
-      <Text className="text-brand-red/80 text-xs font-mono tracking-[0.2rem] uppercase">
-        J&apos;ai rechuté
-      </Text>
+      <FlowText className="text-sm font-bold text-red-500">J&apos;ai rechuté</FlowText>
     </Pressable>
   )
 }
-

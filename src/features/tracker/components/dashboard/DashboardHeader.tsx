@@ -1,6 +1,8 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { IconSymbol } from '@/components/ui/icon-symbol'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import { FLOW } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 
 import type { DashboardHeaderParams } from '../../types'
 
@@ -9,19 +11,16 @@ export const DashboardHeader = ({ level }: DashboardHeaderParams) => {
 
   return (
     <View className="mb-6 flex-row items-center justify-between">
-      <View className="flex-row items-center rounded-lg border border-brand-success/45 bg-brand-success/10 px-3 py-2">
-        <Text className="font-mono text-[10px] font-bold text-brand-success">XP</Text>
-        <Text className="ml-2 font-mono text-[10px] font-bold uppercase tracking-wider text-white">
-          Niveau {level}
-        </Text>
+      <View className="flex-row items-center rounded-full border border-flow-cta/25 bg-flow-secondary px-3 py-2">
+        <FlowText className="text-xs font-bold text-flow-cta">Niv. {level}</FlowText>
       </View>
       <Pressable
         onPress={() => router.push('/settings' as never)}
         accessibilityRole="button"
         accessibilityLabel="Réglages"
-        className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
+        className="h-10 w-10 items-center justify-center rounded-full bg-flow-secondary active:opacity-70"
       >
-        <IconSymbol name="gearshape.fill" size={24} color="#f3e8ff" />
+        <MaterialCommunityIcons name="cog-outline" size={22} color={FLOW.muted} />
       </Pressable>
     </View>
   )

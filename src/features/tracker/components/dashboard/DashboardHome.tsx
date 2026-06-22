@@ -28,11 +28,11 @@ export const DashboardHome = () => {
 
   return (
     <ScrollView
-      className="flex-1 bg-brand-bg"
+      className="flex-1 bg-flow-bg"
       contentContainerStyle={{ paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
     >
-      <View className="px-5 pt-12">
+      <View className="px-6 pt-12">
         <DashboardHeader level={level} />
         <DashboardHero dayCount={dayCount} level={level} />
         <DashboardXpBar totalXp={xp} />

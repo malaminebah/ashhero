@@ -1,6 +1,8 @@
 import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { View, Text, ScrollView } from 'react-native'
+import { View, ScrollView } from 'react-native'
+import { FLOW } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 import { DEFENSE_BADGES } from './defenseBadgeAssets'
 import { isDefenseBadgeUnlocked } from './defenseBadgesConfig'
 import type { DashboardDefenseBadgesParams } from '../../types'
@@ -15,12 +17,10 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
   return (
     <View className="mb-6">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="font-mono text-[10px] font-bold uppercase tracking-[0.25rem] text-white/80">
-          Badges de défense
-        </Text>
-        <Text className="font-mono text-[10px] text-white/45">
+        <FlowText className="text-sm font-bold text-flow-text">Badges de défense</FlowText>
+        <FlowText className="text-xs text-flow-faint">
           {unlockedCount} / {DEFENSE_BADGES.length}
-        </Text>
+        </FlowText>
       </View>
       <ScrollView
         horizontal
@@ -32,19 +32,19 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
           return (
             <View
               key={badge.key}
-              className={`w-[88px] items-center rounded-xl border px-2 py-3 ${
+              className={`w-[88px] items-center rounded-2xl border px-2 py-3 ${
                 active
-                  ? 'border-brand-success/50 bg-brand-success/10'
-                  : 'border-white/10 bg-white/[0.02]'
+                  ? 'border-flow-cta/35 bg-flow-secondary'
+                  : 'border-flow-border bg-flow-bg'
               }`}
             >
-              <Text
-                className={`text-center font-mono text-[9px] font-bold uppercase tracking-wide ${
-                  active ? 'text-brand-success' : 'text-white/35'
+              <FlowText
+                className={`text-center text-[10px] font-bold ${
+                  active ? 'text-flow-cta' : 'text-flow-faint'
                 }`}
               >
                 {badge.label}
-              </Text>
+              </FlowText>
               <View className="relative mt-2 h-12 w-12 items-center justify-center">
                 <Image
                   source={badge.source}
@@ -57,7 +57,7 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
                 />
                 {!active ? (
                   <View className="absolute inset-0 items-center justify-center">
-                    <MaterialIcons name="lock" size={18} color="rgba(255,255,255,0.45)" />
+                    <MaterialIcons name="lock" size={18} color={FLOW.faint} />
                   </View>
                 ) : null}
               </View>

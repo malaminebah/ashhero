@@ -1,5 +1,7 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { FLOW, flowShadow } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 
 import type { DashboardStatsPairParams } from '../../types'
 
@@ -12,7 +14,7 @@ const MiniTrend = ({ variant }: { variant: 'line' | 'bars' }) => {
       {heights.map((h, i) => (
         <View
           key={i}
-          className="flex-1 rounded-sm bg-brand-success/35"
+          className="flex-1 rounded-sm bg-flow-brand/35"
           style={{ height: h }}
         />
       ))}
@@ -33,22 +35,24 @@ export const DashboardStatsPair = ({
 
   return (
     <View className="mb-8 flex-row gap-3">
-      <View className="flex-1 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-        <MaterialIcons name="savings" size={22} color="#fbbf24" />
-        <Text className="mt-3 font-mono text-[9px] uppercase tracking-[0.12rem] text-white/50">
-          Argent économisé
-        </Text>
-        <Text className="mt-1 font-mono text-2xl font-bold text-white">{moneyLabel} €</Text>
-        <Text className="mt-0.5 font-mono text-[9px] text-white/40">Total économisé</Text>
+      <View
+        className="flex-1 rounded-2xl border border-flow-border bg-flow-bg p-4"
+        style={flowShadow.card}
+      >
+        <MaterialIcons name="savings" size={22} color={FLOW.gold} />
+        <FlowText className="mt-3 text-xs text-flow-muted">Argent économisé</FlowText>
+        <FlowText className="mt-1 text-2xl font-bold text-flow-text">{moneyLabel} €</FlowText>
+        <FlowText className="mt-0.5 text-xs text-flow-faint">Total économisé</FlowText>
         <MiniTrend variant="line" />
       </View>
-      <View className="flex-1 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-        <MaterialIcons name="cloud" size={22} color="#93c5fd" />
-        <Text className="mt-3 font-mono text-[9px] uppercase tracking-[0.12rem] text-white/50">
-          {avoidedTitle}
-        </Text>
-        <Text className="mt-1 font-mono text-2xl font-bold text-white">{avoidedCount}</Text>
-        <Text className="mt-0.5 font-mono text-[9px] text-white/40">{avoidedSubtitle}</Text>
+      <View
+        className="flex-1 rounded-2xl border border-flow-border bg-flow-bg p-4"
+        style={flowShadow.card}
+      >
+        <MaterialIcons name="cloud" size={22} color={FLOW.brand} />
+        <FlowText className="mt-3 text-xs text-flow-muted">{avoidedTitle}</FlowText>
+        <FlowText className="mt-1 text-2xl font-bold text-flow-text">{avoidedCount}</FlowText>
+        <FlowText className="mt-0.5 text-xs text-flow-faint">{avoidedSubtitle}</FlowText>
         <MiniTrend variant="bars" />
       </View>
     </View>
