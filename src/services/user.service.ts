@@ -2,6 +2,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
   collection,
   addDoc,
   Timestamp,
@@ -24,6 +25,10 @@ export const saveProfile = async (
     quitDate: profile.quitDate ? Timestamp.fromDate(profile.quitDate) : null,
   })
   console.log('[saveProfile] done')
+}
+
+export const deleteProfile = async (uid: string): Promise<void> => {
+  await deleteDoc(doc(db, 'users', uid, 'profile', 'data'))
 }
 
 export const getProfile = async (

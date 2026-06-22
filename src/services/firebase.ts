@@ -4,8 +4,13 @@ import {
   getReactNativePersistence,
   initializeAuth,
 } from 'firebase/auth'
-import { initializeFirestore, persistentLocalCache } from 'firebase/firestore'
+import {
+  initializeFirestore,
+  memoryLocalCache,
+  persistentLocalCache,
+} from 'firebase/firestore'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Platform } from 'react-native'
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -35,5 +40,5 @@ function createAuth() {
 export const auth = createAuth()
 
 export const db = initializeFirestore(app, {
-  localCache: persistentLocalCache(),
+  localCache: Platform.OS === 'web' ? persistentLocalCache() : memoryLocalCache(),
 })
