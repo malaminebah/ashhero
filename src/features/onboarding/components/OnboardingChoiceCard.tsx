@@ -1,32 +1,42 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Pressable, Text, View } from 'react-native'
 
 import type { OnboardingChoiceCardParams } from '../types'
 
 export const OnboardingChoiceCard = ({
-  emoji,
+  icon,
   label,
   variant = 'outline',
   onPress,
-}: OnboardingChoiceCardParams) => (
-  <Pressable
-    onPress={onPress}
-    className={`mb-3 w-full flex-row items-center gap-4 rounded-2xl border-2 px-4 py-4 active:opacity-90 ${
-      variant === 'primary'
-        ? 'border-brand-accent bg-brand-accent/25'
-        : 'border-brand-accent/35 bg-white/[0.04]'
-    }`}
-  >
-    {emoji ? (
-      <View className="h-12 w-12 items-center justify-center rounded-xl border border-brand-accent/25 bg-brand-bg2">
-        <Text className="text-2xl">{emoji}</Text>
-      </View>
-    ) : null}
-    <Text
-      className={`flex-1 font-mono text-xs uppercase tracking-[0.15rem] ${
-        variant === 'primary' ? 'text-white' : 'text-white/90'
+}: OnboardingChoiceCardParams) => {
+  const selected = variant === 'primary'
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className={`mb-3 w-full flex-row items-center gap-4 rounded-2xl border px-5 py-4 active:opacity-90 ${
+        selected
+          ? 'border-brand-success/50 bg-brand-success/10'
+          : 'border-white/10 bg-white/[0.03]'
       }`}
     >
-      {label}
-    </Text>
-  </Pressable>
-)
+      {icon ? (
+        <View
+          className={`h-11 w-11 items-center justify-center rounded-xl ${
+            selected ? 'bg-brand-success/15' : 'bg-white/[0.05]'
+          }`}
+        >
+          <MaterialCommunityIcons
+            name={icon}
+            size={22}
+            color={selected ? '#22c55e' : 'rgba(255,255,255,0.65)'}
+          />
+        </View>
+      ) : null}
+      <Text className={`flex-1 text-base ${selected ? 'text-white' : 'text-white/85'}`}>
+        {label}
+      </Text>
+      <MaterialCommunityIcons name="chevron-right" size={20} color="rgba(255,255,255,0.25)" />
+    </Pressable>
+  )
+}

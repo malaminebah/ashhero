@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { View, ScrollView, Pressable, TextInput, Text } from 'react-native'
+import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
 import { OnboardingHeader } from './components/OnboardingHeader'
 import { OnboardingPrimaryButton } from './components/OnboardingPrimaryButton'
-
-const inputClass =
-  'rounded-xl border border-brand-accent/20 bg-white/[0.06] px-4 py-4 font-mono text-lg text-white'
+import { OnboardingScreen } from './components/OnboardingScreen'
+import { OnboardingInput } from './components/OnboardingInput'
 
 const Step4 = () => {
   const router = useRouter()
@@ -53,70 +52,60 @@ const Step4 = () => {
 
   if (smokingType === 'vape') {
     return (
-      <ScrollView
-        className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
-        keyboardShouldPersistTaps="handled"
+      <OnboardingScreen
+        footer={<OnboardingPrimaryButton label="Continuer" onPress={onNextVape} />}
       >
         <OnboardingHeader
           step={4}
           title="Ta conso vape"
-          subtitle="Flacon de référence (ex. 50 ml à 9 €) et ml consommés par semaine avant l’arrêt."
+          subtitle="Flacon de référence (ex. 50 ml à 9 €) et ml consommés par semaine avant l'arrêt."
         />
-        <Text className="mb-1 font-mono text-xs text-white/40">Volume du flacon (ml)</Text>
-        <TextInput
-          keyboardType="decimal-pad"
-          value={bottleMl}
-          onChangeText={setBottleMl}
-          placeholder="50"
-          placeholderTextColor="rgba(255,255,255,0.3)"
-          className={`mb-4 ${inputClass}`}
-        />
-        <Text className="mb-1 font-mono text-xs text-white/40">Prix du flacon (€)</Text>
-        <TextInput
-          keyboardType="decimal-pad"
-          value={bottleEuro}
-          onChangeText={setBottleEuro}
-          placeholder="9"
-          placeholderTextColor="rgba(255,255,255,0.3)"
-          className={`mb-4 ${inputClass}`}
-        />
-        <Text className="mb-1 font-mono text-xs text-white/40">Consommation (ml / semaine)</Text>
-        <TextInput
-          keyboardType="decimal-pad"
-          value={mlPerWeek}
-          onChangeText={setMlPerWeek}
-          placeholder="35"
-          placeholderTextColor="rgba(255,255,255,0.3)"
-          className={`mb-8 ${inputClass}`}
-        />
-        <OnboardingPrimaryButton label="Continuer" onPress={onNextVape} />
-      </ScrollView>
+        <View className="flex-1">
+          <OnboardingInput
+            label="Volume du flacon (ml)"
+            value={bottleMl}
+            onChangeText={setBottleMl}
+            placeholder="50"
+            keyboardType="decimal-pad"
+          />
+          <OnboardingInput
+            label="Prix du flacon (€)"
+            value={bottleEuro}
+            onChangeText={setBottleEuro}
+            placeholder="9"
+            keyboardType="decimal-pad"
+          />
+          <OnboardingInput
+            label="Consommation (ml / semaine)"
+            value={mlPerWeek}
+            onChangeText={setMlPerWeek}
+            placeholder="35"
+            keyboardType="decimal-pad"
+          />
+        </View>
+      </OnboardingScreen>
     )
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
+    <OnboardingScreen
+      footer={<OnboardingPrimaryButton label="Continuer" onPress={onNextCigarette} />}
     >
       <OnboardingHeader
         step={4}
         title="Budget cigarette"
         subtitle="Prix de ton paquet habituel, en euros."
       />
-      <Text className="mb-1 font-mono text-xs text-white/40">Prix du paquet (€)</Text>
-      <TextInput
-        keyboardType="decimal-pad"
-        value={packPrice}
-        onChangeText={setPackPrice}
-        placeholder="Ex: 10.50"
-        placeholderTextColor="rgba(255,255,255,0.3)"
-        className={`mb-8 ${inputClass}`}
-      />
-      <OnboardingPrimaryButton label="Continuer" onPress={onNextCigarette} />
-    </ScrollView>
+      <View className="flex-1">
+        <OnboardingInput
+          label="Prix du paquet (€)"
+          value={packPrice}
+          onChangeText={setPackPrice}
+          placeholder="Ex. 10,50"
+          keyboardType="decimal-pad"
+        />
+      </View>
+    </OnboardingScreen>
   )
 }
 

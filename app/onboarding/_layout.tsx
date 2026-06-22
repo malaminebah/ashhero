@@ -1,6 +1,7 @@
 import React from 'react'
 import { Stack, usePathname } from 'expo-router'
 import { View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const STEPS = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6']
 
@@ -11,14 +12,14 @@ export default function OnboardingLayout() {
   const progress = stepIndex >= 0 ? (stepIndex + 1) / STEPS.length : 0
 
   return (
-    <View style={{ flex: 1 }}>
-      <View className="h-1 w-full bg-white/10">
+    <SafeAreaView className="flex-1 bg-brand-bg" edges={['top']}>
+      <View className="h-1 w-full bg-white/6">
         <View
-          className="h-1 bg-purple-500 rounded-full"
+          className="h-1 rounded-full bg-brand-success"
           style={{ width: `${progress * 100}%` }}
         />
       </View>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#08000f' } }}>
         <Stack.Screen name="step1" />
         <Stack.Screen name="step2" />
         <Stack.Screen name="step3" />
@@ -26,6 +27,6 @@ export default function OnboardingLayout() {
         <Stack.Screen name="step5" />
         <Stack.Screen name="step6" />
       </Stack>
-    </View>
+    </SafeAreaView>
   )
 }

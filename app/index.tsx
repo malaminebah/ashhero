@@ -1,7 +1,10 @@
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
+import { OnboardingMascot } from '@/src/features/onboarding/components/OnboardingMascot'
+import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
+import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
 import { useEffect } from 'react'
-import { View, Text, Pressable } from 'react-native'
+import { View, Text } from 'react-native'
 import { Redirect, useRouter, useSegments } from 'expo-router'
 import Animated, {
   useAnimatedStyle,
@@ -9,30 +12,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated'
-
-// Simplified pixel-style character (gray blocks)
-function CharacterDay0() {
-  return (
-    <View style={{ width: 96, height: 96, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ alignItems: 'center' }}>
-        {/* Head */}
-        <View style={{ width: 32, height: 20, backgroundColor: '#a1a1aa', borderRadius: 2 }} />
-        <View style={{ flexDirection: 'row', gap: 8, marginTop: -2 }}>
-          <View style={{ width: 10, height: 10, backgroundColor: '#71717a', borderRadius: 1 }} />
-          <View style={{ width: 10, height: 10, backgroundColor: '#71717a', borderRadius: 1 }} />
-        </View>
-        {/* Torso */}
-        <View style={{ width: 40, height: 8, backgroundColor: '#c0a080', borderRadius: 1, marginTop: 2 }} />
-        <View style={{ width: 48, height: 28, backgroundColor: '#52525b', borderRadius: 2, marginTop: 2 }} />
-        {/* Legs */}
-        <View style={{ flexDirection: 'row', gap: 12, marginTop: 2 }}>
-          <View style={{ width: 16, height: 14, backgroundColor: '#52525b', borderRadius: 1 }} />
-          <View style={{ width: 16, height: 14, backgroundColor: '#52525b', borderRadius: 1 }} />
-        </View>
-      </View>
-    </View>
-  )
-}
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function WelcomeScreen() {
   const router = useRouter()
@@ -46,9 +26,9 @@ export default function WelcomeScreen() {
   const ctaOpacity = useSharedValue(0)
 
   useEffect(() => {
-    headerOpacity.value = withDelay(200, withTiming(1, { duration: 500 }))
-    charOpacity.value = withDelay(400, withTiming(1, { duration: 600 }))
-    ctaOpacity.value = withDelay(800, withTiming(1, { duration: 500 }))
+    headerOpacity.value = withDelay(150, withTiming(1, { duration: 450 }))
+    charOpacity.value = withDelay(300, withTiming(1, { duration: 500 }))
+    ctaOpacity.value = withDelay(550, withTiming(1, { duration: 450 }))
   }, [headerOpacity, charOpacity, ctaOpacity])
 
   useEffect(() => {
@@ -67,8 +47,8 @@ export default function WelcomeScreen() {
 
   if (hasServerProfile === null) {
     return (
-      <View className="flex-1 bg-brand-bg items-center justify-center">
-        <Text className="text-white font-mono text-xs">Chargement…</Text>
+      <View className="flex-1 items-center justify-center bg-brand-bg">
+        <Text className="text-sm text-white/50">Chargement…</Text>
       </View>
     )
   }
@@ -83,84 +63,37 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <View className="flex-1 bg-brand-bg pt-16 pb-12 px-6 justify-between">
-      {/* Header */}
-      <Animated.View style={[headerStyle, { alignItems: 'center' }]}>
-        <Text className="text-[9px] tracking-[5px] text-white/20 uppercase font-mono mb-2">
-          ⚔  QUÊTE DE LIBERTÉ  ⚔
-        </Text>
-        <Text className="text-2xl font-bold text-white tracking-wider">
-          ASH<Text className="text-brand-accent">HERO</Text>
-        </Text>
-      </Animated.View>
+    <SafeAreaView className="flex-1 bg-brand-bg px-6">
+      <View className="flex-1 justify-between py-6">
+        <Animated.View style={headerStyle} className="items-center pt-4">
+          <Text className="text-3xl font-bold text-brand-accent">ashhero</Text>
+        </Animated.View>
 
-      {/* Character area */}
-      <Animated.View style={[charStyle, { alignItems: 'center', flex: 1, justifyContent: 'center' }]}>
-        {/* Outer ring / halo */}
-        <View className="w-[130px] h-[130px] rounded-full border border-brand-accent/20 items-center justify-center">
-          {/* Inner ring */}
-          <View className="w-[100px] h-[100px] rounded-full border border-brand-accent/10 bg-brand-accent/5 items-center justify-center">
-            <CharacterDay0 />
-          </View>
-        </View>
-
-        <Text className="text-white/50 text-sm font-mono mt-6 tracking-wide">
-          {"Ton guerrier t'attend."}
-        </Text>
-        <Text className="text-white/15 text-[10px] font-mono tracking-widest uppercase mt-1">
-          Jour 0 · Niveau 1
-        </Text>
-
-        {/* XP bar */}
-        <View className="w-40 mt-4">
-          <View className="flex-row gap-0.5">
-            {Array.from({ length: 16 }).map((_, i) => (
-              <View
-                key={i}
-                className="flex-1 h-1 bg-white/5 rounded-sm"
-              />
-            ))}
-          </View>
-          <View className="flex-row justify-between mt-1">
-            <Text className="text-[8px] text-white/15 font-mono">0 XP</Text>
-            <Text className="text-[8px] text-white/15 font-mono">??? XP</Text>
-          </View>
-        </View>
-      </Animated.View>
-
-      {/* CTA */}
-      <Animated.View style={[ctaStyle]}>
-        <Text className="text-center text-white/50 text-xs font-mono leading-6 mb-3">
-          Chaque heure sans fumer,{'\n'}
-          <Text className="text-brand-accent">ton guerrier devient plus fort.</Text>
-        </Text>
-
-        <Pressable
-          onPress={onStart}
-          className="w-full py-4 rounded-2xl items-center justify-center bg-brand-accentDark active:opacity-90"
-          style={{
-            shadowColor: '#7c3aed',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.45,
-            shadowRadius: 32,
-            elevation: 8,
-          }}
-        >
-          <Text className="text-white text-xs font-mono tracking-[3px] uppercase">
-            {"⚔  Commencer l'aventure"}
+        <Animated.View style={charStyle} className="flex-1 items-center justify-center">
+          <OnboardingMascot size="lg" />
+          <Text className="mt-8 text-center text-xl font-bold leading-7 text-white">
+            Contrôle tes envies,{'\n'}contrôle ta vie.
           </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={onChangeAccount}
-          disabled={signOutPending}
-          className="mt-4 py-2 active:opacity-80 disabled:opacity-40"
-        >
-          <Text className="text-center text-white/15 text-[9px] font-mono tracking-widest">
-            {signOutPending ? '…' : 'Changer de compte'}
+          <Text className="mt-3 text-center text-sm leading-6 text-white/50">
+            Chaque heure sans fumer, ton héros devient plus fort.
           </Text>
-        </Pressable>
-      </Animated.View>
-    </View>
+        </Animated.View>
+
+        <Animated.View style={ctaStyle}>
+          <OnboardingPrimaryButton label="Commencer" onPress={onStart} />
+          <View className="mt-3">
+            <OnboardingSecondaryButton
+              label={signOutPending ? '…' : 'Changer de compte'}
+              onPress={onChangeAccount}
+              disabled={signOutPending}
+            />
+          </View>
+          <Text className="mt-6 text-center text-[11px] leading-4 text-white/30">
+            En continuant, tu acceptes nos conditions d&apos;utilisation et notre politique de
+            confidentialité.
+          </Text>
+        </Animated.View>
+      </View>
+    </SafeAreaView>
   )
 }

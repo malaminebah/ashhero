@@ -26,6 +26,8 @@ export const THEME = {
   textDim: 'rgba(243,232,255,0.2)',
 } as const
 
+export { FLOW, flowFontFamily, flowShadow } from './flowTheme'
+
 /** Expo tab / template components compatibility (tabs, collapsible, etc.) */
 export const Colors = {
   light: {

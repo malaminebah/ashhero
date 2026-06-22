@@ -1,3 +1,6 @@
+import type MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import type { ComponentProps } from 'react'
+
 export type SmokingType = 'cigarette' | 'vape'
 export type OnboardingData = {
   smokingType: SmokingType | null
@@ -24,10 +27,19 @@ export type OnboardingHeaderParams = {
 export type OnboardingPrimaryButtonParams = {
   label: string
   onPress: () => void
+  disabled?: boolean
 }
 
+export type OnboardingSecondaryButtonParams = {
+  label: string
+  onPress: () => void
+  disabled?: boolean
+}
+
+export type OnboardingChoiceIcon = ComponentProps<typeof MaterialCommunityIcons>['name']
+
 export type OnboardingChoiceCardParams = {
-  emoji?: string
+  icon?: OnboardingChoiceIcon
   label: string
   variant?: OnboardingChoiceVariant
   onPress: () => void

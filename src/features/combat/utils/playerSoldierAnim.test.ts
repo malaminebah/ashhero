@@ -2,20 +2,22 @@ import { describe, expect, it } from 'vitest'
 import { getPlayerSoldierAnim } from './playerSoldierAnim'
 
 describe('getPlayerSoldierAnim', () => {
-  it('idle by default', () => {
+  it('returns idle during player turn', () => {
     expect(getPlayerSoldierAnim('player_turn', 100, null)).toBe('idle')
   })
 
-  it('attack on player effect', () => {
-    expect(getPlayerSoldierAnim('resolving_instant', 100, 'water')).toBe('attackLight')
-    expect(getPlayerSoldierAnim('resolving_instant', 100, 'special')).toBe('attackHeavy')
+  it('maps each player attack to its sprite row', () => {
+    expect(getPlayerSoldierAnim('resolving_instant', 100, 'breathe')).toBe('attackBreathe')
+    expect(getPlayerSoldierAnim('resolving_instant', 100, 'water')).toBe('attackWater')
+    expect(getPlayerSoldierAnim('resolving_instant', 100, 'distract')).toBe('attackDistract')
+    expect(getPlayerSoldierAnim('resolving_instant', 100, 'special')).toBe('attackSpecial')
   })
 
-  it('hurt on boss effect', () => {
+  it('returns hurt when boss counterattacks', () => {
     expect(getPlayerSoldierAnim('enemy_turn', 50, 'boss')).toBe('hurt')
   })
 
-  it('death when hp zero or defeat', () => {
+  it('returns death when hp is zero or phase is defeat', () => {
     expect(getPlayerSoldierAnim('player_turn', 0, null)).toBe('death')
     expect(getPlayerSoldierAnim('defeat', 10, null)).toBe('death')
   })

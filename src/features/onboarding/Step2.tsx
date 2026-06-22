@@ -1,20 +1,17 @@
 import React from 'react'
-import { View, ScrollView } from 'react-native'
+import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
 import { OnboardingHeader } from './components/OnboardingHeader'
 import { OnboardingChoiceCard } from './components/OnboardingChoiceCard'
+import { OnboardingScreen } from './components/OnboardingScreen'
 
 const Step2 = () => {
   const setField = useOnboardingStore((s) => s.setField)
   const router = useRouter()
 
   return (
-    <ScrollView
-      className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
-    >
+    <OnboardingScreen>
       <OnboardingHeader
         step={2}
         title="Première fois ?"
@@ -22,7 +19,7 @@ const Step2 = () => {
       />
       <View>
         <OnboardingChoiceCard
-          emoji="✨"
+          icon="star-four-points-outline"
           label="Oui, je suis plein de confiance"
           variant="primary"
           onPress={() => {
@@ -31,16 +28,15 @@ const Step2 = () => {
           }}
         />
         <OnboardingChoiceCard
-          emoji="⚔️"
+          icon="history"
           label="Non, pas la première"
-          variant="outline"
           onPress={() => {
             setField('isFirstTime', false)
             router.push('/onboarding/step3' as never)
           }}
         />
       </View>
-    </ScrollView>
+    </OnboardingScreen>
   )
 }
 

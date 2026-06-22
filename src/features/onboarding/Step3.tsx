@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { View, ScrollView, TextInput, Text } from 'react-native'
+import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
 import { OnboardingHeader } from './components/OnboardingHeader'
 import { OnboardingPrimaryButton } from './components/OnboardingPrimaryButton'
-
-const inputClass =
-  'rounded-xl border border-brand-accent/20 bg-white/[0.06] px-4 py-4 font-mono text-lg text-white'
+import { OnboardingScreen } from './components/OnboardingScreen'
+import { OnboardingInput } from './components/OnboardingInput'
 
 const Step3 = () => {
   const [quantity, setQuantity] = useState('')
@@ -23,10 +22,8 @@ const Step3 = () => {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
+    <OnboardingScreen
+      footer={<OnboardingPrimaryButton label="Continuer" onPress={onNext} />}
     >
       <OnboardingHeader
         step={3}
@@ -37,17 +34,16 @@ const Step3 = () => {
             : 'Nombre de cigarettes par jour avant ton arrêt.'
         }
       />
-      <Text className="mb-1 font-mono text-xs text-white/40">Quantité</Text>
-      <TextInput
-        keyboardType="decimal-pad"
-        value={quantity}
-        onChangeText={setQuantity}
-        placeholder="Ex: 10"
-        placeholderTextColor="rgba(255,255,255,0.3)"
-        className={`mb-8 ${inputClass}`}
-      />
-      <OnboardingPrimaryButton label="Continuer" onPress={onNext} />
-    </ScrollView>
+      <View className="flex-1">
+        <OnboardingInput
+          label="Quantité"
+          value={quantity}
+          onChangeText={setQuantity}
+          placeholder="Ex. 10"
+          keyboardType="decimal-pad"
+        />
+      </View>
+    </OnboardingScreen>
   )
 }
 

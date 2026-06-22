@@ -1,279 +1,252 @@
 # AshHero — Design System (source unique UI)
 
-> Fichier de référence pour tout agent / dev.  
-> Implémentation : **NativeWind** + tokens `brand.*` dans `tailwind.config.js` et `constants/theme.ts`.  
-> Mock composants : capture design system (boutons, barres, badges, stats, jalons, actions combat).
+> Référence pour tout agent / dev.  
+> Implémentation : **NativeWind** + `flow.*` / `brand.*` dans `tailwind.config.js` et `constants/flowTheme.ts` + `constants/theme.ts`.
 
 ---
 
-## 1. Identité visuelle
+## 0. Vision produit (cible Ahead-like)
 
-| Attribut | Valeur |
-|----------|--------|
-| Style | Dark OLED, pixel-art RPG, gamification santé (anti-vape) |
-| Ambiance | Fond très sombre, accents vert succès, violet ennemi, or récompenses |
-| Densité | Cartes compactes, labels **UPPERCASE** mono, chiffres gros et lisibles |
-| Stack UI | React Native · Expo · NativeWind (pas de `StyleSheet` sauf ombre / gradient) |
+| Attribut | Flow (cible app) | Game (legacy, en place) |
+|----------|------------------|-------------------------|
+| Ambiance | Clair, aéré, coach bienveillant | Dark OLED, RPG pixel |
+| Référence | Screens Ahead (Mobbin) | Combat / dashboard actuel |
+| Fond | `#FFFFFF`, lavande respiration | `#08000f` |
+| CTA | Violet pill `#7C3AED` | Vert `#22c55e` |
+| Illustration | 2D flat / mascot (assets TBD) | Sprites `Hero.png` |
+| Typo | Sans-serif arrondi (Nunito → System interim) | M5x7 pixel |
 
-### Anti-patterns (ne pas faire)
+**Migration** : Phase 1 = parcours entrée (auth, welcome, onboarding). Phase 2 = tabs / dashboard. Phase 3 = combat (garder ou adoucir). **Assets 2D flat à créer plus tard** — placeholders autorisés.
 
-- Emojis comme **icônes de boutons** → `@expo/vector-icons` (MaterialIcons / MaterialCommunityIcons)
-- Violet partout → vert = progression / joueur ; violet = boss / brand legacy
-- Boutons &lt; 48px de hauteur tactile
-- Texte body en violet clair sur fond sombre pour longues phrases (préférer `text-white/65`)
-- Dupliquer ces tokens ailleurs — **modifier ici + `tailwind.config.js` + `theme.ts`**
+**Écrans référence** (workspace) : `assets/Ahead_iOS_Onboarding_*.png`
 
 ---
 
-## 2. Couleurs
+## 1. Tokens Flow (`flow.*`)
 
-### Tokens `brand` (Tailwind)
+Source JS : `constants/flowTheme.ts` · Tailwind : `tailwind.config.js`
 
-| Token | Hex / valeur | Usage |
-|-------|----------------|-------|
-| `brand-bg` | `#08000f` | Fond écran principal |
-| `brand-bg2` | `#0f0020` | Tab bar, surfaces surélevées |
-| `brand-surface` | `rgba(255,255,255,0.03)` | Cartes, inputs |
-| `brand-border` | `rgba(168,85,247,0.15)` | Bordures génériques (legacy violet) |
-| `brand-accent` | `#a855f7` | **PV ennemi**, glow legacy, titres onboarding |
-| `brand-accentDark` | `#7c3aed` | Boutons primaires legacy |
-| `brand-accentDeep` | `#4c1d95` | Profondeur violet |
-| `brand-success` | `#22c55e` | **Progression, PV joueur, onglet actif, jalons OK** |
-| `brand-gold` | `#fbbf24` | XP gemme, spécial, économies, bonus |
-| `brand-red` | `#ef4444` | Danger, défaite |
+### Couleurs
 
-### Couleurs sémantiques (hors `brand`)
+| Token | Hex | Usage |
+|-------|-----|--------|
+| `flow-bg` | `#FFFFFF` | Fond écran standard |
+| `flow-breathe` | `#E5DDF5` | Plein écran respiration |
+| `flow-brand` | `#9B87F5` | Logo « ashhero », accents doux |
+| `flow-cta` | `#7C3AED` | Bouton primaire |
+| `flow-cta-loading` | `#C4B5FD` | CTA état chargement (« Promesse en cours… ») |
+| `flow-mascot` | `#C8EDD6` | Tuile illustration (mint) |
+| `flow-text` | `#171717` | Titres, corps |
+| `flow-muted` | `#64748B` | Sous-titres, labels |
+| `flow-faint` | `#94A3B8` | Legal, hints |
+| `flow-border` | `#E5E7EB` | Inputs, séparateurs |
+| `flow-secondary` | `#F3EEFF` | Bouton secondaire fond |
+| `flow-gold` | `#F5C518` | Lauriers social proof |
 
-| Rôle | Classes / hex | Usage |
-|------|----------------|-------|
-| Eau (action combat) | `border-sky-500/40 bg-sky-950/40` | Bouton « Boire de l'eau » |
-| Neutre secondaire | `border-white/15 bg-white/[0.04]` | Cartes stats, distraire |
-| Texte principal | `text-white` | Titres, valeurs |
-| Texte secondaire | `text-white/50`–`text-white/65` | Labels, descriptions |
-| Texte tertiaire | `text-white/35`–`text-white/45` | Hints, footer |
+### Ombres (StyleSheet autorisé)
 
-### Dégradés (LinearGradient)
-
-```txt
-PV / XP joueur :  #16a34a → #22c55e → #4ade80
-Bouton combat vert : #15803d → #22c55e → #16a34a
-PV ennemi (solide) : #a855f7
+```ts
+import { flowShadow } from '@/constants/flowTheme'
+// flowShadow.card — cartes choix, inputs surélevés
+// flowShadow.canvas — zone dessin promesse
 ```
 
-### JS (`constants/theme.ts`)
-
-Utiliser `THEME.*` pour tab bar, ombres, composants non-NativeWind.  
-Onglet actif dark : `THEME.success` (`#22c55e`).
-
----
-
-## 3. Typographie
-
-| Rôle | Font | Classes typiques |
-|------|------|------------------|
-| Titres écran (Accueil, Arène, Mon héros) | `titleSerif` (Georgia) | `text-2xl`–`text-3xl font-bold uppercase` |
-| Labels UI / stats / nav | Mono système | `font-mono text-[9px]–text-xs uppercase tracking-wider` |
-| Valeurs chiffrées | Mono | `font-mono text-lg`–`text-2xl font-bold` |
-| Corps / dialogue combat | Mono | `font-mono text-xs leading-5` |
-
-**Futur pixel (optionnel)** : Press Start 2P / VT323 pour labels retro — pas encore chargées dans l'app ; jusqu'à intégration expo-font, rester sur mono système.
-
----
-
-## 4. Espacement & rayons
+### Rayons
 
 | Élément | Valeur |
 |---------|--------|
-| Padding écran | `px-5`, `pt-12`, `pb-10` |
-| Gap cartes grille | `gap-2` ou `gap-3` |
-| Rayon carte / input | `rounded-xl` (12–16px) |
-| Rayon bouton action | `rounded-xl` |
-| Rayon bouton rond (CTA arène) | `rounded-full` |
-| Hauteur min bouton tactile | `min-h-[48px]` (combat : `min-h-[52px]`) |
-| Hauteur barre PV/XP | `h-3` ou `h-3.5` |
+| CTA pill | `rounded-full` |
+| Tuile mascot | `rounded-[28px]` |
+| Carte / input / canvas | `rounded-2xl` (16px) |
+
+### Espacement
+
+| Élément | Valeur |
+|---------|--------|
+| Padding horizontal écran | `px-6` (24px) |
+| Gap sections | `mb-8` – `mb-10` |
+| Footer CTA | `pb-10` |
+| Min hauteur bouton | `min-h-[52px]` |
+
+### Typographie Flow
+
+| Rôle | Classes NativeWind | Notes |
+|------|-------------------|--------|
+| Logo | `text-[32px] font-bold text-flow-brand font-flow` | lowercase « ashhero » |
+| Titre écran | `text-[22px] font-bold text-flow-text text-center font-flow` | Une question / écran |
+| Corps | `text-[15px] leading-6 text-flow-muted font-flow` | Centré si onboarding |
+| Caption / legal | `text-[11px] leading-4 text-flow-faint font-flow` | |
+| Bouton | `text-base font-bold text-white font-flow` | Sur fond `flow-cta` |
+
+**Font** : `font-flow` → System (interim). **Cible** : Nunito via `expo-font` — ne pas utiliser M5x7 sur Flow.
+
+**Composant texte** : `OnboardingText` / futur `FlowText` avec `fontFamily: System`.
 
 ---
 
-## 5. Composants — catalogue
+## 2. Tokens Game (`brand.*`) — legacy combat / tabs
 
-### 5.1 Boutons (générique app)
+| Token | Hex | Usage |
+|-------|-----|--------|
+| `brand-bg` | `#08000f` | Fond écran |
+| `brand-bg2` | `#0f0020` | Tab bar |
+| `brand-success` | `#22c55e` | Joueur, progression |
+| `brand-accent` | `#a855f7` | Boss, PV ennemi |
+| `brand-gold` | `#fbbf24` | XP, récompenses |
+| `brand-red` | `#ef4444` | Danger |
 
-Référence visuelle : panneau **BOUTONS** du mock.
+Voir sections 5–6 pour composants combat existants.
 
-| Variante | Bordure + fond NativeWind | Texte | Composant / usage |
-|----------|---------------------------|-------|-------------------|
-| **Primaire** | `border-brand-success/45 bg-brand-success/10` + gradient optionnel | `text-white uppercase font-mono font-bold` | CTAs positifs, lancer combat |
-| **Secondaire** | `border-white/15 bg-white/[0.04]` | `text-white/90` | Actions neutres |
-| **Spécial** | `border-brand-gold/45 bg-brand-gold/10` | `text-brand-gold` | Attaque spéciale, bonus |
-| **Danger** | `border-brand-red/45 bg-brand-red/10` | `text-red-300` | Abandon, reset (si besoin) |
+---
 
-État pressé : `active:opacity-85` ou `active:opacity-90` — **pas de scale** qui décale le layout.
+## 3. Layout Flow — patterns Ahead
 
-### 5.2 Actions combat
+### 3.1 Welcome
 
-Composant : `src/features/combat/components/ActionButton.tsx`
-
-| Action | `variant` | Icône (MaterialCommunityIcons) | Badge |
-|--------|-----------|----------------------------------|-------|
-| Respirer | `breathe` | `lungs` | `60s` + horloge |
-| Boire de l'eau | `water` | `water` | — |
-| Se distraire | `distract` | `gamepad-variant` | — |
-| Attaque spéciale | `special` | `flash` | cadenas + « 7 jours de série » si locked |
-
-### 5.3 Barres de progression
-
-Composant partagé combat : `CombatHpBar.tsx`
-
-| Type | Label | Fill | Exemple |
-|------|-------|------|---------|
-| **PV joueur** | `PV` + `85 / 100` | `#22c55e` / `fillColor="brand-success"` | Sous l'arène combat |
-| **PV ennemi** | idem | `#a855f7` / `fillColor="#a855f7"` | Au-dessus de l'arène |
-| **XP** | `XP` + `650 / 1200` | gradient vert | `DashboardXpBar`, `ProfileProgressPair` |
-
-Structure barre :
-
-```txt
-Track : h-3 rounded-sm border border-white/15 bg-black/50
-Fill  : Animated width % + gradient ou couleur unie
-Label : font-mono text-[10px], PV/XP à gauche, fraction à droite
+```
+[SafeArea bg-flow-bg]
+  Logo ashhero (centre, haut)
+  [flex-1 centre] Mascot tuile mint + tagline 2 lignes
+  [bas] CTA primaire + secondaire + legal caption
 ```
 
-Gemme XP (mock) : petit carré `rotate-45 border-brand-gold/70 bg-brand-gold/25` à droite du compteur.
+- Tagline type : « Contrôle tes envies, contrôle ta vie. »
+- CTA : « Commencer » · secondaire : « Changer de compte » / « J'ai déjà un compte »
 
-### 5.4 Badges (hex)
+### 3.2 Respiration (interstitiel)
 
-Composant : `ProfileBadgesGrid.tsx`
-
-| État | Forme | Bordure | Icône |
-|------|-------|---------|-------|
-| Débloqué | carré 48px `rotate-45` | `border-brand-success/70 bg-brand-success/15` | emoji métier au centre `-rotate-45` |
-| Verrouillé | idem | `border-white/15 opacity-35` | `MaterialIcons lock` en coin |
-
-Couleurs mock badges : vert ★ · or ♥ · bleu 💧 · gris cadenas.
-
-### 5.5 Cartes stats (Accueil)
-
-Composant : `DashboardStatsPair.tsx`
-
-```txt
-Container : flex-1 rounded-2xl border border-white/10 bg-white/[0.04] p-4
-Icône     : MaterialIcons (savings gold, cloud blue)
-Titre     : font-mono text-[9px] uppercase text-white/50
-Valeur    : font-mono text-2xl font-bold text-white
-Sous-texte: font-mono text-[9px] text-white/40
-Sparkline : barres décoratives bg-brand-success/35 (pas de lib chart)
+```
+[plein écran bg-flow-breathe]
+  Mascot centré (yeux fermés — asset TBD)
+  « Prends une grande inspiration »
+  Tap ou auto 3s → suite
 ```
 
-Argent : `toLocaleString('fr-FR', { minimumFractionDigits: 2 })` + ` €`.
+### 3.3 Social proof (optionnel)
 
-### 5.6 Jalons
-
-Composant : `DashboardJalonsGrid.tsx` · config : `jalonsConfig.ts`
-
-| État | Carte | Texte | Icône |
-|------|-------|-------|-------|
-| Débloqué | `border-brand-success/50 bg-brand-success/10` | `text-brand-success` | `check-circle` vert |
-| Verrouillé | `border-white/10 bg-white/[0.02]` | `text-white/35` | `lock` |
-
-Header section : **TES JALONS** + `{n} / 8 débloqués`. Défilement horizontal `ScrollView`.
-
-### 5.7 Dialogue combat
-
-Composant : `CombatMessageBox.tsx`
-
-```txt
-Cadre : rounded-lg border-2 border-brand-success/45 bg-black/50 px-3 py-3 min-h-[64px]
-Prompt par défaut : « Que vas-tu faire ? »
+```
+Logo + titre coach
+3 blocs stats (lauriers flow-gold) — chiffres bold, sous-texte muted
+CTA « C'est parti ! »
 ```
 
-### 5.8 Arène combat (sprites)
+### 3.4 Promesse (geste)
 
-Composant : `CombatArenaView.tsx`
-
-```txt
-Fond   : h-[168px] rounded-xl border border-white/10 bg-[#0a1008]
-Sol    : ellipse bg-white/[0.06] en bas
-Joueur : gauche — PlayerHeroEmoji variant combat
-Boss   : droite — emoji 👾 (placeholder pixel)
-VFX    : AttackEffect centré (emoji action 💨💧🎮⚡)
+```
+Titre : « Prêt à investir en toi ? »
+Mascot tuile mint
+« Engage-toi en traçant une coche : »
+[Canvas blanc + ombre + clear X]
+CTA « Je m'engage » → confetti → loading CTA
 ```
 
-### 5.9 Header & navigation
+### 3.5 Formulaire onboarding (steps 1–6)
 
-| Zone | Pattern |
-|------|---------|
-| Badge niveau accueil | `border-brand-success/45 bg-brand-success/10` + « XP · Niveau N » |
-| Tab bar | fond `THEME.bg2`, actif `brand-success`, labels `font-mono text-[10px] uppercase` |
-| Icônes tabs | Accueil `house` · Combat `sword-cross` · Profil `person` |
-| Fermer modal combat | carré `border-white/15` + `MaterialIcons close` |
+- Colonne centrée, **1 action principale**
+- Barre progression : track `flow-border`, fill `flow-cta`
+- Cartes choix : fond blanc, ombre légère, icône Material (pas emoji)
+- Inputs : bordure `flow-border`, fond blanc, label `flow-muted`
 
 ---
 
-## 6. Écrans — checklist rapide
+## 4. Composants Flow — catalogue
 
-### Accueil (`DashboardHome`)
+| Composant | Fichier | Variantes |
+|-----------|---------|-----------|
+| Shell écran | `OnboardingScreen.tsx` | `default` · `breathe` |
+| Texte | `OnboardingText.tsx` | force System |
+| Mascot | `OnboardingMascot.tsx` | `sm` · `md` · `lg` — placeholder sprite |
+| CTA primaire | `OnboardingPrimaryButton.tsx` | disabled, loading label |
+| CTA secondaire | `OnboardingSecondaryButton.tsx` | fond `flow-secondary` |
+| Header step | `OnboardingHeader.tsx` | step X/6, titre centré |
+| Carte choix | `OnboardingChoiceCard.tsx` | primary / outline |
+| Input | `OnboardingInput.tsx` | email, decimal, password |
+| Respiration | `OnboardingBreatheScreen.tsx` | |
+| Dessin promesse | `OnboardingDrawPad.tsx` | PanResponder |
+| Confetti | `OnboardingConfetti.tsx` | burst 500ms |
 
-1. Header badge XP + engrenage → `/settings`  
-2. Hero avatar halo vert + jours sans vape + message cheer  
-3. Barre XP pleine largeur  
-4. Stats pair (argent / puffs)  
-5. Jalons horizontal  
-6. Bonus du jour → onglet Combat  
+### Règles composants
 
-### Arène (`CombatArenaScreen`)
-
-1. Emoji / illustration héros  
-2. Titre **Arène** serif  
-3. Bouton rond vert **Lancer un combat**  
-
-### Combat modal (`CombatModal`)
-
-1. ✕ + Tour N / ∞  
-2. L'ENVIE + barre violette  
-3. Arène  
-4. Nom héros + PV vert  
-5. Message box  
-6. 4 ActionButton + abandon texte  
-
-### Profil (`ProfileScreenBody`)
-
-1. **Mon héros** + edit  
-2. Avatar rond + input nom  
-3. Paire Niveau | XP  
-4. Grille 2×3 stats  
-5. Badges hex  
-6. Avatars (bientôt)  
+- Icônes : `@expo/vector-icons` uniquement
+- Press : `active:opacity-90` — **pas de scale** layout
+- StatusBar Flow : `style="dark"`
+- StatusBar Game : `style="light"`
 
 ---
 
-## 7. Accessibilité & UX
+## 5. Composants Game — catalogue (inchangé)
 
-- `accessibilityRole="button"` + `accessibilityLabel` sur tout pressable  
-- Contraste : texte principal blanc sur `#08000f`  
-- Feedback : opacité au press, haptics combat (existant)  
-- `prefers-reduced-motion` : pas encore câblé — à respecter si animations ajoutées  
-- Focus clavier web : conserver bordures visibles sur inputs  
+### 5.1 Boutons combat · 5.2 Actions · 5.3 Barres PV/XP · 5.4 Badges · 5.5 Stats · 5.6 Jalons · 5.7 Dialogue · 5.8 Arène · 5.9 Nav
 
----
+Référence implémentation : `src/features/combat/components/*`, `src/features/tracker/components/*`.
 
-## 8. Fichiers code ↔ design
-
-| Design token / composant | Fichier |
-|--------------------------|---------|
-| Couleurs Tailwind | `tailwind.config.js` |
-| THEME / Colors / titleSerif | `constants/theme.ts` |
-| Accueil | `src/features/tracker/components/dashboard/*` |
-| Profil | `src/features/tracker/components/profile/*` |
-| Arène + modal | `src/features/combat/components/*` |
-| Icônes SF → Material | `components/ui/icon-symbol.tsx` |
+| Composant | Fichier |
+|-----------|---------|
+| Action combat | `ActionButton.tsx` |
+| Barre PV | `CombatHpBar.tsx` |
+| Sprite joueur | `PlayerSoldierSprite.tsx` |
+| Arène | `CombatArenaView.tsx` |
 
 ---
 
-## 9. Évolution
+## 6. Anti-patterns
 
-1. Modifier **ce fichier** d'abord (intention design)  
-2. Propager tokens dans `tailwind.config.js` + `theme.ts` si nouvelle couleur  
-3. Mettre à jour le composant référencé en section 5  
-4. Pages spécifiques avec override fort → `design-system/pages/<page>.md` (optionnel, rare)
+| ❌ Ne pas | ✅ Faire |
+|----------|----------|
+| M5x7 sur écrans Flow | `font-flow` / OnboardingText |
+| Emojis comme icônes UI | MaterialCommunityIcons |
+| Fond dark sur welcome/onboarding | `bg-flow-bg` |
+| Violet `brand-accent` sur CTA Flow | `bg-flow-cta` |
+| Boutons &lt; 48px | `min-h-[52px]` |
+| Ombres dures noir 40% | `flowShadow.*` (~6–8%) |
+| Copier mascot Ahead (ghost) | Asset AshHero flat (TBD) |
 
-_Dernière sync : mock design system composants + écrans Accueil / Arène / Combat / Profil (2026)._
+---
+
+## 7. Accessibilité & motion
+
+- Contraste Flow : texte `#171717` sur `#FFFFFF` ≥ 4.5:1
+- Contraste CTA : blanc sur `#7C3AED` ≥ 4.5:1
+- `accessibilityRole="button"` + label sur pressables
+- Animations entrée : fade 150–450ms (Reanimated)
+- Confetti / respiration : respecter `prefers-reduced-motion` (à câbler)
+- Canvas promesse : alternative bouton si gesture impossible
+
+---
+
+## 8. Assets — backlog (post design system)
+
+| Asset | Spec | Écrans |
+|-------|------|--------|
+| Mascot idle flat | PNG transparent, ~512px, violet doux | Welcome, steps |
+| Mascot breathe | Yeux fermés, nuages optionnels | Respiration |
+| Mascot promise | Pose engagement | Promesse |
+| Mascot victory | Célébration légère | Step 6 |
+| Laurier social proof | SVG or PNG `flow-gold` | Social proof |
+| Logo wordmark | « ashhero » lowercase | Partout Flow |
+
+Placeholder actuel : `Hero.png` sprite combat dans tuile mint.
+
+---
+
+## 9. Fichiers code ↔ design
+
+| Sujet | Fichier |
+|-------|---------|
+| Tokens Flow JS | `constants/flowTheme.ts` |
+| Tokens Game JS | `constants/theme.ts` |
+| Tailwind | `tailwind.config.js` |
+| Overrides écran | `design-system/pages/*.md` |
+| Composants Flow | `src/features/onboarding/components/*` |
+| Règles agent | `CURSOR.md` |
+
+---
+
+## 10. Évolution
+
+1. Modifier **ce fichier** ou `design-system/pages/<écran>.md`
+2. Propager tokens → `flowTheme.ts` + `tailwind.config.js`
+3. Implémenter composants Flow
+4. Remplacer placeholders assets (§8)
+
+_Dernière sync : design system Flow Ahead-like — juin 2026._

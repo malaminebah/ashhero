@@ -24,6 +24,20 @@ module.exports = {
           red: "#ef4444",
           success: "#22c55e",
         },
+        flow: {
+          bg: "#FFFFFF",
+          breathe: "#E5DDF5",
+          brand: "#9B87F5",
+          cta: "#7C3AED",
+          "cta-loading": "#C4B5FD",
+          mascot: "#C8EDD6",
+          text: "#171717",
+          muted: "#64748B",
+          faint: "#94A3B8",
+          border: "#E5E7EB",
+          secondary: "#F3EEFF",
+          gold: "#F5C518",
+        },
       },
       backgroundColor: {
         surface: "rgba(255,255,255,0.03)",
@@ -39,6 +53,7 @@ module.exports = {
       fontFamily: {
         sans: ["M5x7"],
         mono: ["M5x7"],
+        flow: ["System"],
       },
     },
   },

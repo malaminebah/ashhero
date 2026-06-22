@@ -2,11 +2,16 @@ import { Pressable, Text } from 'react-native'
 
 import type { OnboardingPrimaryButtonParams } from '../types'
 
-export const OnboardingPrimaryButton = ({ label, onPress }: OnboardingPrimaryButtonParams) => (
+export const OnboardingPrimaryButton = ({
+  label,
+  onPress,
+  disabled,
+}: OnboardingPrimaryButtonParams) => (
   <Pressable
     onPress={onPress}
-    className="w-full items-center justify-center rounded-2xl bg-brand-accent py-4 active:opacity-90"
+    disabled={disabled}
+    className="min-h-[52px] w-full items-center justify-center rounded-full bg-brand-success active:opacity-90 disabled:opacity-45"
   >
-    <Text className="font-mono text-xs uppercase tracking-[0.2rem] text-white">{label}</Text>
+    <Text className="text-base font-bold text-white">{label}</Text>
   </Pressable>
 )

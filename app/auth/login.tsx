@@ -1,15 +1,11 @@
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
+import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
+import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
+import { OnboardingInput } from '@/src/features/onboarding/components/OnboardingInput'
 import { Link, useRouter } from 'expo-router'
 import { useState } from 'react'
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function LoginScreen() {
   const router = useRouter()
@@ -30,81 +26,71 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-brand-bg"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName="flex-grow justify-center px-6 py-10"
+    <SafeAreaView className="flex-1 bg-brand-bg">
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <Text className="text-[9px] tracking-[4px] text-white/20 uppercase font-mono mb-1">
-          Connexion
-        </Text>
-        <Text className="text-2xl font-bold text-white tracking-wider mb-6">
-          ASH<Text className="text-brand-accent">HERO</Text>
-        </Text>
-
-        <Text className="text-white/50 text-xs font-mono mb-2">E-mail</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          autoComplete="email"
-          keyboardType="email-address"
-          className="bg-brand-surface border border-white/10 rounded-md px-3 py-3 text-white font-mono text-sm mb-4"
-        />
-
-        <Text className="text-white/50 text-xs font-mono mb-2">Mot de passe</Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoComplete="password"
-          className="bg-brand-surface border border-white/10 rounded-md px-3 py-3 text-white font-mono text-sm mb-2"
-        />
-
-        <Link href={'/auth/forgot-password' as never} asChild>
-          <Pressable className="self-end py-2">
-            <Text className="text-brand-accent/90 text-xs font-mono">Mot de passe oublié</Text>
-          </Pressable>
-        </Link>
-
-        {error ? (
-          <Text className="text-brand-red text-xs font-mono mb-4 mt-1">{error}</Text>
-        ) : null}
-
-        <Pressable
-          onPress={onSubmit}
-          disabled={pending}
-          className="w-full py-4 rounded-2xl items-center bg-brand-accentDark active:opacity-90 disabled:opacity-50"
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerClassName="flex-grow px-6 py-8"
+          showsVerticalScrollIndicator={false}
         >
-          <Text className="text-white text-xs font-mono tracking-[2px] uppercase">
-            {pending ? '…' : 'Se connecter'}
-          </Text>
-        </Pressable>
+          <View className="mb-10 items-center pt-6">
+            <Text className="text-3xl font-bold text-brand-accent">ashhero</Text>
+            <Text className="mt-3 text-center text-sm text-white/50">
+              Ton coach anti-vape, version RPG.
+            </Text>
+          </View>
 
-        <Text className="text-center text-white/30 text-xs font-mono mt-6">Pas de compte ?</Text>
-        <Link href={'/auth/register' as never} asChild>
-          <Pressable className="items-center py-3">
-            <Text className="text-white text-sm font-mono">Créer un compte</Text>
-          </Pressable>
-        </Link>
+          <OnboardingInput
+            label="E-mail"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="toi@exemple.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+          />
+          <OnboardingInput
+            label="Mot de passe"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="••••••••"
+            secureTextEntry
+            autoComplete="password"
+          />
 
-        <View className="h-px bg-white/10 my-4" />
-        <Text className="text-center text-white/30 text-[10px] font-mono mb-2">
-          Démarrer sans e-mail (session anonyme). Pour retrouver les données ailleurs, lie un compte plus tard (profil).
-        </Text>
-        <Pressable
-          onPress={onGuest}
-          disabled={pending}
-          className="w-full py-3 rounded-xl items-center border border-white/15 active:opacity-80 disabled:opacity-50"
-        >
-          <Text className="text-white/70 text-xs font-mono tracking-wide">
-            {pending ? '…' : 'Continuer en invité (anonyme)'}
+          <Link href={'/auth/forgot-password' as never} asChild>
+            <Pressable className="mb-6 self-end py-1">
+              <Text className="text-sm text-brand-success">Mot de passe oublié</Text>
+            </Pressable>
+          </Link>
+
+          {error ? <Text className="mb-4 text-sm text-brand-red">{error}</Text> : null}
+
+          <OnboardingPrimaryButton label={pending ? '…' : 'Se connecter'} onPress={onSubmit} />
+
+          <Text className="mt-8 text-center text-sm text-white/40">Pas de compte ?</Text>
+          <Link href={'/auth/register' as never} asChild>
+            <Pressable className="items-center py-3">
+              <Text className="text-base text-white">Créer un compte</Text>
+            </Pressable>
+          </Link>
+
+          <View className="my-6 h-px bg-white/8" />
+
+          <Text className="mb-4 text-center text-xs leading-5 text-white/35">
+            Démarrer sans e-mail (session anonyme). Pour retrouver tes données ailleurs, lie un
+            compte plus tard depuis le profil.
           </Text>
-        </Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <OnboardingSecondaryButton
+            label={pending ? '…' : 'Continuer en invité'}
+            onPress={onGuest}
+            disabled={pending}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   )
 }

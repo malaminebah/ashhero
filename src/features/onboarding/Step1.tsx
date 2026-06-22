@@ -1,20 +1,21 @@
 import React from 'react'
-import { View, ScrollView } from 'react-native'
+import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
 import { OnboardingHeader } from './components/OnboardingHeader'
 import { OnboardingChoiceCard } from './components/OnboardingChoiceCard'
+import { OnboardingScreen } from './components/OnboardingScreen'
+import { OnboardingMascot } from './components/OnboardingMascot'
 
 const Step1 = () => {
   const setField = useOnboardingStore((s) => s.setField)
   const router = useRouter()
 
   return (
-    <ScrollView
-      className="flex-1 bg-brand-bg px-6 pb-10 pt-4"
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
-    >
+    <OnboardingScreen>
+      <View className="mb-6 items-center">
+        <OnboardingMascot size="sm" />
+      </View>
       <OnboardingHeader
         step={1}
         title="Ta habitude"
@@ -22,7 +23,7 @@ const Step1 = () => {
       />
       <View>
         <OnboardingChoiceCard
-          emoji="🚬"
+          icon="smoking-off"
           label="Cigarettes"
           variant="primary"
           onPress={() => {
@@ -31,16 +32,15 @@ const Step1 = () => {
           }}
         />
         <OnboardingChoiceCard
-          emoji="💨"
+          icon="cloud-outline"
           label="Vapoteuse"
-          variant="outline"
           onPress={() => {
             setField('smokingType', 'vape')
             router.push('/onboarding/step2' as never)
           }}
         />
       </View>
-    </ScrollView>
+    </OnboardingScreen>
   )
 }
 

@@ -20,7 +20,7 @@ export const VictoryBanner = ({ xpGained, onContinue }: VictoryBannerParams) => 
 
       <View className="mb-5 w-full items-center">
         <View className="flex-row items-end justify-center gap-3">
-          <PlayerSoldierSprite anim="idle" />
+          <PlayerSoldierSprite anim="victory" />
           <Text className="mb-2 text-4xl">🎁</Text>
         </View>
         <Text className="mt-1 text-lg">✨</Text>
