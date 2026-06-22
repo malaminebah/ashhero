@@ -1,4 +1,5 @@
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
+import { AuthEntryRedirect } from '@/src/features/auth/components/AuthEntryRedirect'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
 import { OnboardingInput } from '@/src/features/onboarding/components/OnboardingInput'
@@ -29,6 +30,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-flow-bg">
+      <AuthEntryRedirect />
       <StatusBar style="dark" />
       <KeyboardAvoidingView
         className="flex-1"
@@ -74,7 +76,11 @@ export default function LoginScreen() {
             <OnboardingText className="mb-4 text-sm text-red-500">{error}</OnboardingText>
           ) : null}
 
-          <OnboardingPrimaryButton label={pending ? '…' : 'Se connecter'} onPress={onSubmit} />
+          <OnboardingPrimaryButton
+            label={pending ? '…' : 'Se connecter'}
+            onPress={onSubmit}
+            disabled={pending}
+          />
 
           <OnboardingText className="mt-8 text-center text-sm text-flow-muted">
             Pas de compte ?

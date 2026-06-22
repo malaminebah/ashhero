@@ -19,7 +19,9 @@ import { getProfile, onAuthReady } from '@/src/services'
 import { useOnboardingStore } from '@/src/features/onboarding/store'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
-import { Pressable, Text, View } from 'react-native'
+import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
+import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
+import { View } from 'react-native'
 
 export const unstable_settings = {
   initialRouteName: 'index',
@@ -126,24 +128,26 @@ export default function RootLayout() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-brand-bg items-center justify-center">
-        <Text className="text-white font-mono">Loading..</Text>
+      <View className="flex-1 items-center justify-center bg-flow-bg">
+        <OnboardingText className="text-sm text-flow-muted">Chargement…</OnboardingText>
       </View>
     )
   }
   if (error) {
     return (
-      <View className="flex-1 bg-brand-bg items-center justify-center p-6">
-        <Text className="text-white font-mono text-center mb-6">{error}</Text>
-        <Pressable
-          onPress={() => {
-            setError(null)
-            setProfileRetryNonce((n) => n + 1)
-          }}
-          className="py-3 px-6 rounded-xl bg-brand-accentDark active:opacity-90"
-        >
-          <Text className="text-white text-xs font-mono tracking-wider uppercase">Réessayer</Text>
-        </Pressable>
+      <View className="flex-1 items-center justify-center bg-flow-bg p-6">
+        <OnboardingText className="mb-6 text-center text-[15px] leading-6 text-flow-muted">
+          {error}
+        </OnboardingText>
+        <View className="w-full max-w-xs">
+          <OnboardingPrimaryButton
+            label="Réessayer"
+            onPress={() => {
+              setError(null)
+              setProfileRetryNonce((n) => n + 1)
+            }}
+          />
+        </View>
       </View>
     )
   }
