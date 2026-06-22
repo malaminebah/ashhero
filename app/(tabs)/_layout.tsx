@@ -3,13 +3,11 @@ import React, { useEffect } from 'react'
 
 import { HapticTab } from '@/components/haptic-tab'
 import { TabBarPixelIcon } from '@/components/ui/tab-bar-pixel-icon'
-import { Colors, THEME } from '@/constants/theme'
-import { useColorScheme } from '@/hooks/use-color-scheme'
+import { FLOW, flowFontFamily } from '@/constants/flowTheme'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { TAB_BAR_ICONS } from '@/src/features/navigation/tabBarIcons'
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme()
   const router = useRouter()
   const hasServerProfile = useSessionStore((s) => s.hasServerProfile)
 
@@ -21,22 +19,22 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].tabIconDefault,
+        tabBarActiveTintColor: FLOW.cta,
+        tabBarInactiveTintColor: FLOW.faint,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: THEME.bg2,
-          borderTopColor: THEME.border,
+          backgroundColor: FLOW.bg,
+          borderTopColor: FLOW.border,
           borderTopWidth: 1,
         },
-        tabBarLabelStyle: { fontFamily: 'M5x7', fontSize: 10 },
+        tabBarLabelStyle: { fontFamily: flowFontFamily.sans, fontSize: 11 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'ACCUEIL',
+          title: 'Accueil',
           tabBarIcon: ({ focused }) => (
             <TabBarPixelIcon source={TAB_BAR_ICONS.home} focused={focused} />
           ),
@@ -45,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="combat"
         options={{
-          title: 'COMBAT',
+          title: 'Combat',
           tabBarIcon: ({ focused }) => (
             <TabBarPixelIcon source={TAB_BAR_ICONS.combat} focused={focused} />
           ),
@@ -54,7 +52,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'PROFIL',
+          title: 'Profil',
           tabBarIcon: ({ focused }) => (
             <TabBarPixelIcon source={TAB_BAR_ICONS.profile} focused={focused} />
           ),
