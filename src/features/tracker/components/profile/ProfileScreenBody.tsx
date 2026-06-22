@@ -4,8 +4,10 @@ import { useRouter } from 'expo-router'
 import { FlowText } from '@/components/ui/flow-text'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { useOnboardingStore } from '@/src/features/onboarding/store'
-import { ButtonCraving, ButtonReset } from '@/src/features/tracker'
+import { ButtonCraving } from '../ButtonCraving'
+import { ButtonReset } from '../ButtonReset'
 import { useTrackerStore } from '@/src/features/tracker/store'
+import { deleteProfile, getCurrentUid } from '@/src/services'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
 import { ProfileHeader } from './ProfileHeader'
 import {
@@ -53,7 +55,12 @@ export const ProfileScreenBody = () => {
   }
 
   const onResetAll = () => {
+    useOnboardingStore.getState().reset()
     useSessionStore.getState().setProfileResolved(false)
+    const uid = getCurrentUid()
+    if (uid) {
+      void deleteProfile(uid).catch((e) => console.warn('[profile] deleteProfile', e))
+    }
     router.replace('/' as never)
   }
 
