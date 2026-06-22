@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { titleSerif } from '@/constants/theme'
+import { StatusBar } from 'expo-status-bar'
+import { FlowBackButton } from '@/components/ui/flow-back-button'
+import { FlowText } from '@/components/ui/flow-text'
 import { PRIMARY_MOODS } from '@/src/features/mood/moodTaxonomy'
 import type { PrimaryMood } from '@/src/features/mood/types'
 import { MoodFlowProgress } from '@/src/features/mood/components/MoodFlowProgress'
@@ -23,30 +25,23 @@ export default function MoodPrimaryScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-bg">
+    <SafeAreaView className="flex-1 bg-flow-bg">
+      <StatusBar style="dark" />
       <ScrollView
-        className="flex-1 px-5"
+        className="flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        <Pressable
-          onPress={() => router.back()}
-          className="mb-4 mt-2 self-start active:opacity-70"
-        >
-          <Text className="font-mono text-sm text-white/55">Retour</Text>
-        </Pressable>
+        <FlowBackButton onPress={() => router.back()} />
 
         <MoodFlowProgress step={1} />
 
-        <Text
-          className="text-3xl font-bold text-brand-success"
-          style={{ fontFamily: titleSerif }}
-        >
+        <FlowText className="text-center text-[22px] font-bold text-flow-text">
           Aujourd&apos;hui…
-        </Text>
-        <Text className="mt-3 font-mono text-sm leading-5 text-white/65">
+        </FlowText>
+        <FlowText className="mt-3 text-center text-[15px] leading-6 text-flow-muted">
           Sélectionne ton émotion dominante :
-        </Text>
+        </FlowText>
 
         <View className="mt-8 flex-row flex-wrap justify-between gap-y-6">
           {PRIMARY_MOODS.map((mood) => (
@@ -69,9 +64,9 @@ export default function MoodPrimaryScreen() {
                   style={{ backgroundColor: mood.circleColor }}
                 />
               </View>
-              <Text className="text-center font-mono text-[10px] uppercase tracking-wide text-white/80">
+              <FlowText className="text-center text-[10px] uppercase tracking-wide text-flow-text">
                 {mood.label}
-              </Text>
+              </FlowText>
             </Pressable>
           ))}
         </View>

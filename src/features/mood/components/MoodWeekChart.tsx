@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
+import { FlowText } from '@/components/ui/flow-text'
 import { getPrimaryMood, getSubMoodLabel } from '../moodTaxonomy'
 import type { MoodWeekChartParams } from '../types'
 
@@ -9,14 +10,14 @@ export const MoodWeekChart = ({ weekDays, entriesByDate }: MoodWeekChartParams) 
 
   return (
     <View className="mt-6">
-      <Text className="mb-4 text-center font-mono text-xs text-white/55">
+      <FlowText className="mb-4 text-center text-xs text-flow-muted">
         {filled > 0
           ? `${filled} jour${filled > 1 ? 's' : ''} renseigné${filled > 1 ? 's' : ''}`
           : 'Aucune humeur cette semaine'}
-      </Text>
+      </FlowText>
 
       <View
-        className="flex-row items-end justify-between border-b border-white/20 px-1"
+        className="flex-row items-end justify-between border-b border-flow-border px-1"
         style={{ height: CHART_HEIGHT }}
       >
         {weekDays.map((day) => {
@@ -34,15 +35,15 @@ export const MoodWeekChart = ({ weekDays, entriesByDate }: MoodWeekChartParams) 
                   }}
                 />
               ) : (
-                <View className="h-1 w-full max-w-[28px] rounded-full bg-white/10" />
+                <View className="h-1 w-full max-w-[28px] rounded-full bg-flow-border" />
               )}
-              <Text
-                className={`mt-2 font-mono text-[9px] ${
-                  day.isToday ? 'font-bold text-white' : 'text-white/45'
+              <FlowText
+                className={`mt-2 text-[9px] ${
+                  day.isToday ? 'font-bold text-flow-text' : 'text-flow-faint'
                 }`}
               >
                 {day.weekdayLabel.toLowerCase()}
-              </Text>
+              </FlowText>
             </View>
           )
         })}
@@ -58,17 +59,17 @@ export const MoodWeekChart = ({ weekDays, entriesByDate }: MoodWeekChartParams) 
               return (
                 <View
                   key={day.date}
-                  className="flex-row items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2"
+                  className="flex-row items-center justify-between rounded-2xl border border-flow-border bg-flow-secondary px-3 py-2"
                 >
-                  <Text className="font-mono text-[10px] text-white/50">{day.weekdayLabel}</Text>
+                  <FlowText className="text-[10px] text-flow-faint">{day.weekdayLabel}</FlowText>
                   <View className="flex-row items-center gap-2">
                     <View
                       className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: primary.circleColor }}
                     />
-                    <Text className="font-mono text-xs text-white">
+                    <FlowText className="text-xs text-flow-text">
                       {primary.label} · {getSubMoodLabel(entry.primary, entry.sub)}
-                    </Text>
+                    </FlowText>
                   </View>
                 </View>
               )

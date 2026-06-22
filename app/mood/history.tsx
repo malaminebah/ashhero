@@ -1,8 +1,10 @@
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { StatusBar } from 'expo-status-bar'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { titleSerif } from '@/constants/theme'
+import { FLOW } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 import { MoodWeekChart } from '@/src/features/mood/components/MoodWeekChart'
 import { useMoodWeekHistory } from '@/src/features/mood/hooks/useMoodWeekHistory'
 
@@ -20,30 +22,24 @@ export default function MoodHistoryScreen() {
   } = useMoodWeekHistory()
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-bg">
+    <SafeAreaView className="flex-1 bg-flow-bg">
+      <StatusBar style="dark" />
       <ScrollView
-        className="flex-1 px-5"
+        className="flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
         <View className="mb-4 mt-2 flex-row items-center justify-between">
           <Pressable onPress={() => router.back()} className="active:opacity-70">
-            <Text className="font-mono text-sm text-white/55">Retour</Text>
+            <FlowText className="text-sm text-flow-muted">Retour</FlowText>
           </Pressable>
-          <Text className="font-mono text-xs uppercase tracking-wider text-white/45">
-            Semaine
-          </Text>
+          <FlowText className="text-xs uppercase tracking-wider text-flow-faint">Semaine</FlowText>
         </View>
 
-        <Text
-          className="text-3xl font-bold text-brand-success"
-          style={{ fontFamily: titleSerif }}
-        >
-          Suivi quotidien
-        </Text>
+        <FlowText className="text-[22px] font-bold text-flow-text">Suivi quotidien</FlowText>
 
-        <View className="mt-6 border-b border-brand-success/40 pb-2">
-          <Text className="font-mono text-sm font-bold text-brand-success">Émotions</Text>
+        <View className="mt-6 border-b border-flow-border pb-2">
+          <FlowText className="text-sm font-bold text-flow-cta">Émotions</FlowText>
         </View>
 
         <View className="mt-6 flex-row items-center justify-between">
@@ -51,28 +47,28 @@ export default function MoodHistoryScreen() {
             onPress={goPrevWeek}
             accessibilityRole="button"
             accessibilityLabel="Semaine précédente"
-            className="h-10 w-10 items-center justify-center rounded-full border border-white/15 active:opacity-80"
+            className="h-10 w-10 items-center justify-center rounded-full border border-flow-border bg-flow-secondary active:opacity-80"
           >
-            <MaterialIcons name="chevron-left" size={24} color="#f3e8ff" />
+            <MaterialIcons name="chevron-left" size={24} color={FLOW.muted} />
           </Pressable>
-          <Text className="font-mono text-sm text-white/80">{weekLabel}</Text>
+          <FlowText className="text-sm text-flow-text">{weekLabel}</FlowText>
           <Pressable
             onPress={goNextWeek}
             disabled={!canGoNext}
             accessibilityRole="button"
             accessibilityLabel="Semaine suivante"
-            className="h-10 w-10 items-center justify-center rounded-full border border-white/15 active:opacity-80 disabled:opacity-30"
+            className="h-10 w-10 items-center justify-center rounded-full border border-flow-border bg-flow-secondary active:opacity-80 disabled:opacity-30"
           >
-            <MaterialIcons name="chevron-right" size={24} color="#f3e8ff" />
+            <MaterialIcons name="chevron-right" size={24} color={FLOW.muted} />
           </Pressable>
         </View>
 
         {isLoading ? (
           <View className="mt-16 items-center">
-            <ActivityIndicator color="#22c55e" />
+            <ActivityIndicator color={FLOW.cta} />
           </View>
         ) : error ? (
-          <Text className="mt-8 text-center font-mono text-sm text-red-300">{error}</Text>
+          <FlowText className="mt-8 text-center text-sm text-red-500">{error}</FlowText>
         ) : (
           <MoodWeekChart weekDays={weekDays} entriesByDate={entriesByDate} />
         )}

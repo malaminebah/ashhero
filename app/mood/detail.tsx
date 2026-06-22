@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Pressable, ScrollView } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { LinearGradient } from 'expo-linear-gradient'
-import { titleSerif } from '@/constants/theme'
+import { StatusBar } from 'expo-status-bar'
+import { FlowBackButton } from '@/components/ui/flow-back-button'
+import { FlowText } from '@/components/ui/flow-text'
+import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { PRIMARY_MOODS, getSubMoods } from '@/src/features/mood/moodTaxonomy'
 import type { PrimaryMood } from '@/src/features/mood/types'
 import { MoodFlowProgress } from '@/src/features/mood/components/MoodFlowProgress'
@@ -21,10 +23,11 @@ export default function MoodDetailScreen() {
 
   if (!isValidPrimary) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-brand-bg px-5">
-        <Text className="font-mono text-sm text-white/60">Émotion invalide.</Text>
+      <SafeAreaView className="flex-1 items-center justify-center bg-flow-bg px-6">
+        <StatusBar style="dark" />
+        <FlowText className="text-sm text-flow-muted">Émotion invalide.</FlowText>
         <Pressable onPress={() => router.replace('/mood' as never)} className="mt-4">
-          <Text className="font-mono text-sm text-brand-success">Recommencer</Text>
+          <FlowText className="text-sm font-bold text-flow-cta">Recommencer</FlowText>
         </Pressable>
       </SafeAreaView>
     )
@@ -43,30 +46,23 @@ export default function MoodDetailScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-bg">
+    <SafeAreaView className="flex-1 bg-flow-bg">
+      <StatusBar style="dark" />
       <ScrollView
-        className="flex-1 px-5"
+        className="flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        <Pressable
-          onPress={() => router.back()}
-          className="mb-4 mt-2 self-start active:opacity-70"
-        >
-          <Text className="font-mono text-sm text-white/55">Retour</Text>
-        </Pressable>
+        <FlowBackButton onPress={() => router.back()} />
 
         <MoodFlowProgress step={2} />
 
-        <Text
-          className="text-3xl font-bold text-brand-success"
-          style={{ fontFamily: titleSerif }}
-        >
+        <FlowText className="text-center text-[22px] font-bold text-flow-text">
           Plus précisément…
-        </Text>
-        <Text className="mt-3 font-mono text-sm leading-5 text-white/65">
+        </FlowText>
+        <FlowText className="mt-3 text-center text-[15px] leading-6 text-flow-muted">
           Quelle émotion décrit le mieux ce que tu ressens ?
-        </Text>
+        </FlowText>
 
         <View className="mt-8 flex-row flex-wrap gap-2">
           {subs.map((sub) => {
@@ -77,55 +73,36 @@ export default function MoodDetailScreen() {
                 onPress={() => setSelectedSub(sub.id)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                className={`rounded-xl border px-4 py-3 active:opacity-90 ${
+                className={`rounded-2xl border px-4 py-3 active:opacity-90 ${
                   active
-                    ? 'border-brand-success bg-brand-success'
-                    : 'border-white/15 bg-white/[0.06]'
+                    ? 'border-flow-cta bg-flow-cta'
+                    : 'border-flow-border bg-flow-secondary'
                 }`}
               >
-                <Text
-                  className={`font-mono text-xs font-bold ${
-                    active ? 'text-brand-bg' : 'text-white/85'
+                <FlowText
+                  className={`text-xs font-bold ${
+                    active ? 'text-white' : 'text-flow-text'
                   }`}
                 >
                   {sub.label}
-                </Text>
+                </FlowText>
               </Pressable>
             )
           })}
         </View>
 
         {error ? (
-          <Text className="mt-4 font-mono text-sm text-red-300">{error}</Text>
+          <FlowText className="mt-4 text-sm text-red-500">{error}</FlowText>
         ) : null}
 
-        <Pressable
-          onPress={() => void onSave()}
-          disabled={!selectedSub || isSaving || !canFillToday}
-          className="mt-10 active:opacity-90 disabled:opacity-45"
-        >
-          <LinearGradient
-            colors={['#15803d', '#22c55e', '#16a34a']}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={{
-              borderRadius: 999,
-              paddingVertical: 16,
-              alignItems: 'center',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              gap: 8,
-            }}
-          >
-            {isSaving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="font-mono text-sm font-bold uppercase tracking-wider text-white">
-                Continuer
-              </Text>
-            )}
-          </LinearGradient>
-        </Pressable>
+        <View className="mt-10">
+          <OnboardingPrimaryButton
+            label={isSaving ? 'Enregistrement…' : 'Continuer'}
+            onPress={() => void onSave()}
+            disabled={!selectedSub || isSaving || !canFillToday}
+            loading={isSaving}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
