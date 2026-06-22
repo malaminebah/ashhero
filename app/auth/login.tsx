@@ -2,9 +2,11 @@ import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActio
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
 import { OnboardingInput } from '@/src/features/onboarding/components/OnboardingInput'
+import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
 import { Link, useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import { useState } from 'react'
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function LoginScreen() {
@@ -26,7 +28,8 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-bg">
+    <SafeAreaView className="flex-1 bg-flow-bg">
+      <StatusBar style="dark" />
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -37,10 +40,10 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="mb-10 items-center pt-6">
-            <Text className="text-3xl font-bold text-brand-accent">ashhero</Text>
-            <Text className="mt-3 text-center text-sm text-white/50">
+            <OnboardingText className="text-[32px] font-bold text-flow-brand">ashhero</OnboardingText>
+            <OnboardingText className="mt-3 text-center text-[15px] text-flow-muted">
               Ton coach anti-vape, version RPG.
-            </Text>
+            </OnboardingText>
           </View>
 
           <OnboardingInput
@@ -63,27 +66,33 @@ export default function LoginScreen() {
 
           <Link href={'/auth/forgot-password' as never} asChild>
             <Pressable className="mb-6 self-end py-1">
-              <Text className="text-sm text-brand-success">Mot de passe oublié</Text>
+              <OnboardingText className="text-sm text-flow-cta">Mot de passe oublié</OnboardingText>
             </Pressable>
           </Link>
 
-          {error ? <Text className="mb-4 text-sm text-brand-red">{error}</Text> : null}
+          {error ? (
+            <OnboardingText className="mb-4 text-sm text-red-500">{error}</OnboardingText>
+          ) : null}
 
           <OnboardingPrimaryButton label={pending ? '…' : 'Se connecter'} onPress={onSubmit} />
 
-          <Text className="mt-8 text-center text-sm text-white/40">Pas de compte ?</Text>
+          <OnboardingText className="mt-8 text-center text-sm text-flow-muted">
+            Pas de compte ?
+          </OnboardingText>
           <Link href={'/auth/register' as never} asChild>
             <Pressable className="items-center py-3">
-              <Text className="text-base text-white">Créer un compte</Text>
+              <OnboardingText className="text-base font-bold text-flow-text">
+                Créer un compte
+              </OnboardingText>
             </Pressable>
           </Link>
 
-          <View className="my-6 h-px bg-white/8" />
+          <View className="my-6 h-px bg-flow-border" />
 
-          <Text className="mb-4 text-center text-xs leading-5 text-white/35">
+          <OnboardingText className="mb-4 text-center text-xs leading-5 text-flow-faint">
             Démarrer sans e-mail (session anonyme). Pour retrouver tes données ailleurs, lie un
             compte plus tard depuis le profil.
-          </Text>
+          </OnboardingText>
           <OnboardingSecondaryButton
             label={pending ? '…' : 'Continuer en invité'}
             onPress={onGuest}

@@ -1,11 +1,14 @@
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
+import { OnboardingBreatheScreen } from '@/src/features/onboarding/components/OnboardingBreatheScreen'
 import { OnboardingMascot } from '@/src/features/onboarding/components/OnboardingMascot'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
-import { useEffect } from 'react'
-import { View, Text } from 'react-native'
+import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
+import { useEffect, useState } from 'react'
+import { View } from 'react-native'
 import { Redirect, useRouter, useSegments } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -20,6 +23,7 @@ export default function WelcomeScreen() {
   const uid = useSessionStore((s) => s.uid)
   const hasServerProfile = useSessionStore((s) => s.hasServerProfile)
   const { signOut, pending: signOutPending } = useEmailAuthActions()
+  const [showBreathe, setShowBreathe] = useState(false)
 
   const headerOpacity = useSharedValue(0)
   const charOpacity = useSharedValue(0)
@@ -47,15 +51,21 @@ export default function WelcomeScreen() {
 
   if (hasServerProfile === null) {
     return (
-      <View className="flex-1 items-center justify-center bg-brand-bg">
-        <Text className="text-sm text-white/50">Chargement…</Text>
+      <View className="flex-1 items-center justify-center bg-flow-bg">
+        <OnboardingText className="text-sm text-flow-muted">Chargement…</OnboardingText>
       </View>
     )
   }
 
-  const onStart = () => {
-    router.push('/onboarding/step1' as never)
+  if (showBreathe) {
+    return (
+      <OnboardingBreatheScreen
+        onDone={() => router.push('/onboarding/step1' as never)}
+      />
+    )
   }
+
+  const onStart = () => setShowBreathe(true)
 
   const onChangeAccount = async () => {
     const ok = await signOut()
@@ -63,20 +73,21 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-bg px-6">
+    <SafeAreaView className="flex-1 bg-flow-bg px-6">
+      <StatusBar style="dark" />
       <View className="flex-1 justify-between py-6">
         <Animated.View style={headerStyle} className="items-center pt-4">
-          <Text className="text-3xl font-bold text-brand-accent">ashhero</Text>
+          <OnboardingText className="text-[32px] font-bold text-flow-brand">ashhero</OnboardingText>
         </Animated.View>
 
         <Animated.View style={charStyle} className="flex-1 items-center justify-center">
           <OnboardingMascot size="lg" />
-          <Text className="mt-8 text-center text-xl font-bold leading-7 text-white">
+          <OnboardingText className="mt-8 text-center text-xl font-bold leading-7 text-flow-text">
             Contrôle tes envies,{'\n'}contrôle ta vie.
-          </Text>
-          <Text className="mt-3 text-center text-sm leading-6 text-white/50">
+          </OnboardingText>
+          <OnboardingText className="mt-3 text-center text-[15px] leading-6 text-flow-muted">
             Chaque heure sans fumer, ton héros devient plus fort.
-          </Text>
+          </OnboardingText>
         </Animated.View>
 
         <Animated.View style={ctaStyle}>
@@ -88,10 +99,10 @@ export default function WelcomeScreen() {
               disabled={signOutPending}
             />
           </View>
-          <Text className="mt-6 text-center text-[11px] leading-4 text-white/30">
+          <OnboardingText className="mt-6 text-center text-[11px] leading-4 text-flow-faint">
             En continuant, tu acceptes nos conditions d&apos;utilisation et notre politique de
             confidentialité.
-          </Text>
+          </OnboardingText>
         </Animated.View>
       </View>
     </SafeAreaView>

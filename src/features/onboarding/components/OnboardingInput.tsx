@@ -1,4 +1,7 @@
-import { Text, TextInput } from 'react-native'
+import { TextInput } from 'react-native'
+import { FLOW } from '@/constants/flowTheme'
+
+import { OnboardingText } from './OnboardingText'
 
 type OnboardingInputParams = {
   label: string
@@ -22,17 +25,17 @@ export const OnboardingInput = ({
   autoComplete,
 }: OnboardingInputParams) => (
   <>
-    <Text className="mb-2 text-sm text-white/55">{label}</Text>
+    <OnboardingText className="mb-2 text-sm text-flow-muted">{label}</OnboardingText>
     <TextInput
       keyboardType={keyboardType}
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      placeholderTextColor="rgba(255,255,255,0.28)"
+      placeholderTextColor={FLOW.faint}
       secureTextEntry={secureTextEntry}
       autoCapitalize={autoCapitalize}
       autoComplete={autoComplete}
-      className="mb-5 min-h-[52px] rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-lg text-white"
+      className="mb-5 min-h-[52px] rounded-2xl border border-flow-border bg-flow-bg px-4 font-flow text-lg text-flow-text"
     />
   </>
 )

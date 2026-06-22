@@ -1,6 +1,7 @@
-import { Pressable, Text } from 'react-native'
+import { Pressable } from 'react-native'
 
 import type { OnboardingSecondaryButtonParams } from '../types'
+import { OnboardingText } from './OnboardingText'
 
 export const OnboardingSecondaryButton = ({
   label,
@@ -10,8 +11,9 @@ export const OnboardingSecondaryButton = ({
   <Pressable
     onPress={onPress}
     disabled={disabled}
-    className="min-h-[48px] w-full items-center justify-center rounded-full border border-white/12 bg-white/[0.04] active:opacity-85 disabled:opacity-40"
+    accessibilityRole="button"
+    className="min-h-[52px] w-full items-center justify-center rounded-full bg-flow-secondary active:opacity-90 disabled:opacity-45"
   >
-    <Text className="text-sm text-white/70">{label}</Text>
+    <OnboardingText className="text-base font-bold text-flow-cta">{label}</OnboardingText>
   </Pressable>
 )
