@@ -6,6 +6,7 @@ import {
   signInWithEmail,
   signOutUser,
 } from '@/src/services'
+import { useSessionStore } from '../sessionStore'
 import { authErrorToUserMessage, type AuthErrorContext } from '../utils/authErrors'
 
 type Status = { error: string | null; pending: boolean }
@@ -22,6 +23,9 @@ export const useEmailAuthActions = () => {
       setState({ error: null, pending: true })
       try {
         const result = await fn()
+        if (typeof result === 'string') {
+          useSessionStore.getState().setFromAuth(result)
+        }
         setState({ error: null, pending: false })
         return result
       } catch (e) {
@@ -65,6 +69,7 @@ export const useEmailAuthActions = () => {
     () =>
       wrap(async () => {
         await signOutUser()
+        useSessionStore.getState().setFromAuth(null)
         return true
       }),
     [wrap]
