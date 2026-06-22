@@ -1,6 +1,8 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { FLOW, flowShadow } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 import { getPrimaryMood } from '../moodTaxonomy'
 import type { MoodEntry, WeeklyMoodStripParams } from '../types'
 
@@ -31,8 +33,8 @@ function MoodDot({ entry, isToday, isFuture }: {
     <View
       className={`h-11 w-11 rounded-full border-2 ${
         isToday
-          ? 'border-brand-success/50 bg-brand-success/10'
-          : 'border-white/10 bg-white/[0.04]'
+          ? 'border-flow-cta/35 bg-flow-secondary'
+          : 'border-flow-border bg-flow-bg'
       } ${isFuture ? 'opacity-35' : 'opacity-60'}`}
     />
   )
@@ -47,18 +49,17 @@ export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: WeeklyMoodStripPara
       onPress={() => router.push('/mood/history' as never)}
       accessibilityRole="button"
       accessibilityLabel="Voir le graphique de la semaine"
-      className="mb-6 rounded-2xl border border-white/10 bg-white/[0.04] p-4 active:opacity-90"
+      className="mb-6 rounded-2xl border border-flow-border bg-flow-bg p-4 active:opacity-90"
+      style={flowShadow.card}
     >
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="font-mono text-sm font-bold text-white">Ma semaine</Text>
+        <FlowText className="text-sm font-bold text-flow-text">Ma semaine</FlowText>
         <View className="flex-row items-center gap-2">
-          <View className="flex-row items-center rounded-full border border-brand-success/35 bg-brand-success/10 px-2.5 py-1">
-            <MaterialIcons name="local-fire-department" size={14} color="#22c55e" />
-            <Text className="ml-1 font-mono text-xs font-bold text-brand-success">
-              {filledCount}
-            </Text>
+          <View className="flex-row items-center rounded-full border border-flow-cta/25 bg-flow-secondary px-2.5 py-1">
+            <MaterialIcons name="local-fire-department" size={14} color={FLOW.cta} />
+            <FlowText className="ml-1 text-xs font-bold text-flow-cta">{filledCount}</FlowText>
           </View>
-          <MaterialIcons name="chevron-right" size={20} color="rgba(255,255,255,0.35)" />
+          <MaterialIcons name="chevron-right" size={20} color={FLOW.faint} />
         </View>
       </View>
 
@@ -67,13 +68,13 @@ export const WeeklyMoodStrip = ({ weekDays, entriesByDate }: WeeklyMoodStripPara
           const entry = entriesByDate[day.date]
           return (
             <View key={day.date} className="items-center">
-              <Text
-                className={`mb-2 font-mono text-[9px] ${
-                  day.isToday ? 'font-bold text-white' : 'text-white/45'
+              <FlowText
+                className={`mb-2 text-[10px] ${
+                  day.isToday ? 'font-bold text-flow-text' : 'text-flow-faint'
                 }`}
               >
                 {day.weekdayLabel}
-              </Text>
+              </FlowText>
               <MoodDot entry={entry} isToday={day.isToday} isFuture={day.isFuture} />
             </View>
           )

@@ -1,7 +1,9 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { FLOW, flowShadow } from '@/constants/flowTheme'
+import { FlowText } from '@/components/ui/flow-text'
 
 import type { MoodTodayCardParams } from '../types'
 
@@ -15,28 +17,29 @@ export const MoodTodayCard = ({ canFillToday, todayLabel }: MoodTodayCardParams)
       }
       accessibilityRole="button"
       accessibilityLabel="Suivi d'humeur"
-      className="mb-4 flex-row items-center rounded-2xl border border-white/10 bg-white/[0.04] p-4 active:opacity-85"
+      className="mb-4 flex-row items-center rounded-2xl border border-flow-border bg-flow-bg p-4 active:opacity-90"
+      style={flowShadow.card}
     >
-      <View className="relative mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-brand-bg2">
-        <MaterialCommunityIcons name="weather-partly-cloudy" size={28} color="#7dd3fc" />
+      <View className="relative mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-flow-secondary">
+        <MaterialCommunityIcons name="weather-partly-cloudy" size={28} color={FLOW.brand} />
         {!canFillToday ? (
-          <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-brand-success">
+          <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-flow-cta">
             <MaterialIcons name="check" size={12} color="#fff" />
           </View>
         ) : (
-          <View className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-rose-400/90" />
+          <View className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-rose-400" />
         )}
       </View>
       <View className="flex-1">
-        <Text className="font-mono text-sm font-bold text-white">Suivi d&apos;humeur</Text>
-        <Text className="mt-1 font-mono text-xs text-white/50">
+        <FlowText className="text-sm font-bold text-flow-text">Suivi d&apos;humeur</FlowText>
+        <FlowText className="mt-1 text-xs text-flow-muted">
           {canFillToday ? 'Renseigne ton humeur du jour' : todayLabel ?? 'Terminé'}
-        </Text>
+        </FlowText>
       </View>
       {canFillToday ? (
-        <MaterialIcons name="chevron-right" size={22} color="rgba(255,255,255,0.35)" />
+        <MaterialIcons name="chevron-right" size={22} color={FLOW.faint} />
       ) : (
-        <MaterialIcons name="bar-chart" size={20} color="rgba(255,255,255,0.35)" />
+        <MaterialIcons name="bar-chart" size={20} color={FLOW.faint} />
       )}
     </Pressable>
   )
