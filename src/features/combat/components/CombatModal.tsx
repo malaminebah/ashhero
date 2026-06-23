@@ -11,8 +11,7 @@ import { useTrackerStore } from '@/src/features/tracker/store'
 import { displayHeroName } from '@/src/features/tracker/utils/heroName'
 import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
 import { useTurnCombat } from '../hooks/useTurnCombat'
-import { getPlayerSoldierAnim } from '../utils/playerSoldierAnim'
-import { getBossAnim } from '../utils/getBossAnim'
+import { resolveCombatVisuals } from '../utils/combatVisuals'
 import { ActionButton } from './ActionButton'
 import { BreatheTimer } from './BreatheTimer'
 import { CombatArenaView } from './CombatArenaView'
@@ -42,9 +41,10 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     victoryAction,
     defeatSource,
     canUseSpecial,
-    currentAttackEffect,
+    spriteCue,
     floatDamage,
     turnCount,
+    inArena,
     showActionButtons,
     showBreatheTimer,
     showAbandon,
@@ -60,32 +60,20 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     router.replace('/(tabs)/' as never)
   }, [onClose, router])
 
-  const onAbandon = async () => {
-    await abandon()
-    onClose()
-  }
-
   const handleRequestClose = () => {
     if (phase === 'victory' || phase === 'defeat') {
       onClose()
       return
     }
-    void abandon().then(() => onClose())
+    void abandon()
   }
 
   const xpGained =
     victoryAction != null ? COMBAT_XP_BY_ACTION[victoryAction] : 0
 
-  const isResultScreen = phase === 'victory' || phase === 'defeat'
-
-  const playerAnim = useMemo(
-    () => getPlayerSoldierAnim(phase, playerHp, currentAttackEffect),
-    [phase, playerHp, currentAttackEffect]
-  )
-
-  const bossAnim = useMemo(
-    () => getBossAnim(phase, bossHp, currentAttackEffect),
-    [phase, bossHp, currentAttackEffect]
+  const { playerAnim, bossAnim } = useMemo(
+    () => resolveCombatVisuals(phase, playerHp, bossHp, spriteCue),
+    [phase, playerHp, bossHp, spriteCue]
   )
 
   return (
@@ -97,19 +85,11 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     >
       <SafeAreaView className="flex-1 bg-flow-bg">
         <StatusBar style="dark" />
-        {isResultScreen ? (
-          <>
-            {phase === 'victory' && victoryAction != null ? (
-              <VictoryBanner
-                xpGained={xpGained}
-                level={level}
-                onContinue={onClose}
-              />
-            ) : phase === 'defeat' && defeatSource != null ? (
-              <DefeatBanner onRetry={reset} onGoHome={onGoHome} />
-            ) : null}
-          </>
-        ) : (
+        {phase === 'victory' && victoryAction != null ? (
+          <VictoryBanner xpGained={xpGained} level={level} onContinue={onClose} />
+        ) : phase === 'defeat' && defeatSource != null ? (
+          <DefeatBanner onRetry={reset} onGoHome={onGoHome} />
+        ) : inArena ? (
           <View className="flex-1 px-4 pb-4">
             <View className="mb-2 flex-row items-center justify-between pt-1">
               <Pressable
@@ -130,7 +110,6 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
                 bossDefeated={bossHp <= 0}
                 bossShakeKey={bossShakeKey}
                 playerShakeKey={playerShakeKey}
-                attackEffect={currentAttackEffect}
                 playerAnim={playerAnim}
                 bossAnim={bossAnim}
               >
@@ -171,7 +150,6 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
 
               {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
 
-              {/* Buttons stay mounted (opacity/pointerEvents) so layout never shifts between player_turn and resolving/enemy phases. */}
               <View
                 style={{ opacity: showActionButtons ? 1 : 0 }}
                 pointerEvents={showActionButtons ? 'auto' : 'none'}
@@ -223,7 +201,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
               </View>
 
               <Pressable
-                onPress={() => void onAbandon()}
+                onPress={() => void abandon()}
                 disabled={!showAbandon}
                 accessibilityRole="button"
                 accessibilityLabel="Abandonner le combat"
@@ -236,7 +214,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
               </Pressable>
             </View>
           </View>
-        )}
+        ) : null}
       </SafeAreaView>
     </Modal>
   )

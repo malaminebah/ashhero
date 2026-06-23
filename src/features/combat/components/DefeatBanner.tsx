@@ -7,7 +7,7 @@ import type { DefeatBannerParams } from '../types'
 
 export const DefeatBanner = ({ onRetry, onGoHome }: DefeatBannerParams) => (
   <View className="flex-1 bg-flow-bg">
-    <CombatResultBackdrop heroAnim="death" />
+    <CombatResultBackdrop heroAnim="death" showBoss bossAnim="attack" />
 
     <View className="flex-1 px-6 pb-8 pt-4">
       <View className="self-center rounded-full border border-red-200 bg-red-50 px-8 py-2">

@@ -3,7 +3,6 @@ import { View } from 'react-native'
 import { FLOW } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
-import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
 import { CombatResultBackdrop } from './CombatResultBackdrop'
 import type { VictoryBannerParams } from '../types'
 
@@ -14,7 +13,7 @@ export const VictoryBanner = ({ xpGained, level, onContinue }: VictoryBannerPara
 
   return (
     <View className="flex-1 bg-flow-bg">
-      <CombatResultBackdrop heroAnim="victory" showBoss bossMuted />
+      <CombatResultBackdrop heroAnim="victory" showBoss bossAnim="death" bossMuted />
 
       <View className="flex-1 px-6 pb-8 pt-4">
         <View className="self-center rounded-full border border-flow-cta/30 bg-flow-secondary px-8 py-2">

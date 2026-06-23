@@ -4,6 +4,8 @@ export type CombatPhase =
   | 'resolving_instant'
   | 'breathe_pending'
   | 'enemy_turn'
+  | 'celebrate_victory'
+  | 'celebrate_defeat'
   | 'victory'
   | 'defeat'
 
@@ -21,9 +23,6 @@ export type FloatDamagePayload = {
 
 export type CombatActionVariant = 'breathe' | 'water' | 'distract' | 'special'
 
-import type { AttackEffectKey } from './attackFxSheet'
-export type { AttackEffectKey }
-
 export type CombatModalParams = {
   visible: boolean
   onClose: () => void
@@ -39,7 +38,6 @@ export type CombatArenaViewParams = {
   bossDefeated: boolean
   bossShakeKey: number
   playerShakeKey: number
-  attackEffect: AttackEffectKey | null
   playerAnim: PlayerSoldierAnim
   bossAnim: BossAnim
 }
@@ -101,10 +99,6 @@ export type CombatActionButtonParams = {
   compact?: boolean
 }
 
-export type AttackEffectParams = {
-  effect: AttackEffectKey | null
-}
-
 export type BreatheTimerParams = {
   onComplete: () => void
 }
@@ -123,22 +117,10 @@ export type DefeatBannerParams = {
 export type CombatResultBackdropParams = {
   heroAnim: PlayerSoldierAnim
   showBoss?: boolean
+  bossAnim?: BossAnim
   bossMuted?: boolean
 }
 
 export type CombatArenaScreenParams = {
   onLaunchCombat: () => void
-}
-
-export type CombatMonsterParams = {
-  hp: number
-  maxHp: number
-  shakeKey: number
-}
-
-export type CombatPlayerPanelParams = {
-  hp: number
-  maxHp: number
-  shakeKey: number
-  label?: string
 }

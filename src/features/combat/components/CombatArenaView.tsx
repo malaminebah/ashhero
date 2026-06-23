@@ -1,19 +1,15 @@
 import type { PropsWithChildren } from 'react'
 import { View } from 'react-native'
 import Animated from 'react-native-reanimated'
-import { ARENA_SPRITE_LAYOUT } from '../arenaAssets'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
-import { AttackEffect } from './AttackEffect'
 import { ArenaBackgroundPanel } from './ArenaBackgroundPanel'
-import { BossSprite } from './BossSprite'
-import { PlayerSoldierSprite } from './PlayerSoldierSprite'
+import { ArenaSprites } from './ArenaSprites'
 import type { CombatArenaViewParams } from '../types'
 
 export const CombatArenaView = ({
   bossDefeated,
   bossShakeKey,
   playerShakeKey,
-  attackEffect,
   playerAnim,
   bossAnim,
   children,
@@ -28,24 +24,15 @@ export const CombatArenaView = ({
         tone="game"
         className="flex-1 rounded-2xl border border-white/10 bg-brand-bg"
       >
-        <Animated.View
-          style={[playerShake, { position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.player }]}
-          className="items-center"
+        <ArenaSprites
+          playerAnim={playerAnim}
+          bossAnim={bossAnim}
+          showBoss={!bossDefeated}
+          playerShakeStyle={playerShake}
+          bossShakeStyle={bossShake}
         >
-          <PlayerSoldierSprite anim={playerAnim} />
-        </Animated.View>
-
-        {!bossDefeated ? (
-          <Animated.View
-            style={[bossShake, { position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.boss }]}
-            className="items-center justify-center"
-          >
-            <BossSprite anim={bossAnim} />
-          </Animated.View>
-        ) : null}
-
-        <AttackEffect effect={attackEffect} />
-        {children}
+          {children}
+        </ArenaSprites>
       </ArenaBackgroundPanel>
     </View>
   )
