@@ -169,71 +169,71 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
                 showPrompt={phase === 'player_turn' && !showBreatheTimer}
               />
 
-              {/* Fixed min height: buttons unmount during resolve/enemy turn — without this the arena flex-1 jumps. */}
-              <View className="min-h-[152px] justify-end">
-                {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
+              {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
 
-                {showActionButtons ? (
-                  <View className="mt-2 flex-row flex-wrap justify-between gap-y-2">
-                    <View className="w-[48%]">
-                      <ActionButton
-                        compact
-                        variant="breathe"
-                        label={combatActionLabel('breathe')}
-                        onPress={chooseBreathe}
-                        badge="60s"
-                        accessibilityLabel="Respirer"
-                      />
-                    </View>
-                    <View className="w-[48%]">
-                      <ActionButton
-                        compact
-                        variant="water"
-                        label={combatActionLabel('water')}
-                        onPress={() => chooseInstantAction('water')}
-                        accessibilityLabel="Boire de l'eau"
-                      />
-                    </View>
-                    <View className="w-[48%]">
-                      <ActionButton
-                        compact
-                        variant="distract"
-                        label={combatActionLabel('distract')}
-                        onPress={() => chooseInstantAction('distract')}
-                        accessibilityLabel="Se distraire"
-                      />
-                    </View>
-                    <View className="w-[48%]">
-                      <ActionButton
-                        compact
-                        variant="special"
-                        label={combatActionLabel('special')}
-                        onPress={() => chooseInstantAction('special')}
-                        disabled={!canUseSpecial}
-                        lockHint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
-                        accessibilityLabel={
-                          canUseSpecial
-                            ? 'Attaque spéciale'
-                            : `Attaque spéciale, débloquée après ${COMBAT_SPECIAL_LOCKED_HINT}`
-                        }
-                      />
-                    </View>
-                  </View>
-                ) : null}
-
-                {showAbandon ? (
-                  <Pressable
-                    onPress={() => void onAbandon()}
-                    accessibilityRole="button"
-                    accessibilityLabel="Abandonner le combat"
-                    className="mt-2 items-center py-2 active:opacity-70"
-                  >
-                    <FlowText className="text-[10px] uppercase tracking-wider text-flow-faint">
-                      Abandonner le combat
-                    </FlowText>
-                  </Pressable>
-                ) : null}
+              {/* Buttons stay mounted (opacity/pointerEvents) so layout never shifts between player_turn and resolving/enemy phases. */}
+              <View
+                style={{ opacity: showActionButtons ? 1 : 0 }}
+                pointerEvents={showActionButtons ? 'auto' : 'none'}
+                className="mt-2 flex-row flex-wrap justify-between gap-y-2"
+              >
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="breathe"
+                    label={combatActionLabel('breathe')}
+                    onPress={chooseBreathe}
+                    badge="60s"
+                    accessibilityLabel="Respirer"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="water"
+                    label={combatActionLabel('water')}
+                    onPress={() => chooseInstantAction('water')}
+                    accessibilityLabel="Boire de l'eau"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="distract"
+                    label={combatActionLabel('distract')}
+                    onPress={() => chooseInstantAction('distract')}
+                    accessibilityLabel="Se distraire"
+                  />
+                </View>
+                <View className="w-[48%]">
+                  <ActionButton
+                    compact
+                    variant="special"
+                    label={combatActionLabel('special')}
+                    onPress={() => chooseInstantAction('special')}
+                    disabled={!canUseSpecial}
+                    lockHint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
+                    accessibilityLabel={
+                      canUseSpecial
+                        ? 'Attaque spéciale'
+                        : `Attaque spéciale, débloquée après ${COMBAT_SPECIAL_LOCKED_HINT}`
+                    }
+                  />
+                </View>
               </View>
+
+              <Pressable
+                onPress={() => void onAbandon()}
+                disabled={!showAbandon}
+                accessibilityRole="button"
+                accessibilityLabel="Abandonner le combat"
+                style={{ opacity: showAbandon ? 1 : 0 }}
+                className="mt-2 items-center py-2"
+              >
+                <FlowText className="text-[10px] uppercase tracking-wider text-flow-faint">
+                  Abandonner le combat
+                </FlowText>
+              </Pressable>
             </View>
           </View>
         )}
