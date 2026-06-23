@@ -1,8 +1,21 @@
-import { View } from 'react-native'
+import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { FlipDetailScreen } from '@/components/ui/flip-detail-screen'
-import { FlowText } from '@/components/ui/flow-text'
+import {
+  FlipDetailBackBody,
+  FlipDetailBackHeader,
+  FlipDetailEyebrow,
+  FlipDetailFront,
+  FlipDetailHeroValue,
+  FlipDetailHighlightValue,
+  FlipDetailIconWell,
+  FlipDetailInsightCard,
+  FlipDetailInsightText,
+  FlipDetailNotFound,
+  FlipDetailStatusChip,
+  FlipDetailTitle,
+} from '@/components/ui/flip-detail-parts'
 import { getStatDetail, type StatDetailKey } from '@/src/features/tracker/components/statsDetailConfig'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
 import { useTrackerStore } from '@/src/features/tracker/store'
@@ -61,10 +74,8 @@ export default function StatDetailScreen() {
       <FlipDetailScreen
         onClose={() => router.back()}
         autoFlip={false}
-        front={
-          <FlowText className="text-sm text-flow-muted">Stat introuvable.</FlowText>
-        }
-        back={<FlowText className="text-sm text-flow-muted">Stat introuvable.</FlowText>}
+        front={<FlipDetailNotFound label="Stat introuvable." />}
+        back={<FlipDetailNotFound label="Stat introuvable." />}
       />
     )
   }
@@ -73,30 +84,30 @@ export default function StatDetailScreen() {
     <FlipDetailScreen
       onClose={() => router.back()}
       front={
-        <>
-          <MaterialIcons name={def.icon} size={36} color={def.iconColor} />
-          <FlowText className="mt-5 text-xs text-flow-muted">{labelByKey[statKey]}</FlowText>
-          <FlowText className="mt-2 text-[36px] font-bold text-flow-text">
-            {valueByKey[statKey]}
-          </FlowText>
-          <FlowText className="mt-4 text-center text-[18px] font-bold text-flow-text">
-            {def.title}
-          </FlowText>
-        </>
+        <FlipDetailFront>
+          <FlipDetailIconWell>
+            <MaterialIcons name={def.icon} size={40} color={def.iconColor} />
+          </FlipDetailIconWell>
+          <FlipDetailEyebrow>{labelByKey[statKey]}</FlipDetailEyebrow>
+          <FlipDetailHeroValue>{valueByKey[statKey]}</FlipDetailHeroValue>
+          <FlipDetailTitle>{def.title}</FlipDetailTitle>
+          <FlipDetailStatusChip
+            unlocked
+            unlockedLabel="Stat en direct"
+            lockedLabel=""
+          />
+        </FlipDetailFront>
       }
       back={
         <>
-          <FlowText className="text-xs font-bold uppercase tracking-wide text-flow-cta">
-            {labelByKey[statKey]}
-          </FlowText>
-          <FlowText className="mt-3 text-[20px] font-bold text-flow-text">{def.backTitle}</FlowText>
-          <FlowText className="mt-4 text-[15px] leading-6 text-flow-muted">{def.backBody}</FlowText>
-          <View className="mt-8 rounded-2xl border border-flow-border bg-flow-secondary px-4 py-4">
-            <FlowText className="text-xs font-bold text-flow-text">Valeur actuelle</FlowText>
-            <FlowText className="mt-2 text-2xl font-bold text-flow-cta">
-              {valueByKey[statKey]}
-            </FlowText>
-          </View>
+          <FlipDetailBackHeader eyebrow={labelByKey[statKey]} title={def.backTitle} />
+          <FlipDetailBackBody>{def.backBody}</FlipDetailBackBody>
+          <FlipDetailInsightCard label="Valeur actuelle" accent={statKey === 'money' ? 'gold' : 'cta'}>
+            <FlipDetailHighlightValue>{valueByKey[statKey]}</FlipDetailHighlightValue>
+            <FlipDetailInsightText>
+              Mis à jour en temps réel depuis ton profil et ton parcours sans vape.
+            </FlipDetailInsightText>
+          </FlipDetailInsightCard>
         </>
       }
     />

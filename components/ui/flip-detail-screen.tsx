@@ -9,7 +9,9 @@ import Animated, {
 } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
-import { flowShadow } from '@/constants/flowTheme'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { FLOW } from '@/constants/flowTheme'
+import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import { FlowBackButton } from './flow-back-button'
 import { FlowText } from './flow-text'
 
@@ -55,32 +57,48 @@ export const FlipDetailScreen = ({
   })
 
   return (
-    <SafeAreaView className="flex-1 bg-flow-bg px-5 py-3">
+    <SafeAreaView className="flex-1 bg-flow-bg" edges={['top', 'left', 'right']}>
       <StatusBar style="dark" />
-      <FlowBackButton onPress={onClose} label="Fermer" />
-      <FlowText className="mb-3 text-center text-xs text-flow-faint">
-        Appuie sur la carte pour la retourner
-      </FlowText>
+      <View className="px-6 pt-2">
+        <FlowBackButton onPress={onClose} label="Retour" />
+        <View className="mb-4 flex-row items-center justify-center gap-1.5">
+          <MaterialIcons name="import-export" size={14} color={FLOW.faint} />
+          <FlowText className="text-xs text-flow-faint">Appuie sur la carte pour la retourner</FlowText>
+        </View>
+      </View>
+
       <Pressable
         onPress={toggle}
         accessibilityRole="button"
         accessibilityLabel="Retourner la carte"
-        className="flex-1 active:opacity-95"
+        className="mx-6 mb-6 flex-1 active:opacity-95"
       >
-        <View className="flex-1">
+        <View className="min-h-[420px] flex-1">
           <Animated.View
-            style={[StyleSheet.absoluteFillObject, flowShadow.card, frontStyle]}
-            className="overflow-hidden rounded-3xl border border-flow-border bg-flow-secondary"
-          >
-            <View className="flex-1 items-center justify-center px-6 py-8">{front}</View>
-          </Animated.View>
-          <Animated.View
-            style={[StyleSheet.absoluteFillObject, flowShadow.card, backStyle]}
-            className="overflow-hidden rounded-3xl border border-flow-border bg-flow-bg"
+            style={[StyleSheet.absoluteFillObject, flowCardShadow, frontStyle]}
+            className={`overflow-hidden rounded-2xl border border-flow-cta/20 ${flowSurface.cardActive}`}
           >
             <ScrollView
               className="flex-1"
-              contentContainerStyle={{ padding: 20, paddingBottom: 28 }}
+              contentContainerStyle={{
+                flexGrow: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 24,
+                paddingVertical: 40,
+              }}
+              showsVerticalScrollIndicator={false}
+            >
+              {front}
+            </ScrollView>
+          </Animated.View>
+          <Animated.View
+            style={[StyleSheet.absoluteFillObject, flowCardShadow, backStyle]}
+            className={`overflow-hidden rounded-2xl border border-flow-border ${flowSurface.card}`}
+          >
+            <ScrollView
+              className="flex-1"
+              contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 32 }}
               showsVerticalScrollIndicator={false}
             >
               {back}

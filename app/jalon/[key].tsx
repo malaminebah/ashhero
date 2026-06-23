@@ -1,9 +1,19 @@
-import { View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { FlipDetailScreen } from '@/components/ui/flip-detail-screen'
-import { FlowText } from '@/components/ui/flow-text'
 import { FLOW } from '@/constants/flowTheme'
+import { FlipDetailScreen } from '@/components/ui/flip-detail-screen'
+import {
+  FlipDetailBackBody,
+  FlipDetailBackHeader,
+  FlipDetailEyebrow,
+  FlipDetailFront,
+  FlipDetailIconWell,
+  FlipDetailInsightCard,
+  FlipDetailInsightText,
+  FlipDetailNotFound,
+  FlipDetailStatusChip,
+  FlipDetailTitle,
+} from '@/components/ui/flip-detail-parts'
 import { getJalonByKey } from '@/src/features/tracker/components/dashboard/jalonsConfig'
 import { useTrackerStore } from '@/src/features/tracker/store'
 
@@ -22,10 +32,8 @@ export default function JalonDetailScreen() {
       <FlipDetailScreen
         onClose={() => router.back()}
         autoFlip={false}
-        front={
-          <FlowText className="text-sm text-flow-muted">Jalon introuvable.</FlowText>
-        }
-        back={<FlowText className="text-sm text-flow-muted">Jalon introuvable.</FlowText>}
+        front={<FlipDetailNotFound label="Jalon introuvable." />}
+        back={<FlipDetailNotFound label="Jalon introuvable." />}
       />
     )
   }
@@ -37,36 +45,32 @@ export default function JalonDetailScreen() {
     <FlipDetailScreen
       onClose={() => router.back()}
       front={
-        <>
-          <MaterialIcons
-            name={unlocked ? 'check-circle' : 'lock'}
-            size={48}
-            color={unlocked ? FLOW.cta : FLOW.faint}
+        <FlipDetailFront>
+          <FlipDetailIconWell locked={!unlocked}>
+            <MaterialIcons
+              name={unlocked ? 'check-circle' : 'flag'}
+              size={44}
+              color={unlocked ? FLOW.cta : FLOW.faint}
+            />
+          </FlipDetailIconWell>
+          <FlipDetailEyebrow>{jalon.label}</FlipDetailEyebrow>
+          <FlipDetailTitle>{jalon.title}</FlipDetailTitle>
+          <FlipDetailStatusChip
+            unlocked={unlocked}
+            unlockedLabel="Jalon débloqué"
+            lockedLabel={
+              daysLeft > 0 ? `Encore ~${daysLeft} jour${daysLeft > 1 ? 's' : ''}` : 'Bientôt'
+            }
           />
-          <FlowText className="mt-5 text-xs font-bold text-flow-cta">{jalon.label}</FlowText>
-          <FlowText className="mt-3 text-center text-[22px] font-bold text-flow-text">
-            {jalon.title}
-          </FlowText>
-          <FlowText className="mt-2 text-center text-xs text-flow-faint">
-            {unlocked ? 'Jalon débloqué' : `Encore ~${daysLeft} jour${daysLeft > 1 ? 's' : ''}`}
-          </FlowText>
-        </>
+        </FlipDetailFront>
       }
       back={
         <>
-          <FlowText className="text-xs font-bold uppercase tracking-wide text-flow-cta">
-            {jalon.label}
-          </FlowText>
-          <FlowText className="mt-3 text-[20px] font-bold text-flow-text">{jalon.title}</FlowText>
-          <FlowText className="mt-4 text-[15px] leading-6 text-flow-text">{jalon.summary}</FlowText>
-          <View className="mt-8 rounded-2xl border border-flow-border bg-flow-secondary px-4 py-4">
-            <FlowText className="text-xs font-bold uppercase tracking-wide text-flow-cta">
-              Ta santé
-            </FlowText>
-            <FlowText className="mt-3 text-[15px] leading-6 text-flow-muted">
-              {jalon.health}
-            </FlowText>
-          </View>
+          <FlipDetailBackHeader eyebrow={jalon.label} title={jalon.title} />
+          <FlipDetailBackBody>{jalon.summary}</FlipDetailBackBody>
+          <FlipDetailInsightCard label="Ta santé" accent="cta">
+            <FlipDetailInsightText>{jalon.health}</FlipDetailInsightText>
+          </FlipDetailInsightCard>
         </>
       }
     />
