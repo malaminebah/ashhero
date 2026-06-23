@@ -21,18 +21,29 @@ export const SheetSprite = ({
   muted = false,
 }: SheetSpriteParams) => {
   const frame = useSheetFrameAnim({ frames, frameMs, loop }, animKey)
-  const viewport = Math.round(frameSize * displayScale)
-  const sheetDisplayW = sheetCols * frameSize * displayScale
-  const sheetDisplayH = sheetH * displayScale
+  // Round the cell once and derive everything from it: each cell is an exact
+  // integer size, so translate offsets never drift sub-pixel (no frame bleed).
+  const cell = Math.round(frameSize * displayScale)
+  const viewport = cell
+  const rows = Math.round(sheetH / frameSize)
+  const sheetDisplayW = sheetCols * cell
+  const sheetDisplayH = rows * cell
 
-  const imageStyle = useAnimatedStyle(() => ({
-    width: sheetDisplayW,
-    height: sheetDisplayH,
-    transform: [
-      { translateX: -frame.value * frameSize * displayScale },
-      { translateY: -row * frameSize * displayScale },
-    ],
-  }))
+  const imageStyle = useAnimatedStyle(() => {
+    const raw = Math.floor(frame.value)
+    const index = loop
+      ? ((raw % frames) + frames) % frames
+      : Math.min(Math.max(raw, 0), frames - 1)
+
+    return {
+      width: sheetDisplayW,
+      height: sheetDisplayH,
+      transform: [
+        { translateX: -index * cell },
+        { translateY: -row * cell },
+      ],
+    }
+  })
 
   return (
     <View

@@ -1,5 +1,11 @@
 import { useEffect } from 'react'
-import { useSharedValue } from 'react-native-reanimated'
+import {
+  cancelAnimation,
+  Easing,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated'
 
 export type SheetFrameAnimConfig = {
   frames: number
@@ -7,28 +13,24 @@ export type SheetFrameAnimConfig = {
   loop: boolean
 }
 
+/** Linear progress 0..frames on the UI thread (SheetSprite floors to frame index). */
 export function useSheetFrameAnim(config: SheetFrameAnimConfig, animKey: string) {
-  const frame = useSharedValue(0)
+  const progress = useSharedValue(0)
 
   useEffect(() => {
-    frame.value = 0
-    let index = 0
+    cancelAnimation(progress)
+    progress.value = 0
 
-    const id = setInterval(() => {
-      index += 1
-      if (config.loop) {
-        frame.value = index % config.frames
-        return
-      }
-      if (index < config.frames) {
-        frame.value = index
-        return
-      }
-      clearInterval(id)
-    }, config.frameMs)
+    const duration = config.frames * config.frameMs
+    const timing = withTiming(config.frames, {
+      duration,
+      easing: Easing.linear,
+    })
 
-    return () => clearInterval(id)
-  }, [animKey, config.frameMs, config.frames, config.loop, frame])
+    progress.value = config.loop ? withRepeat(timing, -1, false) : timing
 
-  return frame
+    return () => cancelAnimation(progress)
+  }, [animKey, config.frameMs, config.frames, config.loop, progress])
+
+  return progress
 }
