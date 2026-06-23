@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { TrackerConfig, TrackerActions, trackerProfileFromStore } from './types'
 import { normalizeHeroName } from './utils/heroName'
+import { levelFromXp } from './utils/levelProgress'
 import { addRelapse, getCurrentUid, saveProfile } from '@/src/services'
 
 const initialState: TrackerConfig = {
@@ -52,7 +53,7 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
       winCombat: (_action, xpGained) =>
         set((state) => {
           const newXp = state.xp + xpGained
-          const newLevel = Math.floor(newXp / 100) + 1
+          const newLevel = levelFromXp(newXp)
           return {
             xp: newXp,
             level: newLevel,

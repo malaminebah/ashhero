@@ -15,6 +15,7 @@ import {
   type ProfileHeroCardHandle,
 } from './ProfileHeroCard'
 import { ProfileProgressPair } from './ProfileProgressPair'
+import { ProfileLevelsGrid } from './ProfileLevelsGrid'
 import { ProfileStatsGrid } from './ProfileStatsGrid'
 import { ProfileBadgesGrid } from './ProfileBadgesGrid'
 import { ProfileAvatarsSection } from './ProfileAvatarsSection'
@@ -75,6 +76,7 @@ export const ProfileScreenBody = () => {
           onSaveName={setHeroName}
         />
         <ProfileProgressPair level={level} xp={xp} />
+        <ProfileLevelsGrid level={level} xp={xp} />
         <ProfileStatsGrid
           dayCount={dayCount}
           moneySaved={moneySaved}

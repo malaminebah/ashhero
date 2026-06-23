@@ -91,6 +91,13 @@ export type ProfileHeroCardParams = {
 
 export type ProfileHeaderParams = { onEditPress?: () => void }
 export type ProfileProgressPairParams = { level: number; xp: number }
+export type ProfileLevelsGridParams = { level: number; xp: number }
+export type LevelTierIconParams = { level: number; size?: number; unlocked?: boolean }
+export type LevelStepRowParams = {
+  stepLevel: number
+  xpRequired: number
+  userLevel: number
+}
 export type ProfileAvatarsSectionParams = { level: number }
 export type ProfileHistorySectionParams = { combatsWon: number }
 

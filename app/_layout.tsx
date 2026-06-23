@@ -169,6 +169,7 @@ export default function RootLayout() {
         <Stack.Screen name="defense-badge" options={{ headerShown: false }} />
         <Stack.Screen name="profile-badge" options={{ headerShown: false }} />
         <Stack.Screen name="stat" options={{ headerShown: false }} />
+        <Stack.Screen name="level" options={{ headerShown: false }} />
       </Stack>
 
       <StatusBar style="auto" />
