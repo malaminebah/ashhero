@@ -1,8 +1,8 @@
 import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { View, TextInput, Pressable, type TextStyle } from 'react-native'
+import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FLOW, flowFontFamily } from '@/constants/flowTheme'
-import { OnboardingMascot } from '@/src/features/onboarding/components/OnboardingMascot'
 import {
   DEFAULT_HERO_NAME,
   displayHeroName,
@@ -11,6 +11,8 @@ import {
 } from '../../utils/heroName'
 
 import type { ProfileHeroCardHandle, ProfileHeroCardParams } from '../../types'
+
+const heroAvatar = require('@/assets/caracter/hero-avatar.png')
 
 export type { ProfileHeroCardHandle } from '../../types'
 
@@ -36,7 +38,14 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
 
     return (
       <View className="mb-5 flex-row items-center gap-4">
-        <OnboardingMascot anim="idle" size="sm" />
+        <View className="h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-[20px] bg-flow-mascot">
+          <Image
+            source={heroAvatar}
+            style={{ width: 68, height: 68 }}
+            contentFit="contain"
+            accessibilityLabel="Avatar du héros"
+          />
+        </View>
         <View className="relative flex-1">
           <TextInput
             ref={inputRef}
