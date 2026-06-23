@@ -1,11 +1,9 @@
 export const arenaBackground = require('@/assets/combat/arena-bg.png')
 
-/** Sprite anchors inside the arena panel (combat modal + hub preview). */
+/** Sprite anchors inside the arena panel — Pokémon-style: boss top, player bottom, both centered. */
 export const ARENA_SPRITE_LAYOUT = {
-  player: { bottom: 24, left: 8 },
-  boss: { top: 64, right: 4 },
-  fxFromPlayer: { bottom: 112, left: 88 },
-  fxFromBoss: { bottom: 104, right: 72 },
+  player: { bottom: 28 },
+  boss: { top: 48 },
 } as const
 
 /** Source PNG: 1000×1200 portrait (5:6) — floor anchored bottom for mobile crop. */
