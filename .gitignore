@@ -67,6 +67,10 @@ coverage/
 # Agent rules — local only (not versioned)
 CURSOR.md
 
+# Claude Code — personal overrides (project settings.json is versioned)
+.claude/settings.local.json
+CLAUDE.local.md
+
 # RPG icon sheet — source + generated slices (scripts/slice-icon-sheet.py)
 assets/icons-source-sheet.png
 assets/icons/manifest.json
