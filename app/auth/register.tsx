@@ -106,7 +106,7 @@ export default function RegisterScreen() {
           <OnboardingText className="mt-8 text-center text-sm text-flow-muted">
             Déjà un compte ?
           </OnboardingText>
-          <Link href={'/auth/login' as never} asChild>
+          <Link href={'/auth/sign-in' as never} asChild>
             <Pressable className="items-center py-3">
               <OnboardingText className="text-base font-bold text-flow-text">Se connecter</OnboardingText>
             </Pressable>

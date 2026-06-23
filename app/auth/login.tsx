@@ -2,110 +2,64 @@ import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActio
 import { AuthEntryRedirect } from '@/src/features/auth/components/AuthEntryRedirect'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
-import { OnboardingInput } from '@/src/features/onboarding/components/OnboardingInput'
 import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
-import { Link, useRouter } from 'expo-router'
+import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { useState } from 'react'
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native'
+import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-export default function LoginScreen() {
+const welcomeHero = require('@/assets/images/welcome-hero.png')
+
+export default function WelcomeScreen() {
   const router = useRouter()
-  const { signIn, signInAsGuest, error, pending, clearError } = useEmailAuthActions()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { signInAsGuest, pending } = useEmailAuthActions()
 
-  const onSubmit = async () => {
-    clearError()
-    const uid = await signIn(email, password)
-    if (uid) router.replace('/' as never)
-  }
-
-  const onGuest = async () => {
-    clearError()
+  const onStart = async () => {
     const uid = await signInAsGuest()
     if (uid) router.replace('/' as never)
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-flow-bg">
+    <SafeAreaView className="flex-1 bg-flow-bg px-6">
       <AuthEntryRedirect />
       <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerClassName="flex-grow px-6 py-8"
-          showsVerticalScrollIndicator={false}
-        >
-          <View className="mb-10 items-center pt-6">
-            <OnboardingText className="text-[32px] font-bold text-flow-brand">ashhero</OnboardingText>
-            <OnboardingText className="mt-3 text-center text-[15px] text-flow-muted">
-              Ton coach anti-vape, version RPG.
-            </OnboardingText>
-          </View>
-
-          <OnboardingInput
-            label="E-mail"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="toi@exemple.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-          />
-          <OnboardingInput
-            label="Mot de passe"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="••••••••"
-            secureTextEntry
-            autoComplete="password"
+      <View className="flex-1 justify-between py-6">
+        <View className="flex-1 items-center justify-center">
+          <Image
+            source={welcomeHero}
+            style={{ width: '100%', height: 300 }}
+            contentFit="contain"
+            accessibilityLabel="Héros AshHero qui s'envole"
           />
 
-          <Link href={'/auth/forgot-password' as never} asChild>
-            <Pressable className="mb-6 self-end py-1">
-              <OnboardingText className="text-sm text-flow-cta">Mot de passe oublié</OnboardingText>
-            </Pressable>
-          </Link>
+          <OnboardingText className="mt-8 text-[30px] font-bold text-flow-brand">
+            ashhero
+          </OnboardingText>
+          <OnboardingText className="mt-3 text-center text-[22px] font-bold leading-7 text-flow-text">
+            Contrôle tes envies,{'\n'}contrôle ta vie.
+          </OnboardingText>
+        </View>
 
-          {error ? (
-            <OnboardingText className="mb-4 text-sm text-red-500">{error}</OnboardingText>
-          ) : null}
-
+        <View>
           <OnboardingPrimaryButton
-            label={pending ? '…' : 'Se connecter'}
-            onPress={onSubmit}
+            label={pending ? '…' : 'Commencer'}
+            onPress={onStart}
             disabled={pending}
           />
-
-          <OnboardingText className="mt-8 text-center text-sm text-flow-muted">
-            Pas de compte ?
+          <View className="mt-3">
+            <OnboardingSecondaryButton
+              label="J'ai déjà un compte"
+              onPress={() => router.push('/auth/sign-in' as never)}
+              disabled={pending}
+            />
+          </View>
+          <OnboardingText className="mt-6 text-center text-[11px] leading-4 text-flow-faint">
+            En continuant, tu acceptes nos conditions d&apos;utilisation et notre politique de
+            confidentialité.
           </OnboardingText>
-          <Link href={'/auth/register' as never} asChild>
-            <Pressable className="items-center py-3">
-              <OnboardingText className="text-base font-bold text-flow-text">
-                Créer un compte
-              </OnboardingText>
-            </Pressable>
-          </Link>
-
-          <View className="my-6 h-px bg-flow-border" />
-
-          <OnboardingText className="mb-4 text-center text-xs leading-5 text-flow-faint">
-            Démarrer sans e-mail (session anonyme). Pour retrouver tes données ailleurs, lie un
-            compte plus tard depuis le profil.
-          </OnboardingText>
-          <OnboardingSecondaryButton
-            label={pending ? '…' : 'Continuer en invité'}
-            onPress={onGuest}
-            disabled={pending}
-          />
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </View>
     </SafeAreaView>
   )
 }
