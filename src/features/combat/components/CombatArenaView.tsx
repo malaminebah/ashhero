@@ -22,11 +22,11 @@ export const CombatArenaView = ({
   const playerShake = useCombatShakeStyle(playerShakeKey, 'right')
 
   return (
-    <View className="max-h-full w-full flex-1 items-center justify-center">
+    <View className="max-h-full w-full flex-1">
       <ArenaBackgroundPanel
         variant="fill"
         tone="game"
-        className="rounded-2xl border border-white/10 bg-brand-bg"
+        className="flex-1 rounded-2xl border border-white/10 bg-brand-bg"
       >
         <Animated.View
           style={[playerShake, { position: 'absolute', zIndex: 10, ...ARENA_SPRITE_LAYOUT.player }]}
