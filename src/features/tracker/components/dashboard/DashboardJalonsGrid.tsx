@@ -1,4 +1,5 @@
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Pressable } from 'react-native'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FLOW } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
@@ -7,6 +8,7 @@ import { DASHBOARD_JALONS } from './jalonsConfig'
 import type { DashboardJalonsGridParams } from '../../types'
 
 export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParams) => {
+  const router = useRouter()
   const unlockedCount = DASHBOARD_JALONS.filter((j) => hoursSinceQuit >= j.hours).length
 
   return (
@@ -25,9 +27,12 @@ export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParam
         {DASHBOARD_JALONS.map((j) => {
           const active = hoursSinceQuit >= j.hours
           return (
-            <View
+            <Pressable
               key={j.key}
-              className={`w-[72px] items-center rounded-2xl border px-2 py-3 ${
+              onPress={() => router.push(`/jalon/${j.key}` as never)}
+              accessibilityRole="button"
+              accessibilityLabel={`Jalon ${j.label}`}
+              className={`w-[72px] items-center rounded-2xl border px-2 py-3 active:opacity-90 ${
                 active
                   ? 'border-flow-cta/35 bg-flow-secondary'
                   : 'border-flow-border bg-flow-bg'
@@ -47,7 +52,7 @@ export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParam
                   <MaterialIcons name="lock" size={16} color={FLOW.faint} />
                 )}
               </View>
-            </View>
+            </Pressable>
           )
         })}
       </ScrollView>

@@ -1,6 +1,7 @@
 import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Pressable } from 'react-native'
+import { useRouter } from 'expo-router'
 import { FLOW } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
 import { PROFILE_BADGES } from './badgeRules'
@@ -10,6 +11,7 @@ import type { ProfileBadgesGridParams } from '../../types'
 const ICON_SIZE = 48
 
 export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
+  const router = useRouter()
   const unlockedCount = PROFILE_BADGES.filter((b) => b.isUnlocked(stats)).length
 
   return (
@@ -28,9 +30,12 @@ export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
         {PROFILE_BADGES.map((badge) => {
           const active = badge.isUnlocked(stats)
           return (
-            <View
+            <Pressable
               key={badge.id}
-              className={`w-[88px] items-center rounded-2xl border px-2 py-3 ${
+              onPress={() => router.push(`/profile-badge/${badge.id}` as never)}
+              accessibilityRole="button"
+              accessibilityLabel={`Badge ${badge.name}`}
+              className={`w-[88px] items-center rounded-2xl border px-2 py-3 active:opacity-90 ${
                 active
                   ? 'border-flow-cta/35 bg-flow-secondary'
                   : 'border-flow-border bg-flow-bg'
@@ -60,7 +65,7 @@ export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
                   </View>
                 ) : null}
               </View>
-            </View>
+            </Pressable>
           )
         })}
       </ScrollView>

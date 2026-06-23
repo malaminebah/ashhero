@@ -165,6 +165,10 @@ export default function RootLayout() {
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="mood" options={{ headerShown: false }} />
+        <Stack.Screen name="jalon" options={{ headerShown: false }} />
+        <Stack.Screen name="defense-badge" options={{ headerShown: false }} />
+        <Stack.Screen name="profile-badge" options={{ headerShown: false }} />
+        <Stack.Screen name="stat" options={{ headerShown: false }} />
       </Stack>
 
       <StatusBar style="auto" />

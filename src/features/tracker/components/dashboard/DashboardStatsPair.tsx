@@ -1,4 +1,5 @@
-import { View } from 'react-native'
+import { View, Pressable } from 'react-native'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FLOW, flowShadow } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
@@ -28,6 +29,7 @@ export const DashboardStatsPair = ({
   avoidedTitle,
   avoidedSubtitle,
 }: DashboardStatsPairParams) => {
+  const router = useRouter()
   const moneyLabel = moneySaved.toLocaleString('fr-FR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -35,26 +37,40 @@ export const DashboardStatsPair = ({
 
   return (
     <View className="mb-8 flex-row gap-3">
-      <View
-        className="flex-1 rounded-2xl border border-flow-border bg-flow-bg p-4"
-        style={flowShadow.card}
+      <Pressable
+        onPress={() => router.push('/stat/money' as never)}
+        accessibilityRole="button"
+        accessibilityLabel="Détail argent économisé"
+        className="flex-1 active:opacity-90"
       >
+        <View
+          className="flex-1 rounded-2xl border border-flow-border bg-flow-bg p-4"
+          style={flowShadow.card}
+        >
         <MaterialIcons name="savings" size={22} color={FLOW.gold} />
         <FlowText className="mt-3 text-xs text-flow-muted">Argent économisé</FlowText>
         <FlowText className="mt-1 text-2xl font-bold text-flow-text">{moneyLabel} €</FlowText>
         <FlowText className="mt-0.5 text-xs text-flow-faint">Total économisé</FlowText>
         <MiniTrend variant="line" />
-      </View>
-      <View
-        className="flex-1 rounded-2xl border border-flow-border bg-flow-bg p-4"
-        style={flowShadow.card}
+        </View>
+      </Pressable>
+      <Pressable
+        onPress={() => router.push('/stat/avoided' as never)}
+        accessibilityRole="button"
+        accessibilityLabel={`Détail ${avoidedTitle}`}
+        className="flex-1 active:opacity-90"
       >
+        <View
+          className="flex-1 rounded-2xl border border-flow-border bg-flow-bg p-4"
+          style={flowShadow.card}
+        >
         <MaterialIcons name="cloud" size={22} color={FLOW.brand} />
         <FlowText className="mt-3 text-xs text-flow-muted">{avoidedTitle}</FlowText>
         <FlowText className="mt-1 text-2xl font-bold text-flow-text">{avoidedCount}</FlowText>
         <FlowText className="mt-0.5 text-xs text-flow-faint">{avoidedSubtitle}</FlowText>
         <MiniTrend variant="bars" />
-      </View>
+        </View>
+      </Pressable>
     </View>
   )
 }

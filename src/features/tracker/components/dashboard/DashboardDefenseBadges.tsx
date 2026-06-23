@@ -1,6 +1,7 @@
 import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Pressable } from 'react-native'
+import { useRouter } from 'expo-router'
 import { FLOW } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
 import { DEFENSE_BADGES } from './defenseBadgeAssets'
@@ -10,6 +11,7 @@ import type { DashboardDefenseBadgesParams } from '../../types'
 const ICON_SIZE = 48
 
 export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParams) => {
+  const router = useRouter()
   const unlockedCount = DEFENSE_BADGES.filter((b) =>
     isDefenseBadgeUnlocked(b.minDays, dayCount)
   ).length
@@ -30,9 +32,12 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
         {DEFENSE_BADGES.map((badge) => {
           const active = isDefenseBadgeUnlocked(badge.minDays, dayCount)
           return (
-            <View
+            <Pressable
               key={badge.key}
-              className={`w-[88px] items-center rounded-2xl border px-2 py-3 ${
+              onPress={() => router.push(`/defense-badge/${badge.key}` as never)}
+              accessibilityRole="button"
+              accessibilityLabel={`Badge de défense ${badge.label}`}
+              className={`w-[88px] items-center rounded-2xl border px-2 py-3 active:opacity-90 ${
                 active
                   ? 'border-flow-cta/35 bg-flow-secondary'
                   : 'border-flow-border bg-flow-bg'
@@ -61,7 +66,7 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
                   </View>
                 ) : null}
               </View>
-            </View>
+            </Pressable>
           )
         })}
       </ScrollView>

@@ -1,24 +1,36 @@
-import { View } from 'react-native'
+import { View, Pressable } from 'react-native'
+import { useRouter } from 'expo-router'
 import { flowShadow } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
 import type { ProfileStatsGridParams } from '../../types'
+import type { StatDetailKey } from '../statsDetailConfig'
 
-type CellProps = {
+type StatCellParams = {
   value: string | number
   label: string
+  statKey: StatDetailKey
 }
 
-function StatCell({ value, label }: CellProps) {
+function StatCell({ value, label, statKey }: StatCellParams) {
+  const router = useRouter()
+
   return (
-    <View
-      className="min-h-[76px] flex-1 items-center justify-center rounded-2xl border border-flow-border bg-flow-bg px-1.5 py-3"
-      style={flowShadow.card}
+    <Pressable
+      onPress={() => router.push(`/stat/${statKey}` as never)}
+      accessibilityRole="button"
+      accessibilityLabel={`Stat ${label}`}
+      className="min-h-[76px] flex-1 active:opacity-90"
     >
-      <FlowText className="text-center text-lg font-bold text-flow-text">{value}</FlowText>
-      <FlowText className="mt-1.5 text-center text-[10px] leading-3 text-flow-muted">
-        {label}
-      </FlowText>
-    </View>
+      <View
+        className="min-h-[76px] flex-1 items-center justify-center rounded-2xl border border-flow-border bg-flow-bg px-1.5 py-3"
+        style={flowShadow.card}
+      >
+        <FlowText className="text-center text-lg font-bold text-flow-text">{value}</FlowText>
+        <FlowText className="mt-1.5 text-center text-[10px] leading-3 text-flow-muted">
+          {label}
+        </FlowText>
+      </View>
+    </Pressable>
   )
 }
 
@@ -41,14 +53,14 @@ export const ProfileStatsGrid = ({
       <FlowText className="mb-3 text-sm font-bold text-flow-text">Tes stats</FlowText>
       <View className="gap-2">
         <View className="flex-row gap-2">
-          <StatCell value={dayCount} label="Jours sans vape" />
-          <StatCell value={combatsWon} label="Combats gagnés" />
-          <StatCell value={combatsLost} label="Combats perdus" />
+          <StatCell value={dayCount} label="Jours sans vape" statKey="days" />
+          <StatCell value={combatsWon} label="Combats gagnés" statKey="combats-won" />
+          <StatCell value={combatsLost} label="Combats perdus" statKey="combats-lost" />
         </View>
         <View className="flex-row gap-2">
-          <StatCell value={relapseCount ?? 0} label="Rechutes" />
-          <StatCell value={avoidedCount} label={avoidedLabel} />
-          <StatCell value={`${moneyLabel} €`} label="Argent économisé" />
+          <StatCell value={relapseCount ?? 0} label="Rechutes" statKey="relapses" />
+          <StatCell value={avoidedCount} label={avoidedLabel} statKey="avoided" />
+          <StatCell value={`${moneyLabel} €`} label="Argent économisé" statKey="money" />
         </View>
       </View>
     </View>
