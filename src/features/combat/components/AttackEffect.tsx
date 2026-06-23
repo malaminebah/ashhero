@@ -1,6 +1,4 @@
 import { useEffect } from 'react'
-import { Image } from 'expo-image'
-import { View } from 'react-native'
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -15,26 +13,17 @@ import {
   ATTACK_FX_FRAME_COUNT,
   ATTACK_FX_FRAME_MS,
   ATTACK_FX_FRAME_SIZE,
+  ATTACK_FX_ROWS,
   attackFxRow,
   attackSparkSheet,
 } from '../attackFxSheet'
-import { useSheetFrameAnim } from '../hooks/useSheetFrameAnim'
 import type { AttackEffectParams } from '../types'
-
-const AnimatedImage = Animated.createAnimatedComponent(Image)
-
-const sheetW = ATTACK_FX_FRAME_SIZE * ATTACK_FX_FRAME_COUNT
-const sheetH = ATTACK_FX_FRAME_SIZE * 9
-const viewport = Math.round(ATTACK_FX_FRAME_SIZE * ATTACK_FX_DISPLAY_SCALE)
+import { SheetSprite } from './SheetSprite'
 
 export const AttackEffect = ({ effect }: AttackEffectParams) => {
   const opacity = useSharedValue(0)
   const juiceScale = useSharedValue(0.65)
   const slideX = useSharedValue(0)
-  const frame = useSheetFrameAnim(
-    { frames: ATTACK_FX_FRAME_COUNT, frameMs: ATTACK_FX_FRAME_MS, loop: false },
-    effect ?? 'none'
-  )
 
   const playerAttacks = effect != null && effect !== 'boss'
 
@@ -72,20 +61,6 @@ export const AttackEffect = ({ effect }: AttackEffectParams) => {
     ],
   }))
 
-  const sheetStyle = useAnimatedStyle(() => ({
-    width: sheetW * ATTACK_FX_DISPLAY_SCALE,
-    height: sheetH * ATTACK_FX_DISPLAY_SCALE,
-    transform: [
-      { translateX: -frame.value * ATTACK_FX_FRAME_SIZE * ATTACK_FX_DISPLAY_SCALE },
-      {
-        translateY:
-          -(effect != null ? attackFxRow(effect) : 0) *
-          ATTACK_FX_FRAME_SIZE *
-          ATTACK_FX_DISPLAY_SCALE,
-      },
-    ],
-  }))
-
   if (effect == null) return null
 
   const anchor = playerAttacks ? ARENA_SPRITE_LAYOUT.fxFromPlayer : ARENA_SPRITE_LAYOUT.fxFromBoss
@@ -95,9 +70,19 @@ export const AttackEffect = ({ effect }: AttackEffectParams) => {
       style={[wrapperStyle, { position: 'absolute', zIndex: 20, ...anchor }]}
       pointerEvents="none"
     >
-      <View style={{ width: viewport, height: viewport, overflow: 'hidden' }}>
-        <AnimatedImage source={attackSparkSheet} style={sheetStyle} contentFit="fill" />
-      </View>
+      <SheetSprite
+        sheet={attackSparkSheet}
+        frameSize={ATTACK_FX_FRAME_SIZE}
+        sheetH={ATTACK_FX_FRAME_SIZE * ATTACK_FX_ROWS}
+        sheetCols={ATTACK_FX_FRAME_COUNT}
+        displayScale={ATTACK_FX_DISPLAY_SCALE}
+        row={attackFxRow(effect)}
+        frames={ATTACK_FX_FRAME_COUNT}
+        frameMs={ATTACK_FX_FRAME_MS}
+        loop={false}
+        animKey={effect}
+        accessibilityLabel=""
+      />
     </Animated.View>
   )
 }
