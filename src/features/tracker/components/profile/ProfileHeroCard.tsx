@@ -3,6 +3,7 @@ import { View, TextInput, Pressable, type TextStyle } from 'react-native'
 import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FLOW, flowFontFamily } from '@/constants/flowTheme'
+import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import {
   DEFAULT_HERO_NAME,
   displayHeroName,
@@ -38,7 +39,7 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
 
     return (
       <View className="mb-5 flex-row items-center gap-4">
-        <View className="h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-[20px] bg-flow-mascot">
+        <View className={`h-[72px] w-[72px] ${flowSurface.tile} items-center justify-center`}>
           <Image
             source={heroAvatar}
             style={{ width: 68, height: 68 }}
@@ -46,7 +47,7 @@ export const ProfileHeroCard = forwardRef<ProfileHeroCardHandle, ProfileHeroCard
             accessibilityLabel="Avatar du héros"
           />
         </View>
-        <View className="relative flex-1">
+        <View className="relative flex-1" style={flowCardShadow}>
           <TextInput
             ref={inputRef}
             value={draft}

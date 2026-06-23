@@ -13,7 +13,7 @@ export const ProfileHeader = ({ onEditPress }: ProfileHeaderParams) => (
         onPress={onEditPress}
         accessibilityRole="button"
         accessibilityLabel="Modifier le nom du héros"
-        className="absolute right-0 top-0 h-10 w-10 items-center justify-center rounded-full bg-flow-secondary active:opacity-70"
+        className="absolute right-0 top-0 h-10 w-10 items-center justify-center rounded-full border border-flow-border bg-flow-secondary active:opacity-70"
       >
         <MaterialIcons name="edit" size={20} color={FLOW.muted} />
       </Pressable>

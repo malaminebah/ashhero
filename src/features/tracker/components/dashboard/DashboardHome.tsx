@@ -23,8 +23,7 @@ export const DashboardHome = () => {
 
   const avoidedTitle =
     smokingType === 'cigarette' ? 'Cigarettes évitées' : 'Puffs évitées'
-  const avoidedSubtitle =
-    smokingType === 'cigarette' ? 'Cigarettes évitées' : 'Puffs évitées'
+  const avoidedSubtitle = 'Depuis ton arrêt'
 
   return (
     <ScrollView

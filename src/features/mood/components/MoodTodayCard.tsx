@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FLOW, flowShadow } from '@/constants/flowTheme'
+import { flowSurface } from '@/constants/flowSurfaces'
 import { FlowText } from '@/components/ui/flow-text'
 
 import type { MoodTodayCardParams } from '../types'
@@ -17,10 +18,10 @@ export const MoodTodayCard = ({ canFillToday, todayLabel }: MoodTodayCardParams)
       }
       accessibilityRole="button"
       accessibilityLabel="Suivi d'humeur"
-      className="mb-4 flex-row items-center rounded-2xl border border-flow-border bg-flow-bg p-4 active:opacity-90"
+      className={`mb-4 flex-row items-center p-4 active:opacity-90 ${flowSurface.card}`}
       style={flowShadow.card}
     >
-      <View className="relative mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-flow-secondary">
+      <View className={`relative mr-4 h-14 w-14 ${flowSurface.iconWell}`}>
         <MaterialCommunityIcons name="weather-partly-cloudy" size={28} color={FLOW.brand} />
         {!canFillToday ? (
           <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-flow-cta">

@@ -1,8 +1,9 @@
 import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { View, ScrollView, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import { FLOW } from '@/constants/flowTheme'
+import { badgeSurface, flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import { FlowText } from '@/components/ui/flow-text'
 import { DEFENSE_BADGES } from './defenseBadgeAssets'
 import { isDefenseBadgeUnlocked } from './defenseBadgesConfig'
@@ -24,11 +25,7 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
           {unlockedCount} / {DEFENSE_BADGES.length}
         </FlowText>
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 12, paddingRight: 4 }}
-      >
+      <View className="flex-row gap-3">
         {DEFENSE_BADGES.map((badge) => {
           const active = isDefenseBadgeUnlocked(badge.minDays, dayCount)
           return (
@@ -37,20 +34,18 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
               onPress={() => router.push(`/defense-badge/${badge.key}` as never)}
               accessibilityRole="button"
               accessibilityLabel={`Badge de défense ${badge.label}`}
-              className={`w-[88px] items-center rounded-2xl border px-2 py-3 active:opacity-90 ${
-                active
-                  ? 'border-flow-cta/35 bg-flow-secondary'
-                  : 'border-flow-border bg-flow-bg'
-              }`}
+              className={`${flowSurface.badge} ${badgeSurface(active)}`}
+              style={flowCardShadow}
             >
               <FlowText
                 className={`text-center text-[10px] font-bold ${
                   active ? 'text-flow-cta' : 'text-flow-faint'
                 }`}
+                numberOfLines={2}
               >
                 {badge.label}
               </FlowText>
-              <View className="relative mt-2 h-12 w-12 items-center justify-center">
+              <View className={`relative mt-2 h-12 w-12 ${flowSurface.iconWell}`}>
                 <Image
                   source={badge.source}
                   style={{
@@ -69,7 +64,7 @@ export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParam
             </Pressable>
           )
         })}
-      </ScrollView>
+      </View>
     </View>
   )
 }

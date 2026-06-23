@@ -2,10 +2,13 @@ import { View, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FLOW } from '@/constants/flowTheme'
+import { badgeSurface, flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import { FlowText } from '@/components/ui/flow-text'
 import { DASHBOARD_JALONS } from './jalonsConfig'
 
 import type { DashboardJalonsGridParams } from '../../types'
+
+const JALON_ROW_H = 88
 
 export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParams) => {
   const router = useRouter()
@@ -21,8 +24,10 @@ export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParam
       </View>
       <ScrollView
         horizontal
+        nestedScrollEnabled
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, paddingRight: 4 }}
+        style={{ height: JALON_ROW_H, flexGrow: 0 }}
+        contentContainerStyle={{ gap: 10, paddingRight: 4, alignItems: 'stretch' }}
       >
         {DASHBOARD_JALONS.map((j) => {
           const active = hoursSinceQuit >= j.hours
@@ -32,11 +37,8 @@ export const DashboardJalonsGrid = ({ hoursSinceQuit }: DashboardJalonsGridParam
               onPress={() => router.push(`/jalon/${j.key}` as never)}
               accessibilityRole="button"
               accessibilityLabel={`Jalon ${j.label}`}
-              className={`w-[72px] items-center rounded-2xl border px-2 py-3 active:opacity-90 ${
-                active
-                  ? 'border-flow-cta/35 bg-flow-secondary'
-                  : 'border-flow-border bg-flow-bg'
-              }`}
+              className={`${flowSurface.jalon} ${badgeSurface(active)}`}
+              style={[flowCardShadow, { height: JALON_ROW_H }]}
             >
               <FlowText
                 className={`text-center text-[10px] font-bold ${

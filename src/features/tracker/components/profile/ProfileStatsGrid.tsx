@@ -1,6 +1,6 @@
 import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { flowShadow } from '@/constants/flowTheme'
+import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import { FlowText } from '@/components/ui/flow-text'
 import type { ProfileStatsGridParams } from '../../types'
 import type { StatDetailKey } from '../statsDetailConfig'
@@ -22,8 +22,8 @@ function StatCell({ value, label, statKey }: StatCellParams) {
       className="min-h-[76px] flex-1 active:opacity-90"
     >
       <View
-        className="min-h-[76px] flex-1 items-center justify-center rounded-2xl border border-flow-border bg-flow-bg px-1.5 py-3"
-        style={flowShadow.card}
+        className={`min-h-[76px] flex-1 items-center justify-center px-1.5 py-3 ${flowSurface.card}`}
+        style={flowCardShadow}
       >
         <FlowText className="text-center text-lg font-bold text-flow-text">{value}</FlowText>
         <FlowText className="mt-1.5 text-center text-[10px] leading-3 text-flow-muted">

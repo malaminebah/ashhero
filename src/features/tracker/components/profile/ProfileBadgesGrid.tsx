@@ -3,6 +3,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { View, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import { FLOW } from '@/constants/flowTheme'
+import { badgeSurface, flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import { FlowText } from '@/components/ui/flow-text'
 import { PROFILE_BADGES } from './badgeRules'
 import { profileBadgeSource } from './profileBadgeAssets'
@@ -35,11 +36,8 @@ export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
               onPress={() => router.push(`/profile-badge/${badge.id}` as never)}
               accessibilityRole="button"
               accessibilityLabel={`Badge ${badge.name}`}
-              className={`w-[88px] items-center rounded-2xl border px-2 py-3 active:opacity-90 ${
-                active
-                  ? 'border-flow-cta/35 bg-flow-secondary'
-                  : 'border-flow-border bg-flow-bg'
-              }`}
+              className={`${flowSurface.badge} ${badgeSurface(active)}`}
+              style={flowCardShadow}
             >
               <FlowText
                 className={`text-center text-[10px] font-bold ${
@@ -49,7 +47,7 @@ export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
               >
                 {badge.name}
               </FlowText>
-              <View className="relative mt-2 h-12 w-12 items-center justify-center">
+              <View className={`relative mt-2 h-12 w-12 ${flowSurface.iconWell}`}>
                 <Image
                   source={profileBadgeSource(badge.asset)}
                   style={{
