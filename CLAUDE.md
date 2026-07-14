@@ -27,10 +27,23 @@ npx expo start
 ## Coding style
 
 - KISS, minimal diff, no drive-by refactors.
+- Code déclaratif : `map`/`filter`/`every` plutôt que boucles `for` — simple et compréhensible à la première lecture.
 - Reuse existing patterns before creating abstractions.
 - Comments only when non-obvious; English if needed. UI copy in French.
 - No commit / push / PR unless explicitly asked.
 - Conventional Commits in English (`feat(combat): …`).
+
+## Tests (non-negotiable)
+
+- **Given/When/Then = structure du corps du test** (3 blocs séparés par une ligne vide) : Given = données préparées, When = **une** action dont le résultat est capturé (`const result = …`), Then = assertions sur ce résultat. Pas de `expect(fn(x)).toBe(y)` inline qui fusionne When et Then. Le titre décrit le scénario.
+- **Boîte noire** : tester le comportement, jamais l'implémentation. Interdits :
+  - tautologie (re-calculer la formule du code dans le test),
+  - asserter des constantes de config une à une,
+  - `toEqual` sur la shape exacte d'un objet interne (préférer les invariants).
+  Litmus test : « si je réécris l'implémentation sans changer le comportement, le test passe-t-il encore ? »
+- **Isolation** : aucun état partagé entre tests ; mocks restaurés (`afterEach` + `vi.restoreAllMocks`).
+- **Edge cases obligatoires** : bornes (0, max, vide, null), transitions, cas limites réels.
+- **Priorité au structurant** (FSM combat, progression XP, calculs tracker, insights mood) — pas de tests triviaux pour la couverture.
 
 ## Communication
 
@@ -61,3 +74,11 @@ Pipeline:
 4. Test on device: idle loop, player attack, boss hurt, boss attack windup
 
 Key files: `SheetSprite.tsx`, `useSheetFrameAnim.ts`, `ArenaSprites.tsx`, `combatVisuals.ts`, `useTurnCombat.ts`.
+
+### Combat — interdits
+
+- Pas de nouveau composant sprite si `SheetSprite` suffit
+- Pas de `setInterval` pour les frames
+- Pas d'offsets magiques frame par frame
+- Pas de refactor hors combat
+- Toujours mesurer le PNG avant de changer `animConfig`

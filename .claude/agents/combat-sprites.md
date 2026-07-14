@@ -45,4 +45,12 @@ Pokémon-style: boss top-center (scaleX -1), player bottom-center. See `arenaAss
 - [ ] `npm test -- src/features/combat` passes
 - [ ] `npx tsc --noEmit` passes
 
+## Interdits
+
+- Pas de nouveau composant sprite si `SheetSprite` suffit
+- Pas de `setInterval` pour les frames
+- Pas d'offsets magiques frame par frame
+- Pas de refactor hors combat
+- Toujours mesurer le PNG avant de changer `animConfig`
+
 Reply in French. Minimal diff. No commit unless asked.
