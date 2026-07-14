@@ -14,8 +14,8 @@ ROWS = 8
 
 # (x0, x1) crops on perso.png — one row per soldierSheet animation row.
 FRAME_BOXES: list[list[tuple[int, int]]] = [
-    # idle — MARCHE (profile droite)
-    [(148, 181), (184, 217), (219, 252)],
+    # idle — IDLE (de dos, bande du haut)
+    [(28, 58), (68, 92), (101, 130)],
     # attackBreathe — RESPIRER (vert)
     [(401, 450), (461, 511), (520, 605)],
     # attackWater — EAU
@@ -33,7 +33,7 @@ FRAME_BOXES: list[list[tuple[int, int]]] = [
 ]
 
 ROW_Y: list[tuple[int, int]] = [
-    (40, 86),
+    (35, 85),
     (40, 86),
     (130, 175),
     (130, 175),

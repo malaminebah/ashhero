@@ -8,8 +8,8 @@ drift and head clipping caused by inconsistent per-frame anchoring.
 import sys
 from PIL import Image
 
-TOP_MARGIN = 4
-BOTTOM_MARGIN = 3
+TOP_MARGIN = 8
+BOTTOM_MARGIN = 6
 SIDE_MARGIN = 3
 FEET_BAND = 16  # px from content bottom used to find the horizontal foot center
 
@@ -37,6 +37,18 @@ def foot_center_x(cell, bbox):
     return wsum / total
 
 
+def clean_alpha(img: Image.Image) -> Image.Image:
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                px[x, y] = (0, 0, 0, 0)
+            elif r + g + b < 24 and a < 180:
+                px[x, y] = (0, 0, 0, 0)
+    return img
+
+
 def normalize(path, out, cols, rows, cell, mode="feet"):
     im = Image.open(path).convert("RGBA")
     dst = Image.new("RGBA", im.size, (0, 0, 0, 0))
@@ -51,11 +63,12 @@ def normalize(path, out, cols, rows, cell, mode="feet"):
             x0, y0, x1, y1 = bb
             w, h = x1 - x0, y1 - y0
             s = min(1.0, usable_h / h, usable_w / w)
-            content = src.crop(bb)
+            content = clean_alpha(src.crop(bb))
             if s < 1.0:
                 content = content.resize(
                     (max(1, round(w * s)), max(1, round(h * s))), Image.NEAREST
                 )
+                content = clean_alpha(content)
             cw, ch = content.size
             if mode == "feet":
                 fx = foot_center_x(src, bb)
@@ -66,7 +79,7 @@ def normalize(path, out, cols, rows, cell, mode="feet"):
             paste_y = cell - BOTTOM_MARGIN - ch
             paste_x = max(0, min(cell - cw, paste_x))
             paste_y = max(0, min(cell - ch, paste_y))
-            dst.alpha_composite(content, (c * cell + paste_x, r * cell + paste_y))
+            dst.paste(content, (c * cell + paste_x, r * cell + paste_y), content)
     dst.save(out)
     print("wrote", out, dst.size)
 
