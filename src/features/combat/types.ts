@@ -12,10 +12,25 @@ export type CombatPhase =
   | 'victory'
   | 'defeat'
 
+/** Craving intensity picked before combat — drives boss identity and difficulty. */
+export type CravingTier = 'soft' | 'medium' | 'hard'
+
+export type CravingTierConfig = {
+  label: string
+  bossName: string
+  bossHp: number
+  riposteMin: number
+  riposteMax: number
+  bossScale: number
+  victoryBonusXp: number
+  introText: string
+}
+
 export type BattleMessage =
   | { kind: 'idle' }
   | { kind: 'status'; text: string }
-  | { kind: 'player_hit'; actionLabel: string; damage: number }
+  | { kind: 'player_hit'; actionLabel: string; damage: number; crit: boolean }
+  | { kind: 'player_water'; damage: number; heal: number }
   | { kind: 'player_breathe'; grade: BreatheGrade; damage: number; heal: number }
   | { kind: 'boss_hit'; attackName: string; damage: number }
   | { kind: 'boss_countered'; attackName: string; bonusXp: number }
@@ -63,6 +78,7 @@ export type CombatActionVariant = 'breathe' | 'water' | 'distract' | 'special'
 
 export type CombatModalParams = {
   visible: boolean
+  tier: CravingTier
   onClose: () => void
 }
 
@@ -78,6 +94,7 @@ import type { StyleProp, ViewStyle } from 'react-native'
 
 export type CombatArenaViewParams = {
   phase: CombatPhase
+  bossTier: CravingTier
   bossDefeated: boolean
   bossShakeKey: number
   playerShakeKey: number
@@ -189,5 +206,5 @@ export type DefeatBannerParams = {
 }
 
 export type CombatArenaScreenParams = {
-  onLaunchCombat: () => void
+  onLaunchCombat: (tier: CravingTier) => void
 }

@@ -1,35 +1,76 @@
 import type { CombatAction } from '@/src/features/tracker/types'
-import type { BossAttackName } from './types'
+import type { BossAttackName, CravingTier, CravingTierConfig } from './types'
 import type { BreatheGrade } from './breatheCycle'
 
 export const COMBAT_PLAYER_MAX_HP = 100
 
-export const COMBAT_BOSS_BASE_HP = 78
-
-/** Boss HP scales with player level, capped so late levels stay winnable. */
-export function bossMaxHpForLevel(level: number): number {
-  return COMBAT_BOSS_BASE_HP + 13 * Math.min(Math.max(level, 1) - 1, 6)
+/**
+ * Difficulty comes from the craving tier the player picks, not from their level.
+ * Stronger craving → bigger boss, more HP, harder ripostes, better victory XP.
+ */
+export const CRAVING_TIERS: Record<CravingTier, CravingTierConfig> = {
+  soft: {
+    label: 'Envie douce',
+    bossName: 'Brume',
+    bossHp: 120,
+    riposteMin: 10,
+    riposteMax: 16,
+    bossScale: 0.85,
+    victoryBonusXp: 0,
+    introText: 'Brume apparaît dans un nuage léger…',
+  },
+  medium: {
+    label: 'Envie moyenne',
+    bossName: 'Fumée',
+    bossHp: 160,
+    riposteMin: 14,
+    riposteMax: 22,
+    bossScale: 1,
+    victoryBonusXp: 15,
+    introText: 'Fumée apparaît, bien décidée à rester !',
+  },
+  hard: {
+    label: 'Envie forte',
+    bossName: 'Tempête',
+    bossHp: 210,
+    riposteMin: 20,
+    riposteMax: 30,
+    bossScale: 1.25,
+    victoryBonusXp: 35,
+    introText: 'Tempête déferle sur l’arène !',
+  },
 }
 
-/** breathe deals light damage — its real value is the heal (see BREATHE_RESULT). */
+export const CRAVING_TIER_ORDER: CravingTier[] = ['soft', 'medium', 'hard']
+
+/**
+ * Action roles: distract = main damage, water = heal (splash chip damage),
+ * breathe = skill move (real values per grade in BREATHE_RESULT), special = nuke.
+ */
 export const DAMAGE_TO_BOSS: Record<CombatAction, number> = {
-  breathe: 12,
-  water: 16,
-  distract: 20,
-  special: 70,
+  breathe: 2,
+  water: 8,
+  distract: 22,
+  special: 50,
 }
+
+/** Water is the recovery move — restores player HP on top of its splash damage. */
+export const WATER_HEAL = 22
 
 /** Heal to player + damage to boss, by breathing precision grade. */
 export const BREATHE_RESULT: Record<BreatheGrade, { heal: number; damage: number }> = {
-  perfect: { heal: 24, damage: 16 },
-  good: { heal: 16, damage: 12 },
-  off: { heal: 8, damage: 8 },
+  perfect: { heal: 12, damage: 3 },
+  good: { heal: 10, damage: 2 },
+  off: { heal: 5, damage: 1 },
 }
 
-/** Riposte scales with player level: lvl 1 → 12–20, lvl 6+ → 22–30. */
-export function rollBossRiposteDamage(level: number): number {
-  const tier = Math.min(Math.max(level, 1) - 1, 5)
-  return 12 + tier * 2 + Math.floor(Math.random() * 9)
+/** Pure attacks (distract/special) can crit — utility moves (water/breathe) cannot. */
+export const CRIT_CHANCE = 0.15
+export const CRIT_MULTIPLIER = 1.5
+
+export function rollBossRiposteDamage(tier: CravingTier): number {
+  const { riposteMin, riposteMax } = CRAVING_TIERS[tier]
+  return riposteMin + Math.floor(Math.random() * (riposteMax - riposteMin + 1))
 }
 
 export const BOSS_ATTACK_NAMES: BossAttackName[] = [
@@ -66,7 +107,7 @@ export function combatActionLabel(action: CombatAction): string {
 }
 
 export const COMBAT_BREATHE_STATUS =
-  '3 inspirations — tape l\'écran à chaque « Inspire » pour rester dans le rythme.'
+  '10 secondes — tape l\'écran sur « Inspire » pour rester dans le rythme.'
 
 export const COMBAT_SPECIAL_LOCKED_HINT = '100 XP gagnés'
 

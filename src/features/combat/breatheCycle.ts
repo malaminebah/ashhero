@@ -1,4 +1,5 @@
-export const BREATHE_CYCLE_COUNT = 3
+/** One deep 10 s cycle (3+4+3) — combat pacing wants a short exercise. */
+export const BREATHE_CYCLE_COUNT = 1
 export const BREATHE_COUNTDOWN_SEC = 3
 export const BREATHE_INHALE_SEC = 4
 export const BREATHE_EXHALE_SEC = 3

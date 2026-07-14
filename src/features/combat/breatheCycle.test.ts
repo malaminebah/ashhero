@@ -26,17 +26,15 @@ describe('advanceBreatheStep', () => {
 
   it(`
     Given a running cycle
-    When steps advance from inhale to rest
-    Then phases chain inhale → exhale → rest → next cycle countdown
+    When the inhale ends and when a rest ends
+    Then inhale chains to exhale and rest chains to the next cycle countdown
   `, () => {
     const cycle = 1
 
     const afterInhale = advanceBreatheStep('inhale', cycle)
-    const afterExhale = advanceBreatheStep('exhale', cycle)
     const afterRest = advanceBreatheStep('rest', cycle)
 
     expect(afterInhale).toEqual({ phase: 'exhale', cycleIndex: 1, completed: false })
-    expect(afterExhale).toEqual({ phase: 'rest', cycleIndex: 1, completed: false })
     expect(afterRest).toEqual({ phase: 'countdown', cycleIndex: 2, completed: false })
   })
 

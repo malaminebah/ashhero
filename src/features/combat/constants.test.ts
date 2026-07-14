@@ -3,9 +3,9 @@ import {
   BOSS_ATTACK_NAMES,
   BOSS_COUNTER_ACTION,
   BREATHE_RESULT,
-  bossMaxHpForLevel,
-  COMBAT_BOSS_BASE_HP,
   combatActionLabel,
+  CRAVING_TIER_ORDER,
+  CRAVING_TIERS,
   DAMAGE_TO_BOSS,
   rollBossRiposteDamage,
 } from './constants'
@@ -16,89 +16,56 @@ describe('rollBossRiposteDamage', () => {
   })
 
   it(`
-    Given level 1 and Math.random returns 0
+    Given each craving tier and Math.random returns 0
     When rollBossRiposteDamage is called
-    Then the minimum damage 12 is returned
+    Then the tier minimum is returned
   `, () => {
     vi.spyOn(Math, 'random').mockReturnValue(0)
 
-    const damage = rollBossRiposteDamage(1)
+    const damages = CRAVING_TIER_ORDER.map((tier) => rollBossRiposteDamage(tier))
 
-    expect(damage).toBe(12)
+    expect(damages).toEqual(CRAVING_TIER_ORDER.map((tier) => CRAVING_TIERS[tier].riposteMin))
   })
 
   it(`
-    Given level 1 and Math.random returns just below 1
+    Given each craving tier and Math.random returns just below 1
     When rollBossRiposteDamage is called
-    Then the maximum damage 20 is returned
+    Then the tier maximum is returned (inclusive bound)
   `, () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.999999)
 
-    const damage = rollBossRiposteDamage(1)
+    const damages = CRAVING_TIER_ORDER.map((tier) => rollBossRiposteDamage(tier))
 
-    expect(damage).toBe(20)
-  })
-
-  it(`
-    Given level 6 and Math.random returns 0
-    When rollBossRiposteDamage is called
-    Then the level tier adds +10 damage
-  `, () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0)
-
-    const damage = rollBossRiposteDamage(6)
-
-    expect(damage).toBe(22)
-  })
-
-  it(`
-    Given a level above the scaling cap
-    When rollBossRiposteDamage is called
-    Then damage stays at the level 6 tier
-  `, () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0)
-
-    const damage = rollBossRiposteDamage(10)
-
-    expect(damage).toBe(22)
+    expect(damages).toEqual(CRAVING_TIER_ORDER.map((tier) => CRAVING_TIERS[tier].riposteMax))
   })
 })
 
-describe('bossMaxHpForLevel', () => {
+describe('CRAVING_TIERS', () => {
   it(`
-    Given level 1
-    When bossMaxHpForLevel is called
-    Then the base HP is returned
+    Given the three craving tiers from soft to hard
+    When their combat stats are compared
+    Then every stat strictly escalates with the craving intensity
   `, () => {
-    const level = 1
+    const [soft, medium, hard] = CRAVING_TIER_ORDER.map((tier) => CRAVING_TIERS[tier])
 
-    const maxHp = bossMaxHpForLevel(level)
+    const pairs = [
+      [soft, medium],
+      [medium, hard],
+    ] as const
 
-    expect(maxHp).toBe(COMBAT_BOSS_BASE_HP)
-  })
-
-  it(`
-    Given level 3
-    When bossMaxHpForLevel is called
-    Then HP grows by 13 per level
-  `, () => {
-    const level = 3
-
-    const maxHp = bossMaxHpForLevel(level)
-
-    expect(maxHp).toBe(COMBAT_BOSS_BASE_HP + 26)
-  })
-
-  it(`
-    Given a level above the scaling cap
-    When bossMaxHpForLevel is called
-    Then HP stays at the level 7 cap
-  `, () => {
-    const level = 10
-
-    const maxHp = bossMaxHpForLevel(level)
-
-    expect(maxHp).toBe(COMBAT_BOSS_BASE_HP + 13 * 6)
+    const hpEscalates = pairs.every(([lower, higher]) => higher.bossHp > lower.bossHp)
+    const riposteEscalates = pairs.every(
+      ([lower, higher]) =>
+        higher.riposteMin > lower.riposteMin && higher.riposteMax > lower.riposteMax
+    )
+    const sizeEscalates = pairs.every(([lower, higher]) => higher.bossScale > lower.bossScale)
+    const rewardEscalates = pairs.every(
+      ([lower, higher]) => higher.victoryBonusXp > lower.victoryBonusXp
+    )
+    expect(hpEscalates).toBe(true)
+    expect(riposteEscalates).toBe(true)
+    expect(sizeEscalates).toBe(true)
+    expect(rewardEscalates).toBe(true)
   })
 })
 
@@ -185,13 +152,13 @@ describe('DAMAGE_TO_BOSS', () => {
   })
 
   it(`
-    Given breathe is the healing action
-    When its damage is compared to the DPS actions
-    Then breathe deals the lightest hit
+    Given water and breathe are the utility actions
+    When their damage is compared to the main attack
+    Then both hit lighter than distract
   `, () => {
     const { breathe, water, distract } = DAMAGE_TO_BOSS
 
-    expect(breathe).toBeLessThan(water)
+    expect(water).toBeLessThan(distract)
     expect(breathe).toBeLessThan(distract)
   })
 })
