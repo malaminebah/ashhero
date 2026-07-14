@@ -30,6 +30,7 @@ function makeStore(overrides: Partial<TrackerStore> = {}): TrackerStore {
     relapse: noop,
     winCombat: noop,
     loseCombat: noop,
+    addXp: noop,
     setHeroName: noop,
     ...overrides,
   }
