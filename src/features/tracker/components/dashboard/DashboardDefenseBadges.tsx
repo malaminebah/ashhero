@@ -1,66 +1,67 @@
-import { Image } from 'expo-image'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { FLOW } from '@/constants/flowTheme'
-import { badgeSurface, flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
+import { GameCard } from '@/components/ui/game-card'
+import { GameIcon } from '@/components/ui/game-icon'
+import { GameLabel } from '@/components/ui/game-label'
 import { FlowText } from '@/components/ui/flow-text'
-import { DEFENSE_BADGES } from './defenseBadgeAssets'
-import { isDefenseBadgeUnlocked } from './defenseBadgesConfig'
+import { DEFENSE_BADGE_RULES, isDefenseBadgeUnlocked } from './defenseBadgesConfig'
 import type { DashboardDefenseBadgesParams } from '../../types'
 
-const ICON_SIZE = 48
+const ROW_TINT = {
+  week1: { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+  week2: { color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
+  week3: { color: '#a855f7', bg: 'rgba(168,85,247,0.15)' },
+} as const
 
 export const DashboardDefenseBadges = ({ dayCount }: DashboardDefenseBadgesParams) => {
   const router = useRouter()
-  const unlockedCount = DEFENSE_BADGES.filter((b) =>
-    isDefenseBadgeUnlocked(b.minDays, dayCount)
-  ).length
 
   return (
-    <View className="mb-6">
-      <View className="mb-3 flex-row items-center justify-between">
-        <FlowText className="text-sm font-bold text-flow-text">Badges de défense</FlowText>
-        <FlowText className="text-xs text-flow-faint">
-          {unlockedCount} / {DEFENSE_BADGES.length}
-        </FlowText>
-      </View>
-      <View className="flex-row gap-3">
-        {DEFENSE_BADGES.map((badge) => {
-          const active = isDefenseBadgeUnlocked(badge.minDays, dayCount)
+    <View className="mt-5">
+      <GameLabel>Tes défenses</GameLabel>
+      <View className="mt-2.5 gap-2.5">
+        {DEFENSE_BADGE_RULES.map((badge) => {
+          const unlocked = isDefenseBadgeUnlocked(badge.minDays, dayCount)
+          const tint = ROW_TINT[badge.asset]
           return (
             <Pressable
               key={badge.key}
               onPress={() => router.push(`/defense-badge/${badge.key}` as never)}
               accessibilityRole="button"
-              accessibilityLabel={`Badge de défense ${badge.label}`}
-              className={`${flowSurface.badge} ${badgeSurface(active)}`}
-              style={flowCardShadow}
+              accessibilityLabel={`Badge de défense ${badge.title}`}
+              className="active:opacity-90"
+              style={{ opacity: unlocked ? 1 : 0.55 }}
             >
-              <FlowText
-                className={`text-center text-[10px] font-bold ${
-                  active ? 'text-flow-cta' : 'text-flow-faint'
-                }`}
-                numberOfLines={2}
-              >
-                {badge.label}
-              </FlowText>
-              <View className={`relative mt-2 h-12 w-12 ${flowSurface.iconWell}`}>
-                <Image
-                  source={badge.source}
-                  style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                    opacity: active ? 1 : 0.35,
-                  }}
-                  contentFit="contain"
-                />
-                {!active ? (
-                  <View className="absolute inset-0 items-center justify-center">
-                    <MaterialIcons name="lock" size={18} color={FLOW.faint} />
+              <GameCard className="flex-row items-center justify-between px-4 py-3.5">
+                <View className="flex-row items-center gap-3">
+                  <View
+                    className="h-10 w-10 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: unlocked ? tint.bg : 'rgba(148,163,184,0.12)' }}
+                  >
+                    <GameIcon
+                      name={unlocked ? 'shield' : 'lock'}
+                      size={unlocked ? 20 : 18}
+                      color={unlocked ? tint.color : '#8b7aa8'}
+                    />
                   </View>
-                ) : null}
-              </View>
+                  <View>
+                    <FlowText className="text-sm font-extrabold text-white">
+                      {badge.title}
+                    </FlowText>
+                    <GameLabel className="mt-0.5 normal-case tracking-normal">
+                      {unlocked
+                        ? badge.label + ' sans vape'
+                        : `Se débloque à ${badge.minDays} jours`}
+                    </GameLabel>
+                  </View>
+                </View>
+                <FlowText
+                  className="text-sm font-bold"
+                  style={{ color: unlocked ? tint.color : '#8b7aa8' }}
+                >
+                  {unlocked ? `+${badge.healthBonusPercent} DÉF` : '?'}
+                </FlowText>
+              </GameCard>
             </Pressable>
           )
         })}

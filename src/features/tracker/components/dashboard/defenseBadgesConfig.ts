@@ -52,5 +52,18 @@ export function isDefenseBadgeUnlocked(minDays: number, dayCount: number): boole
   return dayCount >= minDays
 }
 
+/** Highest health bonus among unlocked defense badges (10 → 20 → 30 %). */
+export function getDefenseHealthBonusPercent(dayCount: number): number {
+  return DEFENSE_BADGE_RULES.reduce((best, rule) => {
+    if (!isDefenseBadgeUnlocked(rule.minDays, dayCount)) return best
+    return Math.max(best, rule.healthBonusPercent)
+  }, 0)
+}
+
+export function playerEffectiveMaxHp(baseMax: number, bonusPercent: number): number {
+  if (bonusPercent <= 0) return baseMax
+  return Math.round(baseMax * (1 + bonusPercent / 100))
+}
+
 export const getDefenseBadgeByKey = (key: string): DefenseBadgeRule | undefined =>
   DEFENSE_BADGE_RULES.find((b) => b.key === key)
