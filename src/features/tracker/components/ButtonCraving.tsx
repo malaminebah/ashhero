@@ -10,9 +10,11 @@ export const ButtonCraving = () => {
   return (
     <Pressable
       onPress={() => relapse(getDayCount(quiteDate))}
-      className="mt-2 w-full items-center justify-center rounded-full border border-red-300 bg-red-50 py-4 active:opacity-90"
+      accessibilityRole="button"
+      accessibilityLabel="J'ai rechuté"
+      className="mt-2 min-h-[52px] w-full items-center justify-center rounded-full border border-[rgba(239,68,68,0.5)] bg-[rgba(239,68,68,0.1)] py-4 active:opacity-90"
     >
-      <FlowText className="text-sm font-bold text-red-500">J&apos;ai rechuté</FlowText>
+      <FlowText className="text-sm font-bold text-brand-red">J&apos;ai rechuté</FlowText>
     </Pressable>
   )
 }

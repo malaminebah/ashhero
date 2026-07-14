@@ -1,6 +1,6 @@
-import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { FlipDetailScreen } from '@/components/ui/flip-detail-screen'
+import { HexBadge, type HexBadgeTint } from '@/components/ui/hex-badge'
 import {
   FlipDetailBackBody,
   FlipDetailBackHeader,
@@ -14,23 +14,25 @@ import {
   FlipDetailStatusChip,
   FlipDetailTitle,
 } from '@/components/ui/flip-detail-parts'
-import { DEFENSE_BADGES } from '@/src/features/tracker/components/dashboard/defenseBadgeAssets'
 import {
   getDefenseBadgeByKey,
   isDefenseBadgeUnlocked,
 } from '@/src/features/tracker/components/dashboard/defenseBadgesConfig'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
 
-const ICON_SIZE = 72
+const DEFENSE_TINT: Record<string, HexBadgeTint> = {
+  week1: 'blue',
+  week2: 'green',
+  week3: 'violet',
+}
 
 export default function DefenseBadgeDetailScreen() {
   const router = useRouter()
   const { key } = useLocalSearchParams<{ key: string }>()
   const { dayCount } = useStats()
   const rule = key ? getDefenseBadgeByKey(key) : undefined
-  const badge = rule ? DEFENSE_BADGES.find((b) => b.key === rule.key) : undefined
 
-  if (!rule || !badge) {
+  if (!rule) {
     return (
       <FlipDetailScreen
         onClose={() => router.back()}
@@ -50,14 +52,11 @@ export default function DefenseBadgeDetailScreen() {
       front={
         <FlipDetailFront>
           <FlipDetailIconWell locked={!unlocked}>
-            <Image
-              source={badge.source}
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-                opacity: unlocked ? 1 : 0.4,
-              }}
-              contentFit="contain"
+            <HexBadge
+              icon="shield"
+              tint={DEFENSE_TINT[rule.key] ?? 'blue'}
+              size={62}
+              locked={!unlocked}
             />
           </FlipDetailIconWell>
           <FlipDetailEyebrow>{rule.label}</FlipDetailEyebrow>

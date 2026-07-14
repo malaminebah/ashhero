@@ -15,6 +15,9 @@ const initialState: TrackerConfig = {
   vapeMlPerWeek: null,
   quitDate: null,
   isFirstTime: null,
+  yearsUsing: null,
+  triggers: [],
+  motivations: [],
   unlockedEtapes: [],
   relapseCount: 0,
   bestStreak: 0,
@@ -64,6 +67,21 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         set((state) => ({
           combatsLost: state.combatsLost + 1,
         })),
+      addXp: (amount) => {
+        if (amount <= 0) return
+        set((state) => {
+          const newXp = state.xp + amount
+          return { xp: newXp, level: levelFromXp(newXp) }
+        })
+        const uid = getCurrentUid()
+        if (!uid) {
+          console.warn('[tracker] addXp: uid null, Firestore not called')
+          return
+        }
+        void saveProfile(uid, trackerProfileFromStore(get())).catch((err) =>
+          console.warn('[tracker] addXp sync', err)
+        )
+      },
       setHeroName: (name) => {
         const heroName = normalizeHeroName(name)
         if (heroName === get().heroName) return
@@ -91,6 +109,9 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         vapeMlPerWeek: state.vapeMlPerWeek,
         smokingType: state.smokingType,
         isFirstTime: state.isFirstTime,
+        yearsUsing: state.yearsUsing,
+        triggers: state.triggers,
+        motivations: state.motivations,
         unlockedEtapes: state.unlockedEtapes,
         relapseCount: state.relapseCount,
         bestStreak: state.bestStreak,
@@ -114,6 +135,9 @@ export const useTrackerStore = create<TrackerConfig & TrackerActions>()(
         if (typeof state.vapeBottleVolumeMl !== 'number') state.vapeBottleVolumeMl = null
         if (typeof state.vapeBottlePriceEuro !== 'number') state.vapeBottlePriceEuro = null
         if (typeof state.vapeMlPerWeek !== 'number') state.vapeMlPerWeek = null
+        if (typeof state.yearsUsing !== 'number') state.yearsUsing = null
+        if (!Array.isArray(state.triggers)) state.triggers = []
+        if (!Array.isArray(state.motivations)) state.motivations = []
       },
     }
   )

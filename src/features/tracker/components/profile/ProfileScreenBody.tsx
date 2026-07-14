@@ -1,7 +1,10 @@
 import { useRef } from 'react'
 import { View, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FlowText } from '@/components/ui/flow-text'
+import { ChunkyButton, CHUNKY_COLORS } from '@/components/ui/chunky-button'
+import { floatingTabClearance } from '@/src/features/navigation/floatingTabBar'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { useOnboardingStore } from '@/src/features/onboarding/store'
 import { ButtonCraving } from '../ButtonCraving'
@@ -14,7 +17,7 @@ import {
   ProfileHeroCard,
   type ProfileHeroCardHandle,
 } from './ProfileHeroCard'
-import { ProfileProgressPair } from './ProfileProgressPair'
+import { ProfileJourneySection } from './ProfileJourneySection'
 import { ProfileLevelsGrid } from './ProfileLevelsGrid'
 import { ProfileStatsGrid } from './ProfileStatsGrid'
 import { ProfileBadgesGrid } from './ProfileBadgesGrid'
@@ -23,6 +26,7 @@ import type { ProfileBadgeStats } from './badgeRules'
 
 export const ProfileScreenBody = () => {
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const heroRef = useRef<ProfileHeroCardHandle>(null)
   const reset = useTrackerStore((s) => s.reset)
   const smokingType = useTrackerStore((s) => s.smokingType)
@@ -66,17 +70,23 @@ export const ProfileScreenBody = () => {
   }
 
   return (
-    <ScrollView className="flex-1 bg-flow-bg" showsVerticalScrollIndicator={false}>
-      <View className="px-6 pb-10 pt-12">
+    <ScrollView
+      className="flex-1 bg-brand-bg"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        paddingTop: insets.top + 16,
+        paddingBottom: floatingTabClearance(insets.bottom),
+      }}
+    >
+      <View className="px-5 pb-10">
         <ProfileHeader onEditPress={() => heroRef.current?.focusName()} />
         <ProfileHeroCard
           ref={heroRef}
           level={level}
+          xp={xp}
           heroName={heroName}
           onSaveName={setHeroName}
         />
-        <ProfileProgressPair level={level} xp={xp} />
-        <ProfileLevelsGrid level={level} xp={xp} />
         <ProfileStatsGrid
           dayCount={dayCount}
           moneySaved={moneySaved}
@@ -86,16 +96,28 @@ export const ProfileScreenBody = () => {
           combatsLost={combatsLost}
           relapseCount={relapseCount ?? 0}
         />
+        <ProfileJourneySection />
         <ProfileBadgesGrid stats={badgeStats} />
+        <ProfileLevelsGrid level={level} xp={xp} />
         <ProfileAvatarsSection level={level} />
 
-        <View className="mt-6 gap-3">
+        <View className="mt-4">
+          <ChunkyButton
+            label="Une envie, là ? Combats-la"
+            palette={CHUNKY_COLORS.violet}
+            height={56}
+            fontSize={15}
+            onPress={() => router.push('/(tabs)/combat' as never)}
+          />
+        </View>
+
+        <View className="mt-4 gap-3">
           <ButtonCraving />
           <ButtonReset onAfterReset={onResetAll} />
         </View>
 
         <Pressable onPress={onRestartFlow} className="mt-8 items-center py-3 active:opacity-80">
-          <FlowText className="text-xs text-flow-faint">Recommencer le parcours (test)</FlowText>
+          <FlowText className="text-xs text-brand-locked">Recommencer le parcours (test)</FlowText>
         </Pressable>
       </View>
     </ScrollView>

@@ -1,6 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { FLOW } from '@/constants/flowTheme'
 import { FlipDetailScreen } from '@/components/ui/flip-detail-screen'
 import {
   FlipDetailBackBody,
@@ -50,7 +49,7 @@ export default function JalonDetailScreen() {
             <MaterialIcons
               name={unlocked ? 'check-circle' : 'flag'}
               size={44}
-              color={unlocked ? FLOW.cta : FLOW.faint}
+              color={unlocked ? '#22c55e' : '#5b4a75'}
             />
           </FlipDetailIconWell>
           <FlipDetailEyebrow>{jalon.label}</FlipDetailEyebrow>

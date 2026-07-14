@@ -30,7 +30,11 @@ describe('getDayCount', () => {
     When getDayCount is called
     Then the result is 0
   `, () => {
-    expect(getDayCount(null)).toBe(0)
+    const quitDate = null
+
+    const days = getDayCount(quitDate)
+
+    expect(days).toBe(0)
   })
 
   it(`
@@ -39,7 +43,10 @@ describe('getDayCount', () => {
     Then the result is 2 full days
   `, () => {
     const quitDate = new Date('2026-06-13T12:00:00.000Z')
-    expect(getDayCount(quitDate)).toBe(2)
+
+    const days = getDayCount(quitDate)
+
+    expect(days).toBe(2)
   })
 
   it(`
@@ -48,7 +55,10 @@ describe('getDayCount', () => {
     Then the result is 0
   `, () => {
     const quitDate = new Date('2026-06-16T12:00:00.000Z')
-    expect(getDayCount(quitDate)).toBe(0)
+
+    const days = getDayCount(quitDate)
+
+    expect(days).toBe(0)
   })
 })
 
@@ -69,7 +79,11 @@ describe('getMoneySaved', () => {
     When money saved is computed (cigarette)
     Then the amount is 0
   `, () => {
-    expect(getMoneySaved('cigarette', null, 20, 15, null)).toBe(0)
+    const quitDate = null
+
+    const saved = getMoneySaved('cigarette', quitDate, 20, 15, null)
+
+    expect(saved).toBe(0)
   })
 
   it(`
@@ -77,7 +91,12 @@ describe('getMoneySaved', () => {
     When getMoneySaved is called
     Then (30×20/20)×15 = €450
   `, () => {
-    expect(getMoneySaved('cigarette', quit30DaysAgo, 20, 15, null)).toBe(450)
+    const perDay = 20
+    const pricePerPack = 15
+
+    const saved = getMoneySaved('cigarette', quit30DaysAgo, perDay, pricePerPack, null)
+
+    expect(saved).toBe(450)
   })
 
   it(`
@@ -85,10 +104,12 @@ describe('getMoneySaved', () => {
     When getMoneySaved is called
     Then (days/7) × (ml/week × €/ml) with €/ml = 9/50
   `, () => {
+    const pricing = vape50ml9eur35ml
+
     // 30/7 * 35 * (9/50) = 27
-    expect(
-      getMoneySaved('vape', quit30DaysAgo, 10, null, vape50ml9eur35ml)
-    ).toBe(27)
+    const saved = getMoneySaved('vape', quit30DaysAgo, 10, null, pricing)
+
+    expect(saved).toBe(27)
   })
 
   it(`
@@ -96,22 +117,36 @@ describe('getMoneySaved', () => {
     When pricePerPack and quantity are used as fallback
     Then legacy formula days × sessions × price applies
   `, () => {
-    expect(
-      getMoneySaved('vape', quit30DaysAgo, 10, 0.5, {
-        bottleVolumeMl: null,
-        bottlePriceEuro: null,
-        mlPerWeek: null,
-      })
-    ).toBe(150)
+    const legacyPricing = { bottleVolumeMl: null, bottlePriceEuro: null, mlPerWeek: null }
+
+    const saved = getMoneySaved('vape', quit30DaysAgo, 10, 0.5, legacyPricing)
+
+    expect(saved).toBe(150)
   })
 })
 
 describe('getLifeRegainedMinutes', () => {
-  it('applies 11 minutes per cigarette avoided', () => {
-    expect(getLifeRegainedMinutes('cigarette', 20)).toBe(220)
+  it(`
+    Given 20 cigarettes avoided
+    When life regained is computed
+    Then 11 minutes per cigarette gives 220 minutes
+  `, () => {
+    const avoided = 20
+
+    const minutes = getLifeRegainedMinutes('cigarette', avoided)
+
+    expect(minutes).toBe(220)
   })
 
-  it('applies 3.75 minutes per vape equivalent avoided', () => {
-    expect(getLifeRegainedMinutes('vape', 88)).toBe(330)
+  it(`
+    Given 88 vape equivalents avoided
+    When life regained is computed
+    Then 3.75 minutes per unit gives 330 minutes
+  `, () => {
+    const avoided = 88
+
+    const minutes = getLifeRegainedMinutes('vape', avoided)
+
+    expect(minutes).toBe(330)
   })
 })

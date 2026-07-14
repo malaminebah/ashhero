@@ -2,11 +2,12 @@ import { ScrollView, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import { FlowBackButton } from '@/components/ui/flow-back-button'
 import { FlowText } from '@/components/ui/flow-text'
-import { FLOW } from '@/constants/flowTheme'
-import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
+import { GameCard } from '@/components/ui/game-card'
+import { GameIcon } from '@/components/ui/game-icon'
+import { GameLabel } from '@/components/ui/game-label'
+import { XpBar } from '@/components/ui/xp-bar'
 import { LevelStepRow } from '@/src/features/tracker/components/profile/LevelStepRow'
 import { LevelTierIcon } from '@/src/features/tracker/components/profile/LevelTierIcon'
 import { useTrackerStore } from '@/src/features/tracker/store'
@@ -26,39 +27,36 @@ export default function LevelProgressScreen() {
   const unlockedCount = PROFILE_LEVEL_STEPS.filter((step) => level >= step.level).length
 
   return (
-    <SafeAreaView className="flex-1 bg-flow-bg" edges={['top', 'left', 'right']}>
-      <StatusBar style="dark" />
-      <View className="px-6 pt-2">
+    <SafeAreaView className="flex-1 bg-brand-bg" edges={['top', 'left', 'right']}>
+      <StatusBar style="light" />
+      <View className="px-5 pt-2">
         <FlowBackButton onPress={() => router.back()} label="Profil" />
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
       >
-        <FlowText className="text-[22px] font-bold leading-8 text-flow-text">Progression</FlowText>
-        <FlowText className="mt-1 text-[15px] leading-6 text-flow-muted">
+        <FlowText className="text-[22px] font-extrabold leading-8 text-white" style={{ letterSpacing: -0.4 }}>
+          Progression
+        </FlowText>
+        <FlowText className="mt-1 text-[15px] leading-6 text-brand-muted">
           Monte en niveau en gagnant des combats
         </FlowText>
 
-        <View
-          className={`mt-6 overflow-hidden rounded-2xl border border-flow-cta/25 p-5 ${flowSurface.cardActive}`}
-          style={flowCardShadow}
-        >
+        <GameCard className="mt-6 p-5" style={{ borderColor: 'rgba(251,191,36,0.35)' }}>
           <View className="flex-row items-center gap-4">
-            <View className={`h-[72px] w-[72px] ${flowSurface.iconWell} items-center justify-center`}>
+            <View className="h-[72px] w-[72px] items-center justify-center rounded-2xl bg-brand-track">
               <LevelTierIcon level={level} size={36} unlocked />
             </View>
             <View className="flex-1">
-              <FlowText className="text-xs font-bold uppercase tracking-wide text-flow-muted">
-                Ton niveau
-              </FlowText>
-              <FlowText className="mt-1 text-[32px] font-bold leading-9 text-flow-text">
+              <GameLabel>Ton niveau</GameLabel>
+              <FlowText className="mt-1 text-[32px] font-extrabold leading-9 text-white">
                 Niveau {level}
               </FlowText>
             </View>
-            <View className="rounded-full border border-flow-cta/20 bg-flow-bg px-3 py-1.5">
-              <FlowText className="text-xs font-bold text-flow-cta">
+            <View className="rounded-full bg-brand-track px-3 py-1.5">
+              <FlowText className="text-xs font-bold text-brand-gold">
                 {unlockedCount}/{MAX_PROFILE_LEVEL}
               </FlowText>
             </View>
@@ -66,16 +64,15 @@ export default function LevelProgressScreen() {
 
           <View className="mt-6">
             <View className="flex-row items-baseline justify-between">
-              <FlowText className="text-xs font-bold text-flow-muted">XP</FlowText>
-              <FlowText className="text-sm font-bold text-flow-text">
-                {xp}{' '}
-                <FlowText className="text-sm font-normal text-flow-faint">/ {nextCap}</FlowText>
+              <GameLabel>XP</GameLabel>
+              <FlowText className="text-sm font-bold text-brand-gold">
+                {xp} <FlowText className="text-sm font-normal text-brand-muted">/ {nextCap}</FlowText>
               </FlowText>
             </View>
-            <View className="mt-2.5 h-3 overflow-hidden rounded-full bg-flow-border">
-              <View className="h-full rounded-full bg-flow-cta" style={{ width: `${pct}%` }} />
+            <View className="mt-2.5">
+              <XpBar progress={pct / 100} />
             </View>
-            <FlowText className="mt-2.5 text-xs leading-4 text-flow-faint">
+            <FlowText className="mt-2.5 text-xs leading-4 text-brand-locked">
               {xpToNext > 0
                 ? `Encore ${xpToNext} XP pour atteindre le niveau ${level + 1}`
                 : level >= MAX_PROFILE_LEVEL
@@ -83,28 +80,25 @@ export default function LevelProgressScreen() {
                   : 'Palier suivant débloqué — continue sur ta lancée !'}
             </FlowText>
           </View>
-        </View>
+        </GameCard>
 
-        <View
-          className={`mt-4 flex-row items-center gap-3 rounded-2xl border border-flow-border px-4 py-3.5 ${flowSurface.card}`}
-          style={flowCardShadow}
-        >
-          <View className={`h-10 w-10 items-center justify-center rounded-xl ${flowSurface.iconWell}`}>
-            <MaterialCommunityIcons name="lightning-bolt" size={20} color={FLOW.cta} />
+        <GameCard className="mt-4 flex-row items-center gap-3 px-4 py-3.5">
+          <View className="h-10 w-10 items-center justify-center rounded-xl bg-brand-track">
+            <GameIcon name="bolt" size={20} color="#fbbf24" />
           </View>
           <View className="flex-1">
-            <FlowText className="text-sm font-bold text-flow-text">
+            <FlowText className="text-sm font-bold text-white">
               {XP_PER_LEVEL} XP par niveau
             </FlowText>
-            <FlowText className="mt-0.5 text-xs leading-4 text-flow-muted">
+            <FlowText className="mt-0.5 text-xs leading-4 text-brand-muted">
               Chaque victoire en combat te rapproche du palier suivant
             </FlowText>
           </View>
-        </View>
+        </GameCard>
 
         <View className="mb-4 mt-8 flex-row items-end justify-between">
-          <FlowText className="text-sm font-bold text-flow-text">Tous les paliers</FlowText>
-          <FlowText className="text-xs text-flow-faint">{unlockedCount} débloqués</FlowText>
+          <GameLabel>Tous les paliers</GameLabel>
+          <FlowText className="text-xs text-brand-locked">{unlockedCount} débloqués</FlowText>
         </View>
 
         <View className="gap-2.5">

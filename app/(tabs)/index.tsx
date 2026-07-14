@@ -4,8 +4,8 @@ import { DashboardHome } from '@/src/features/tracker'
 
 export default function HomeScreen() {
   return (
-    <View className="flex-1 bg-flow-bg">
-      <StatusBar style="dark" />
+    <View className="flex-1 bg-brand-bg">
+      <StatusBar style="light" />
       <DashboardHome />
     </View>
   )

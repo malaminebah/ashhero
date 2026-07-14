@@ -1,6 +1,7 @@
 import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
+import { GameCard } from '@/components/ui/game-card'
+import { GameLabel } from '@/components/ui/game-label'
 import { FlowText } from '@/components/ui/flow-text'
 import type { ProfileStatsGridParams } from '../../types'
 import type { StatDetailKey } from '../statsDetailConfig'
@@ -9,9 +10,10 @@ type StatCellParams = {
   value: string | number
   label: string
   statKey: StatDetailKey
+  valueColor?: string
 }
 
-function StatCell({ value, label, statKey }: StatCellParams) {
+function StatCell({ value, label, statKey, valueColor = '#ffffff' }: StatCellParams) {
   const router = useRouter()
 
   return (
@@ -19,17 +21,16 @@ function StatCell({ value, label, statKey }: StatCellParams) {
       onPress={() => router.push(`/stat/${statKey}` as never)}
       accessibilityRole="button"
       accessibilityLabel={`Stat ${label}`}
-      className="min-h-[76px] flex-1 active:opacity-90"
+      className="flex-1 active:opacity-90"
     >
-      <View
-        className={`min-h-[76px] flex-1 items-center justify-center px-1.5 py-3 ${flowSurface.card}`}
-        style={flowCardShadow}
-      >
-        <FlowText className="text-center text-lg font-bold text-flow-text">{value}</FlowText>
-        <FlowText className="mt-1.5 text-center text-[10px] leading-3 text-flow-muted">
-          {label}
+      <GameCard className="min-h-[84px] items-center justify-center px-1.5 py-3.5">
+        <FlowText className="text-center text-2xl font-extrabold" style={{ color: valueColor }}>
+          {value}
         </FlowText>
-      </View>
+        <GameLabel className="mt-1 text-center normal-case tracking-normal" numberOfLines={2}>
+          {label}
+        </GameLabel>
+      </GameCard>
     </Pressable>
   )
 }
@@ -44,23 +45,24 @@ export const ProfileStatsGrid = ({
   relapseCount,
 }: ProfileStatsGridParams) => {
   const moneyLabel = moneySaved.toLocaleString('fr-FR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   })
 
   return (
-    <View className="mb-8">
-      <FlowText className="mb-3 text-sm font-bold text-flow-text">Tes stats</FlowText>
-      <View className="gap-2">
-        <View className="flex-row gap-2">
-          <StatCell value={dayCount} label="Jours sans vape" statKey="days" />
-          <StatCell value={combatsWon} label="Combats gagnés" statKey="combats-won" />
-          <StatCell value={combatsLost} label="Combats perdus" statKey="combats-lost" />
+    <View className="mb-6">
+      <GameLabel className="mb-2.5">Tes stats</GameLabel>
+      <View className="gap-3">
+        <View className="flex-row gap-3">
+          <StatCell value={dayCount} label="jours sans vape" statKey="days" valueColor="#22c55e" />
+          <StatCell value={combatsWon} label="combats gagnés" statKey="combats-won" />
         </View>
-        <View className="flex-row gap-2">
-          <StatCell value={relapseCount ?? 0} label="Rechutes" statKey="relapses" />
-          <StatCell value={avoidedCount} label={avoidedLabel} statKey="avoided" />
-          <StatCell value={`${moneyLabel} €`} label="Argent économisé" statKey="money" />
+        <View className="flex-row gap-3">
+          <StatCell value={combatsLost} label="combats perdus" statKey="combats-lost" valueColor="#ef4444" />
+          <StatCell value={relapseCount ?? 0} label="rechutes" statKey="relapses" valueColor="#fbbf24" />
+        </View>
+        <View className="flex-row gap-3">
+          <StatCell value={avoidedCount.toLocaleString('fr-FR')} label={avoidedLabel} statKey="avoided" />
+          <StatCell value={`${moneyLabel} €`} label="argent économisé" statKey="money" valueColor="#fbbf24" />
         </View>
       </View>
     </View>

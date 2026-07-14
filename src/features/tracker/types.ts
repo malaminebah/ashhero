@@ -20,6 +20,9 @@ export type TrackerConfig = {
   vapeMlPerWeek: number | null,
   quitDate: Date | null,
   isFirstTime: boolean | null,
+  yearsUsing: number | null,
+  triggers: string[],
+  motivations: string[],
   unlockedEtapes: string[] ,
   relapseCount: number | null,
   bestStreak: number | null,
@@ -39,6 +42,8 @@ export type TrackerActions = {
   winCombat: (action: CombatAction, xpGained: number) => void
   loseCombat: () => void
   setHeroName: (name: string) => void
+  /** Generic XP grant (mood log, daily bonus…) — updates level and syncs the profile. */
+  addXp: (amount: number) => void
 }
 
 export type Etape = {
@@ -58,8 +63,8 @@ export type PlayerHeroEmojiParams = {
   variant?: PlayerHeroVariant
 }
 
-export type DashboardHeaderParams = { level: number }
-export type DashboardHeroParams = { dayCount: number; level: number }
+export type DashboardHeaderParams = { level: number; xp: number }
+export type DashboardHeroParams = { dayCount: number; level: number; xp: number }
 export type DashboardXpBarParams = { totalXp: number }
 export type DashboardStatsPairParams = {
   moneySaved: number
@@ -85,6 +90,7 @@ export type ProfileHeroCardHandle = { focusName: () => void }
 
 export type ProfileHeroCardParams = {
   level: number
+  xp: number
   heroName: string | null
   onSaveName: (name: string) => void
 }
@@ -124,6 +130,9 @@ export const trackerProfileFromStore = (s: TrackerStore): TrackerConfig => ({
   vapeMlPerWeek: s.vapeMlPerWeek,
   quitDate: s.quitDate,
   isFirstTime: s.isFirstTime,
+  yearsUsing: s.yearsUsing,
+  triggers: s.triggers,
+  motivations: s.motivations,
   unlockedEtapes: s.unlockedEtapes,
   relapseCount: s.relapseCount,
   bestStreak: s.bestStreak,

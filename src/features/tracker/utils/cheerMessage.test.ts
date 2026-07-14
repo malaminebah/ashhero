@@ -7,60 +7,82 @@ describe('getCheerMessage', () => {
     When getCheerMessage is called
     Then the adventure prompt is returned
   `, () => {
-    expect(getCheerMessage(0)).toBe('Prêt pour l’aventure ?')
+    const dayCount = 0
+
+    const message = getCheerMessage(dayCount)
+
+    expect(message).toBe('Prêt pour l’aventure ?')
   })
 
   it(`
-    Given dayCount is between 1 and 2
+    Given dayCount is at both bounds of the 1-2 range
     When getCheerMessage is called
     Then the early-streak message is returned
   `, () => {
-    expect(getCheerMessage(1)).toBe('Chaque jour compte.')
-    expect(getCheerMessage(2)).toBe('Chaque jour compte.')
+    const bounds = [1, 2]
+
+    const messages = bounds.map(getCheerMessage)
+
+    expect(messages.every((m) => m === 'Chaque jour compte.')).toBe(true)
   })
 
   it(`
-    Given dayCount is between 3 and 6
+    Given dayCount is at both bounds of the 3-6 range
     When getCheerMessage is called
     Then the encouragement message is returned
   `, () => {
-    expect(getCheerMessage(3)).toBe('Continue comme ça !')
-    expect(getCheerMessage(6)).toBe('Continue comme ça !')
+    const bounds = [3, 6]
+
+    const messages = bounds.map(getCheerMessage)
+
+    expect(messages.every((m) => m === 'Continue comme ça !')).toBe(true)
   })
 
   it(`
-    Given dayCount is between 7 and 13
+    Given dayCount is at both bounds of the 7-13 range
     When getCheerMessage is called
     Then the weekly streak message is returned
   `, () => {
-    expect(getCheerMessage(7)).toBe('Belle série !')
-    expect(getCheerMessage(13)).toBe('Belle série !')
+    const bounds = [7, 13]
+
+    const messages = bounds.map(getCheerMessage)
+
+    expect(messages.every((m) => m === 'Belle série !')).toBe(true)
   })
 
   it(`
-    Given dayCount is between 14 and 29
+    Given dayCount is at both bounds of the 14-29 range
     When getCheerMessage is called
     Then the strong streak message is returned
   `, () => {
-    expect(getCheerMessage(14)).toBe('Tu assures !')
-    expect(getCheerMessage(29)).toBe('Tu assures !')
+    const bounds = [14, 29]
+
+    const messages = bounds.map(getCheerMessage)
+
+    expect(messages.every((m) => m === 'Tu assures !')).toBe(true)
   })
 
   it(`
-    Given dayCount is between 30 and 59
+    Given dayCount is at both bounds of the 30-59 range
     When getCheerMessage is called
     Then the one-month message is returned
   `, () => {
-    expect(getCheerMessage(30)).toBe('Un mois — incroyable !')
-    expect(getCheerMessage(59)).toBe('Un mois — incroyable !')
+    const bounds = [30, 59]
+
+    const messages = bounds.map(getCheerMessage)
+
+    expect(messages.every((m) => m === 'Un mois — incroyable !')).toBe(true)
   })
 
   it(`
-    Given dayCount is 60 or more
+    Given dayCount is 60 or far beyond
     When getCheerMessage is called
     Then the legend message is returned
   `, () => {
-    expect(getCheerMessage(60)).toBe('Tu es une légende !')
-    expect(getCheerMessage(365)).toBe('Tu es une légende !')
+    const bounds = [60, 365]
+
+    const messages = bounds.map(getCheerMessage)
+
+    expect(messages.every((m) => m === 'Tu es une légende !')).toBe(true)
   })
 })

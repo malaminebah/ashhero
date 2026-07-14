@@ -1,27 +1,22 @@
-import { Image } from 'expo-image'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { View, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { FLOW } from '@/constants/flowTheme'
-import { badgeSurface, flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
+import { GameLabel } from '@/components/ui/game-label'
+import { HexBadge } from '@/components/ui/hex-badge'
 import { FlowText } from '@/components/ui/flow-text'
 import { PROFILE_BADGES } from './badgeRules'
-import { profileBadgeSource } from './profileBadgeAssets'
 import type { ProfileBadgesGridParams } from '../../types'
-
-const ICON_SIZE = 48
 
 export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
   const router = useRouter()
   const unlockedCount = PROFILE_BADGES.filter((b) => b.isUnlocked(stats)).length
 
   return (
-    <View className="mb-8">
-      <View className="mb-3 flex-row items-center justify-between">
-        <FlowText className="text-sm font-bold text-flow-text">Badges</FlowText>
-        <FlowText className="text-xs text-flow-faint">
+    <View className="mb-6">
+      <View className="mb-2.5 flex-row items-center justify-between">
+        <GameLabel>Badges</GameLabel>
+        <GameLabel className="text-brand-gold">
           {unlockedCount} / {PROFILE_BADGES.length}
-        </FlowText>
+        </GameLabel>
       </View>
       <ScrollView
         horizontal
@@ -36,32 +31,20 @@ export const ProfileBadgesGrid = ({ stats }: ProfileBadgesGridParams) => {
               onPress={() => router.push(`/profile-badge/${badge.id}` as never)}
               accessibilityRole="button"
               accessibilityLabel={`Badge ${badge.name}`}
-              className={`${flowSurface.badge} ${badgeSurface(active)}`}
-              style={flowCardShadow}
+              className={`w-[88px] items-center rounded-2xl border bg-brand-card px-2 py-3 active:opacity-90 ${
+                active ? 'border-brand-gold' : 'border-[rgba(255,255,255,0.1)]'
+              }`}
             >
               <FlowText
                 className={`text-center text-[10px] font-bold ${
-                  active ? 'text-flow-cta' : 'text-flow-faint'
+                  active ? 'text-brand-gold' : 'text-brand-locked'
                 }`}
                 numberOfLines={2}
               >
                 {badge.name}
               </FlowText>
-              <View className={`relative mt-2 h-12 w-12 ${flowSurface.iconWell}`}>
-                <Image
-                  source={profileBadgeSource(badge.asset)}
-                  style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                    opacity: active ? 1 : 0.35,
-                  }}
-                  contentFit="contain"
-                />
-                {!active ? (
-                  <View className="absolute inset-0 items-center justify-center">
-                    <MaterialIcons name="lock" size={18} color={FLOW.faint} />
-                  </View>
-                ) : null}
+              <View className="mt-2">
+                <HexBadge icon={badge.icon} tint={badge.tint} size={48} locked={!active} />
               </View>
             </Pressable>
           )

@@ -1,39 +1,54 @@
 import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { Image } from 'expo-image'
+import { LinearGradient } from 'expo-linear-gradient'
+import { HeroSprite } from '@/components/characters/HeroSprite'
+import { GameLabel } from '@/components/ui/game-label'
 import { FlowText } from '@/components/ui/flow-text'
-import { flowSurface } from '@/constants/flowSurfaces'
-import { getCheerMessage } from '../../utils/cheerMessage'
+import { XpBar } from '@/components/ui/xp-bar'
 
+import { getMotivation } from '@/src/features/onboarding/profileFacts'
+import { xpProgressInLevel } from '../../utils/levelProgress'
+import { useTrackerStore } from '../../store'
 import type { DashboardHeroParams } from '../../types'
 
-const heroAvatar = require('@/assets/caracter/hero-avatar.png')
-
-export const DashboardHero = ({ dayCount }: DashboardHeroParams) => {
+export const DashboardHero = ({ dayCount, level, xp }: DashboardHeroParams) => {
   const router = useRouter()
+  const motivations = useTrackerStore((s) => s.motivations)
+  const { nextCap, pct } = xpProgressInLevel(xp)
+  const progress = pct / 100
+  const mainMotivation = motivations.length > 0 ? getMotivation(motivations[0]) : null
 
   return (
-    <View className="mb-6 items-center">
-      <Pressable
-        onPress={() => router.push('/(tabs)/profile' as never)}
-        accessibilityRole="button"
-        accessibilityLabel="Voir le profil"
-        className="active:opacity-90"
-      >
-        <View className={`h-24 w-24 ${flowSurface.tile} items-center justify-center`}>
-          <Image
-            source={heroAvatar}
-            style={{ width: 88, height: 88 }}
-            contentFit="contain"
-            accessibilityLabel="Avatar du héros"
-          />
+    <Pressable
+      onPress={() => router.push('/level' as never)}
+      accessibilityRole="button"
+      accessibilityLabel={`${dayCount} jours sans vape, niveau ${level}`}
+      className="mb-3 overflow-hidden rounded-[20px] border border-[rgba(255,255,255,0.07)] active:opacity-95"
+    >
+      <LinearGradient colors={['#1c0733', '#12051f']} style={{ padding: 22, alignItems: 'center' }}>
+        <HeroSprite pose="idle" width={92} height={112} />
+        <FlowText
+          className="mt-2 text-brand-success"
+          style={{ fontSize: 56, fontWeight: '900', letterSpacing: -2, lineHeight: 60 }}
+        >
+          {dayCount}
+        </FlowText>
+        <FlowText className="text-[15px] font-bold text-white">jours sans vape</FlowText>
+        {mainMotivation ? (
+          <GameLabel className="mt-1 normal-case tracking-normal">
+            Tu te bats pour {mainMotivation.label.toLowerCase()}
+          </GameLabel>
+        ) : null}
+        <View className="mb-1.5 mt-4 w-full flex-row items-center justify-between">
+          <GameLabel>Niveau {level}</GameLabel>
+          <GameLabel className="text-brand-gold">
+            {xp} / {nextCap} XP
+          </GameLabel>
         </View>
-      </Pressable>
-      <FlowText className="mt-6 text-5xl font-bold text-flow-text">{dayCount}</FlowText>
-      <FlowText className="mt-1 text-sm text-flow-muted">Jours sans vape</FlowText>
-      <FlowText className="mt-3 text-center text-[15px] text-flow-muted">
-        {getCheerMessage(dayCount)}
-      </FlowText>
-    </View>
+        <View className="w-full">
+          <XpBar progress={progress} />
+        </View>
+      </LinearGradient>
+    </Pressable>
   )
 }

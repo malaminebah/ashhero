@@ -1,8 +1,6 @@
 import { View, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import { FLOW } from '@/constants/flowTheme'
-import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
+import { GameLabel } from '@/components/ui/game-label'
 import { FlowText } from '@/components/ui/flow-text'
 
 export const DashboardDailyBonus = () => {
@@ -13,19 +11,21 @@ export const DashboardDailyBonus = () => {
       onPress={() => router.push('/(tabs)/combat' as never)}
       accessibilityRole="button"
       accessibilityLabel="Bonus du jour — lancer un combat"
-      className={`flex-row items-center border border-flow-gold/25 bg-flow-secondary px-4 py-4 active:opacity-90 ${flowSurface.card}`}
-      style={flowCardShadow}
+      className="mt-3 flex-row items-center justify-between rounded-[20px] border border-[rgba(251,191,36,0.35)] bg-brand-card px-4 py-3.5 active:opacity-90"
     >
-      <View className={`mr-3 h-11 w-11 ${flowSurface.iconWell} bg-flow-gold/15`}>
-        <MaterialCommunityIcons name="gift-outline" size={24} color={FLOW.gold} />
+      <View>
+        <FlowText className="text-sm font-extrabold text-brand-gold">
+          Bonus du jour · +10 XP
+        </FlowText>
+        <GameLabel className="mt-0.5 normal-case tracking-normal">
+          Gagne un combat aujourd&apos;hui
+        </GameLabel>
       </View>
-      <View className="flex-1">
-        <FlowText className="text-sm font-bold text-flow-text">Bonus du jour</FlowText>
-        <FlowText className="mt-1 text-xs leading-4 text-flow-muted">
-          Gagne de l&apos;XP en lançant un combat aujourd&apos;hui !
+      <View className="rounded-full bg-brand-gold px-3.5 py-2">
+        <FlowText className="text-xs font-extrabold" style={{ color: '#3b2000' }}>
+          Go !
         </FlowText>
       </View>
-      <MaterialCommunityIcons name="chevron-right" size={20} color={FLOW.faint} />
     </Pressable>
   )
 }

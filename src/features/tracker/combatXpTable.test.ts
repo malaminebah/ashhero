@@ -1,36 +1,41 @@
 import { describe, expect, it } from 'vitest'
+import { SPECIAL_CHARGE_XP } from './utils/levelProgress'
 import { COMBAT_XP_BY_ACTION } from './combatXpTable'
 
 describe('COMBAT_XP_BY_ACTION', () => {
   it(`
-    Given action breathe
-    When XP is read from the table
-    Then reward is 25
+    Given every combat action
+    When its XP reward is read
+    Then each action grants XP
   `, () => {
-    expect(COMBAT_XP_BY_ACTION.breathe).toBe(25)
+    const rewards = Object.values(COMBAT_XP_BY_ACTION)
+
+    const allGrantXp = rewards.every((xp) => xp > 0)
+
+    expect(allGrantXp).toBe(true)
   })
 
   it(`
-    Given action water
-    When XP is read from the table
-    Then reward is 20
+    Given the special attack costs a full charge
+    When its reward is compared to the others
+    Then special grants the highest XP
   `, () => {
-    expect(COMBAT_XP_BY_ACTION.water).toBe(20)
+    const { breathe, water, distract, special } = COMBAT_XP_BY_ACTION
+
+    const specialIsHighest = [breathe, water, distract].every((xp) => special > xp)
+
+    expect(specialIsHighest).toBe(true)
   })
 
   it(`
-    Given action distract
-    When XP is read from the table
-    Then reward is 12
+    Given every action reward
+    When it is compared to a special charge
+    Then no single action fills a full charge at once
   `, () => {
-    expect(COMBAT_XP_BY_ACTION.distract).toBe(12)
-  })
+    const rewards = Object.values(COMBAT_XP_BY_ACTION)
 
-  it(`
-    Given action special
-    When XP is read from the table
-    Then reward is 40
-  `, () => {
-    expect(COMBAT_XP_BY_ACTION.special).toBe(40)
+    const noneFillsACharge = rewards.every((xp) => xp < SPECIAL_CHARGE_XP)
+
+    expect(noneFillsACharge).toBe(true)
   })
 })

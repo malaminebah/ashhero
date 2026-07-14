@@ -1,6 +1,6 @@
-import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { FlipDetailScreen } from '@/components/ui/flip-detail-screen'
+import { HexBadge } from '@/components/ui/hex-badge'
 import {
   FlipDetailBackBody,
   FlipDetailBackHeader,
@@ -20,11 +20,8 @@ import {
   getProfileBadgeDetail,
   getProfileBadgeProgressHint,
 } from '@/src/features/tracker/components/profile/profileBadgeDetails'
-import { profileBadgeSource } from '@/src/features/tracker/components/profile/profileBadgeAssets'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
 import { useTrackerStore } from '@/src/features/tracker/store'
-
-const ICON_SIZE = 72
 
 export default function ProfileBadgeDetailScreen() {
   const router = useRouter()
@@ -67,15 +64,7 @@ export default function ProfileBadgeDetailScreen() {
       front={
         <FlipDetailFront>
           <FlipDetailIconWell locked={!unlocked}>
-            <Image
-              source={profileBadgeSource(badge.asset)}
-              style={{
-                width: ICON_SIZE,
-                height: ICON_SIZE,
-                opacity: unlocked ? 1 : 0.4,
-              }}
-              contentFit="contain"
-            />
+            <HexBadge icon={badge.icon} tint={badge.tint} size={62} locked={!unlocked} />
           </FlipDetailIconWell>
           <FlipDetailEyebrow>{badge.name}</FlipDetailEyebrow>
           <FlipDetailTitle>{detail.title}</FlipDetailTitle>
@@ -91,10 +80,19 @@ export default function ProfileBadgeDetailScreen() {
         <>
           <FlipDetailBackHeader eyebrow={badge.name} title={detail.title} />
           <FlipDetailBackBody>{detail.backBody}</FlipDetailBackBody>
+          <FlipDetailInsightCard label="Comment l'obtenir" accent="gold">
+            <FlipDetailInsightText>
+              {badge.requirement}
+              {!unlocked && progressHint ? ` — ${progressHint.toLowerCase()}` : ''}
+            </FlipDetailInsightText>
+          </FlipDetailInsightCard>
+          <FlipDetailInsightCard label="Le sais-tu ?" accent="brand">
+            <FlipDetailInsightText>{detail.tip}</FlipDetailInsightText>
+          </FlipDetailInsightCard>
           <FlipDetailInsightCard label="Statut" accent={unlocked ? 'cta' : 'brand'}>
             <FlipDetailInsightText>
               {unlocked
-                ? 'Tu as mérité ce badge — continue à accumuler les victoires.'
+                ? 'Badge débloqué — continue à accumuler les victoires.'
                 : progressHint ?? 'Continue ton parcours pour le débloquer.'}
             </FlipDetailInsightText>
           </FlipDetailInsightCard>

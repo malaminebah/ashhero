@@ -1,8 +1,7 @@
 import { View, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { FLOW } from '@/constants/flowTheme'
-import { badgeSurface, flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
+import { GameLabel } from '@/components/ui/game-label'
 import { FlowText } from '@/components/ui/flow-text'
 import { LevelTierIcon } from './LevelTierIcon'
 import { PROFILE_LEVEL_STEPS, XP_PER_LEVEL } from '../../utils/levelProgress'
@@ -17,16 +16,14 @@ export const ProfileLevelsGrid = ({ level, xp }: ProfileLevelsGridParams) => {
   const nextCap = Math.ceil(xp / XP_PER_LEVEL) * XP_PER_LEVEL
 
   return (
-    <View className="mb-8">
+    <View className="mb-6">
       <View className="mb-1 flex-row items-center justify-between">
-        <FlowText className="text-sm font-bold text-flow-text">Parcours de niveau</FlowText>
-        <View className="rounded-full border border-flow-cta/20 bg-flow-secondary px-2.5 py-1">
-          <FlowText className="text-[11px] font-bold text-flow-cta">
-            {unlockedCount}/{PROFILE_LEVEL_STEPS.length}
-          </FlowText>
-        </View>
+        <GameLabel>Parcours de niveau</GameLabel>
+        <GameLabel className="text-brand-gold">
+          {unlockedCount}/{PROFILE_LEVEL_STEPS.length}
+        </GameLabel>
       </View>
-      <FlowText className="mb-4 text-xs leading-4 text-flow-faint">
+      <FlowText className="mb-3 text-xs leading-4 text-brand-locked">
         {XP_PER_LEVEL} XP par palier · {xp} XP au total
       </FlowText>
 
@@ -47,35 +44,33 @@ export const ProfileLevelsGrid = ({ level, xp }: ProfileLevelsGridParams) => {
               onPress={() => router.push('/level' as never)}
               accessibilityRole="button"
               accessibilityLabel={`Niveau ${step.level}, ${step.xpRequired} XP`}
-              className={`relative items-center justify-between px-2 py-3 active:opacity-90 ${flowSurface.badge} ${badgeSurface(unlocked)} ${
-                isCurrent ? 'border-flow-cta/50 bg-flow-secondary' : ''
+              className={`items-center justify-between rounded-[16px] border bg-brand-card px-2 py-3 active:opacity-90 ${
+                isCurrent
+                  ? 'border-brand-gold'
+                  : unlocked
+                    ? 'border-brand-success'
+                    : 'border-[rgba(255,255,255,0.1)]'
               }`}
-              style={[
-                flowCardShadow,
-                { width: LEVEL_CARD_W, height: LEVEL_CARD_H },
-                isCurrent ? { borderColor: FLOW.cta, borderWidth: 1.5 } : null,
-              ]}
+              style={{ width: LEVEL_CARD_W, height: LEVEL_CARD_H }}
             >
               <FlowText
-                className={`text-[11px] font-bold ${unlocked ? 'text-flow-cta' : 'text-flow-faint'}`}
+                className={`text-[11px] font-extrabold ${
+                  unlocked ? 'text-brand-success' : 'text-brand-locked'
+                }`}
               >
                 Niv. {step.level}
               </FlowText>
 
-              <View
-                className={`h-11 w-11 items-center justify-center rounded-2xl ${
-                  unlocked ? flowSurface.iconWell : 'bg-flow-border/30'
-                }`}
-              >
+              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand-track">
                 {unlocked ? (
                   <LevelTierIcon level={step.level} size={22} unlocked />
                 ) : (
-                  <MaterialIcons name="lock-outline" size={18} color={FLOW.faint} />
+                  <MaterialIcons name="lock-outline" size={18} color="#5b4a75" />
                 )}
               </View>
 
               <FlowText
-                className={`text-[10px] ${unlocked ? 'text-flow-muted' : 'text-flow-faint'}`}
+                className={`text-[10px] ${unlocked ? 'text-brand-muted' : 'text-brand-locked'}`}
               >
                 {step.xpRequired} XP
               </FlowText>
@@ -90,12 +85,12 @@ export const ProfileLevelsGrid = ({ level, xp }: ProfileLevelsGridParams) => {
         accessibilityLabel="Voir toute la progression"
         className="mt-3 flex-row items-center justify-center gap-1 active:opacity-80"
       >
-        <FlowText className="text-xs font-bold text-flow-cta">Voir la progression</FlowText>
-        <MaterialIcons name="chevron-right" size={16} color={FLOW.cta} />
+        <FlowText className="text-xs font-bold text-brand-accent">Voir la progression</FlowText>
+        <MaterialIcons name="chevron-right" size={16} color="#a855f7" />
       </Pressable>
 
       {xp < nextCap ? (
-        <FlowText className="mt-1 text-center text-[11px] text-flow-faint">
+        <FlowText className="mt-1 text-center text-[11px] text-brand-locked">
           Prochain palier à {nextCap} XP
         </FlowText>
       ) : null}

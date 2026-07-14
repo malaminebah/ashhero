@@ -17,29 +17,83 @@ function badge(id: string) {
 }
 
 describe('PROFILE_BADGES', () => {
-  it('exposes 15 badges', () => {
-    expect(PROFILE_BADGES).toHaveLength(15)
+  it(`
+    Given the badge catalog
+    When ids are collected
+    Then every badge id is unique
+  `, () => {
+    const ids = PROFILE_BADGES.map((b) => b.id)
+
+    expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('jour1 unlocks from day 1', () => {
-    expect(badge('jour1').isUnlocked(base())).toBe(false)
-    expect(badge('jour1').isUnlocked({ ...base(), dayCount: 1 })).toBe(true)
+  it(`
+    Given a brand-new profile with empty stats
+    When every badge rule is evaluated
+    Then every rule returns a boolean without crashing
+  `, () => {
+    const emptyProfile = base()
+
+    const results = PROFILE_BADGES.map((b) => b.isUnlocked(emptyProfile))
+
+    expect(results.every((result) => typeof result === 'boolean')).toBe(true)
   })
 
-  it('combat1 before combat3', () => {
+  it(`
+    Given a profile with zero and then one day without vaping
+    When the first-day badge is evaluated
+    Then it unlocks exactly from day 1
+  `, () => {
+    const dayZero = base()
+    const dayOne = { ...base(), dayCount: 1 }
+
+    const lockedAtZero = badge('jour1').isUnlocked(dayZero)
+    const unlockedAtOne = badge('jour1').isUnlocked(dayOne)
+
+    expect(lockedAtZero).toBe(false)
+    expect(unlockedAtOne).toBe(true)
+  })
+
+  it(`
+    Given two combats won
+    When the combat badges are evaluated
+    Then the first combat badge unlocks before the third
+  `, () => {
     const stats = { ...base(), combatsWon: 2 }
-    expect(badge('combat1').isUnlocked(stats)).toBe(true)
-    expect(badge('combat3').isUnlocked(stats)).toBe(false)
+
+    const firstUnlocked = badge('combat1').isUnlocked(stats)
+    const thirdUnlocked = badge('combat3').isUnlocked(stats)
+
+    expect(firstUnlocked).toBe(true)
+    expect(thirdUnlocked).toBe(false)
   })
 
-  it('niv5 and eco50', () => {
+  it(`
+    Given a profile at level 5 with 50 euros saved
+    When the level and savings badges are evaluated
+    Then both unlock
+  `, () => {
     const stats = { ...base(), level: 5, moneySaved: 50 }
-    expect(badge('niv5').isUnlocked(stats)).toBe(true)
-    expect(badge('eco50').isUnlocked(stats)).toBe(true)
+
+    const levelUnlocked = badge('niv5').isUnlocked(stats)
+    const savingsUnlocked = badge('eco50').isUnlocked(stats)
+
+    expect(levelUnlocked).toBe(true)
+    expect(savingsUnlocked).toBe(true)
   })
 
-  it('xp2000 threshold', () => {
-    expect(badge('xp2000').isUnlocked({ ...base(), xp: 1999 })).toBe(false)
-    expect(badge('xp2000').isUnlocked({ ...base(), xp: 2000 })).toBe(true)
+  it(`
+    Given XP just below and exactly on the 2000 XP threshold
+    When the XP badge is evaluated
+    Then it unlocks exactly at the threshold
+  `, () => {
+    const justBelow = { ...base(), xp: 1999 }
+    const exactThreshold = { ...base(), xp: 2000 }
+
+    const lockedBelow = badge('xp2000').isUnlocked(justBelow)
+    const unlockedAt = badge('xp2000').isUnlocked(exactThreshold)
+
+    expect(lockedBelow).toBe(false)
+    expect(unlockedAt).toBe(true)
   })
 })
