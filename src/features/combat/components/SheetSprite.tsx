@@ -8,11 +8,13 @@ const AnimatedImage = Animated.createAnimatedComponent(Image)
 
 export const SheetSprite = ({
   sheet,
-  frameSize,
+  sheetW,
   sheetH,
   sheetCols,
+  sheetRows,
   displayScale,
   row,
+  col = 0,
   frames,
   frameMs,
   loop,
@@ -20,42 +22,44 @@ export const SheetSprite = ({
   accessibilityLabel,
   muted = false,
 }: SheetSpriteParams) => {
-  const frame = useSheetFrameAnim({ frames, frameMs, loop }, animKey)
-  // Round the cell once and derive everything from it: each cell is an exact
-  // integer size, so translate offsets never drift sub-pixel (no frame bleed).
-  const cell = Math.round(frameSize * displayScale)
-  const viewport = cell
-  const rows = Math.round(sheetH / frameSize)
-  const sheetDisplayW = sheetCols * cell
-  const sheetDisplayH = rows * cell
+  const progress = useSheetFrameAnim({ frames, frameMs, loop }, animKey)
+  const sheetDisplayW = sheetW * displayScale
+  const sheetDisplayH = sheetH * displayScale
+  const cellW = sheetDisplayW / sheetCols
+  const cellH = sheetDisplayH / sheetRows
 
   const imageStyle = useAnimatedStyle(() => {
-    const raw = Math.floor(frame.value)
+    const raw = Math.floor(progress.value)
     const index = loop
       ? ((raw % frames) + frames) % frames
       : Math.min(Math.max(raw, 0), frames - 1)
 
     return {
+      position: 'absolute' as const,
       width: sheetDisplayW,
       height: sheetDisplayH,
-      transform: [
-        { translateX: -index * cell },
-        { translateY: -row * cell },
-      ],
+      left: -(col + index) * cellW,
+      top: -row * cellH,
     }
   })
 
   return (
     <View
       style={{
-        width: viewport,
-        height: viewport,
+        width: cellW,
+        height: cellH,
         overflow: 'hidden',
+        backgroundColor: 'transparent',
         opacity: muted ? 0.35 : 1,
       }}
       accessibilityLabel={accessibilityLabel}
     >
-      <AnimatedImage source={sheet} style={imageStyle} contentFit="fill" />
+      <AnimatedImage
+        source={sheet}
+        style={imageStyle}
+        contentFit="fill"
+        allowDownscaling={false}
+      />
     </View>
   )
 }

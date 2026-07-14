@@ -1,79 +1,88 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
+import Animated, {
+  Easing,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
+import Svg, { Circle } from 'react-native-svg'
 import { FlowText } from '@/components/ui/flow-text'
-import {
-  BREATHE_PAUSE_SEC,
-  BREATHE_PHASE_LABEL,
-  BREATHE_PHASE_SEC,
-  nextBreathePhase,
-  type BreathePhase,
-} from '../breatheCycle'
+import { BREATHE_PHASE_LABEL } from '../breatheCycle'
 import type { BreatheTimerParams } from '../types'
 
-const TOTAL_SECONDS = 60
-const SEGMENTS = 12
+const SIZE = 66
+const STROKE = 6
+const R = (SIZE - STROKE) / 2
+const CIRCUMFERENCE = 2 * Math.PI * R
 
-export const BreatheTimer = ({ onComplete }: BreatheTimerParams) => {
-  const [remaining, setRemaining] = useState(TOTAL_SECONDS)
-  const phaseRef = useRef<BreathePhase>('inhale')
-  const [phase, setPhase] = useState<BreathePhase>('inhale')
-  const [phaseRemaining, setPhaseRemaining] = useState(BREATHE_PHASE_SEC.inhale)
-  const onCompleteRef = useRef(onComplete)
-  const completedRef = useRef(false)
-  onCompleteRef.current = onComplete
+const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
-  useEffect(() => {
-    if (remaining <= 0) return
-    const t = setTimeout(() => {
-      setRemaining((r) => r - 1)
-      setPhaseRemaining((pRem) => {
-        if (pRem > 1) return pRem - 1
-        const next = nextBreathePhase(phaseRef.current)
-        phaseRef.current = next
-        setPhase(next)
-        return BREATHE_PHASE_SEC[next]
-      })
-    }, 1000)
-    return () => clearTimeout(t)
-  }, [remaining, phaseRemaining])
+/** Mockup circular timer — top-right of the arena during breathing. */
+export const BreatheTimer = ({
+  cycleIndex,
+  cycleCount,
+  phase,
+  phaseRemaining,
+  progress,
+}: BreatheTimerParams) => {
+  const animatedProgress = useSharedValue(progress)
 
   useEffect(() => {
-    if (remaining !== 0 || completedRef.current) return
-    completedRef.current = true
-    onCompleteRef.current()
-  }, [remaining])
+    animatedProgress.value = withTiming(progress, {
+      duration: 900,
+      easing: Easing.out(Easing.cubic),
+    })
+  }, [animatedProgress, progress])
 
-  const filledSegments = Math.min(
-    SEGMENTS,
-    Math.floor(((TOTAL_SECONDS - remaining) / TOTAL_SECONDS) * SEGMENTS)
-  )
+  const circleProps = useAnimatedProps(() => ({
+    strokeDashoffset: CIRCUMFERENCE * (1 - animatedProgress.value),
+  }))
 
   return (
-    <View className="mb-4 items-center rounded-2xl border border-flow-border bg-flow-secondary py-4">
-      <View className="h-36 w-36 items-center justify-center rounded-full border-2 border-flow-cta/40 p-2">
-        <View className="w-32 flex-row flex-wrap justify-center gap-1">
-          {Array.from({ length: SEGMENTS }, (_, i) => (
-            <View
-              key={i}
-              className={`h-3 w-3 rounded-sm ${
-                i < filledSegments ? 'bg-flow-cta' : 'bg-flow-border'
-              }`}
-            />
-          ))}
+    <View style={{ alignItems: 'center' }} pointerEvents="none">
+      <View style={{ width: SIZE, height: SIZE }}>
+        <Svg width={SIZE} height={SIZE}>
+          <Circle
+            cx={SIZE / 2}
+            cy={SIZE / 2}
+            r={R}
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth={STROKE}
+            fill="rgba(8,0,15,0.55)"
+          />
+          <AnimatedCircle
+            cx={SIZE / 2}
+            cy={SIZE / 2}
+            r={R}
+            stroke="#22c55e"
+            strokeWidth={STROKE}
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray={CIRCUMFERENCE}
+            animatedProps={circleProps}
+            transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
+          />
+        </Svg>
+        <View
+          style={{
+            position: 'absolute',
+            inset: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <FlowText className="text-[15px] font-extrabold text-white">
+            {phaseRemaining} s
+          </FlowText>
         </View>
       </View>
-      <FlowText className="mt-4 text-sm font-bold text-flow-cta">
+      <FlowText className="mt-1 text-[11px] font-bold uppercase tracking-[0.6px] text-[#bbf7d0]">
+        Cycle {cycleIndex} / {cycleCount}
+      </FlowText>
+      <FlowText className="text-[11px] font-bold text-white/80">
         {BREATHE_PHASE_LABEL[phase]}
       </FlowText>
-      <FlowText className="mt-1 text-3xl font-bold tabular-nums text-flow-text">
-        {phaseRemaining}s
-      </FlowText>
-      {phase === 'pause' ? (
-        <FlowText className="mt-2 px-4 text-center text-xs leading-5 text-flow-muted">
-          {BREATHE_PAUSE_SEC}s avant la prochaine inspiration.
-        </FlowText>
-      ) : null}
-      <FlowText className="mt-3 text-xs text-flow-faint">Temps restant : {remaining}s</FlowText>
     </View>
   )
 }

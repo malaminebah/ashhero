@@ -8,8 +8,8 @@ export default function CombatScreen() {
   const [open, setOpen] = useState(false)
 
   return (
-    <View className="flex-1 bg-flow-bg">
-      <StatusBar style="dark" />
+    <View className="flex-1 bg-brand-bg">
+      <StatusBar style="light" />
       <CombatArenaScreen onLaunchCombat={() => setOpen(true)} />
       <CombatModal visible={open} onClose={() => setOpen(false)} />
     </View>

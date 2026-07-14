@@ -4,30 +4,53 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { FLOW } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
-import { COMBAT_XP_BY_ACTION } from '@/src/features/tracker/combatXpTable'
+import { BOSS_COUNTER_ACTION, COMBAT_PLAYER_MAX_HP, combatActionLabel } from '../constants'
+import { breatheTotalTicks } from '../breatheCycle'
+import { useStats } from '@/src/features/tracker/hooks/useStats'
 import { useTrackerStore } from '@/src/features/tracker/store'
 import { displayHeroName } from '@/src/features/tracker/utils/heroName'
-import { COMBAT_SPECIAL_LOCKED_HINT, combatActionLabel } from '../constants'
+import { levelFromXp } from '@/src/features/tracker/utils/levelProgress'
+import {
+  getDefenseHealthBonusPercent,
+  playerEffectiveMaxHp,
+} from '@/src/features/tracker/components/dashboard/defenseBadgesConfig'
 import { useTurnCombat } from '../hooks/useTurnCombat'
+import { useBreatheTimer } from '../hooks/useBreatheTimer'
 import { resolveCombatVisuals } from '../utils/combatVisuals'
 import { ActionButton } from './ActionButton'
 import { BreatheTimer } from './BreatheTimer'
 import { CombatArenaView } from './CombatArenaView'
 import { CombatHpBar } from './CombatHpBar'
+import { CombatXpBar } from './CombatXpBar'
 import { CombatMessageBox } from './CombatMessageBox'
 import { DefeatBanner } from './DefeatBanner'
 import { FloatingDamage } from './FloatingDamage'
 import { VictoryBanner } from './VictoryBanner'
-import type { CombatModalParams } from '../types'
+import type { CombatModalParams, CombatEffect } from '../types'
+
+/** Damage chip color follows the attack (mockup: blue −13 for water). */
+const PLAYER_HIT_CHIP: Record<string, string> = {
+  water: '#3b82f6',
+  distract: '#64748b',
+  breathe: '#22c55e',
+  special: '#f59e0b',
+}
+
+function chipFill(combatEffect: CombatEffect): string | undefined {
+  if (combatEffect?.kind === 'player_hits_boss' && combatEffect.effect != null) {
+    return PLAYER_HIT_CHIP[combatEffect.effect]
+  }
+  return undefined
+}
 
 export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
   const router = useRouter()
-  const level = useTrackerStore((s) => s.level)
   const heroName = useTrackerStore((s) => s.heroName)
-  const heroLabel = displayHeroName(heroName).toUpperCase()
-  const heroDialogName = displayHeroName(heroName)
+  const heroLabel = displayHeroName(heroName)
+  const { dayCount } = useStats()
+  const playerShieldBonus = getDefenseHealthBonusPercent(dayCount)
+  const effectivePlayerMaxHp = playerEffectiveMaxHp(COMBAT_PLAYER_MAX_HP, playerShieldBonus)
 
   const {
     phase,
@@ -35,14 +58,20 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     playerMaxHp,
     bossHp,
     bossMaxHp,
+    nextBossAttack,
     battleMessage,
     bossShakeKey,
     playerShakeKey,
     victoryAction,
     defeatSource,
     canUseSpecial,
+    sessionXp,
+    displayXp,
+    xpAtStart,
+    specialsUsed,
     spriteCue,
     floatDamage,
+    combatEffect,
     turnCount,
     inArena,
     showActionButtons,
@@ -53,7 +82,9 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     chooseInstantAction,
     abandon,
     reset,
-  } = useTurnCombat({ enabled: visible })
+  } = useTurnCombat({ enabled: visible, playerMaxHp: effectivePlayerMaxHp })
+
+  const breathe = useBreatheTimer(onBreatheComplete, showBreatheTimer)
 
   const onGoHome = useCallback(() => {
     onClose()
@@ -68,8 +99,9 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     void abandon()
   }
 
-  const xpGained =
-    victoryAction != null ? COMBAT_XP_BY_ACTION[victoryAction] : 0
+  const combatLevel = levelFromXp(displayXp)
+  const counterAction = BOSS_COUNTER_ACTION[nextBossAttack]
+  const counterBadge = (action: string) => (counterAction === action ? 'Contre !' : undefined)
 
   const { playerAnim, bossAnim } = useMemo(
     () => resolveCombatVisuals(phase, playerHp, bossHp, spriteCue),
@@ -83,118 +115,135 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
       presentationStyle="fullScreen"
       onRequestClose={handleRequestClose}
     >
-      <SafeAreaView className="flex-1 bg-flow-bg">
-        <StatusBar style="dark" />
+      <View className="flex-1 bg-brand-bg">
+        <StatusBar style="light" />
         {phase === 'victory' && victoryAction != null ? (
-          <VictoryBanner xpGained={xpGained} level={level} onContinue={onClose} />
+          <VictoryBanner xpGained={sessionXp} level={combatLevel} onContinue={onClose} />
         ) : phase === 'defeat' && defeatSource != null ? (
           <DefeatBanner onRetry={reset} onGoHome={onGoHome} />
         ) : inArena ? (
-          <View className="flex-1 px-4 pb-4">
-            <View className="mb-2 flex-row items-center justify-between pt-1">
-              <Pressable
-                onPress={handleRequestClose}
-                accessibilityRole="button"
-                accessibilityLabel="Fermer le combat"
-                className="h-10 w-10 items-center justify-center rounded-full bg-flow-secondary active:opacity-80"
-              >
-                <MaterialIcons name="close" size={20} color={FLOW.muted} />
-              </Pressable>
-              <FlowText className="text-xs font-bold uppercase tracking-wider text-flow-muted">
-                Tour {turnCount}
-              </FlowText>
-            </View>
+          <SafeAreaView className="flex-1" edges={['top', 'left', 'right', 'bottom']}>
+            <View className="flex-1 px-5 pb-2" style={{ gap: 12 }}>
+              <View className="flex-row items-center justify-between">
+                <Pressable
+                  onPress={handleRequestClose}
+                  accessibilityRole="button"
+                  accessibilityLabel="Fermer le combat"
+                  className="h-9 w-9 items-center justify-center rounded-full bg-brand-card active:opacity-80"
+                >
+                  <MaterialIcons name="close" size={18} color="#8b7aa8" />
+                </Pressable>
+                <FlowText className="text-[11px] font-bold uppercase tracking-[0.6px] text-brand-muted">
+                  Tour {turnCount}
+                </FlowText>
+              </View>
 
-            <View className="mb-2 min-h-[200px] flex-1">
+              <CombatHpBar
+                variant="boss"
+                name="L'Envie"
+                level={combatLevel + 1}
+                hp={bossHp}
+                maxHp={bossMaxHp}
+              />
+
               <CombatArenaView
+                phase={phase}
                 bossDefeated={bossHp <= 0}
                 bossShakeKey={bossShakeKey}
                 playerShakeKey={playerShakeKey}
                 playerAnim={playerAnim}
                 bossAnim={bossAnim}
+                combatEffect={combatEffect}
+                breatheActive={showBreatheTimer}
+                breathePhase={breathe.phase}
+                style={{ flex: 1, minHeight: 220 }}
               >
-                <View className="absolute left-3 top-3 z-10">
-                  <CombatHpBar
-                    overlay
-                    variant="boss"
-                    name="L'ENVIE"
-                    level={level + 1}
-                    hp={bossHp}
-                    maxHp={bossMaxHp}
-                  />
-                </View>
-
-                <View className="absolute bottom-3 right-3 z-10 items-end">
-                  <CombatHpBar
-                    overlay
-                    variant="player"
-                    name={heroLabel}
-                    level={level}
-                    hp={playerHp}
-                    maxHp={playerMaxHp}
-                  />
-                </View>
-
                 {floatDamage != null ? (
-                  <FloatingDamage floatDamage={floatDamage} />
+                  <FloatingDamage floatDamage={floatDamage} fill={chipFill(combatEffect)} />
+                ) : null}
+                {showBreatheTimer ? (
+                  <>
+                    <Pressable
+                      onPress={breathe.registerTap}
+                      accessibilityRole="button"
+                      accessibilityLabel="Taper au rythme de la respiration"
+                      style={{ position: 'absolute', inset: 0 }}
+                    />
+                    <View style={{ position: 'absolute', top: 14, right: 14 }}>
+                      <BreatheTimer {...breathe} />
+                    </View>
+                  </>
                 ) : null}
               </CombatArenaView>
-            </View>
 
-            <View className="shrink-0">
+              <View>
+                <CombatHpBar
+                  variant="player"
+                  name={heroLabel}
+                  level={combatLevel}
+                  hp={playerHp}
+                  maxHp={playerMaxHp}
+                  baseMaxHp={COMBAT_PLAYER_MAX_HP}
+                />
+                <View className="mt-2">
+                  <CombatXpBar
+                    xpStart={xpAtStart}
+                    sessionXp={sessionXp}
+                    specialsUsed={specialsUsed}
+                    locked={!canUseSpecial}
+                  />
+                </View>
+              </View>
+
               <CombatMessageBox
                 message={battleMessage}
-                heroName={heroDialogName}
-                showPrompt={phase === 'player_turn' && !showBreatheTimer}
+                heroName={heroLabel}
+                showPrompt={phase === 'player_turn'}
+                nextAttack={phase === 'player_turn' ? nextBossAttack : undefined}
               />
 
-              {showBreatheTimer ? <BreatheTimer onComplete={onBreatheComplete} /> : null}
-
-              <View
-                style={{ opacity: showActionButtons ? 1 : 0 }}
-                pointerEvents={showActionButtons ? 'auto' : 'none'}
-                className="mt-2 flex-row flex-wrap justify-between gap-y-2"
-              >
-                <View className="w-[48%]">
+              <View className="flex-row flex-wrap justify-between" style={{ rowGap: 12 }}>
+                <View style={{ width: '48.5%' }}>
                   <ActionButton
-                    compact
                     variant="breathe"
                     label={combatActionLabel('breathe')}
                     onPress={chooseBreathe}
-                    badge="60s"
+                    disabled={!showActionButtons}
+                    badge={counterBadge('breathe') ?? `${breatheTotalTicks()} s`}
                     accessibilityLabel="Respirer"
                   />
                 </View>
-                <View className="w-[48%]">
+                <View style={{ width: '48.5%' }}>
                   <ActionButton
-                    compact
                     variant="water"
                     label={combatActionLabel('water')}
                     onPress={() => chooseInstantAction('water')}
+                    disabled={!showActionButtons}
+                    badge={counterBadge('water')}
                     accessibilityLabel="Boire de l'eau"
                   />
                 </View>
-                <View className="w-[48%]">
+                <View style={{ width: '48.5%' }}>
                   <ActionButton
-                    compact
                     variant="distract"
                     label={combatActionLabel('distract')}
                     onPress={() => chooseInstantAction('distract')}
+                    disabled={!showActionButtons}
+                    badge={counterBadge('distract')}
                     accessibilityLabel="Se distraire"
                   />
                 </View>
-                <View className="w-[48%]">
+                <View style={{ width: '48.5%' }}>
                   <ActionButton
-                    compact
                     variant="special"
                     label={combatActionLabel('special')}
                     onPress={() => chooseInstantAction('special')}
-                    disabled={!canUseSpecial}
-                    lockHint={!canUseSpecial ? COMBAT_SPECIAL_LOCKED_HINT : undefined}
+                    disabled={!showActionButtons || !canUseSpecial}
+                    badge={!canUseSpecial ? '100 XP' : undefined}
                     accessibilityLabel={
                       canUseSpecial
                         ? 'Attaque spéciale'
-                        : `Attaque spéciale, débloquée après ${COMBAT_SPECIAL_LOCKED_HINT}`
+                        : 'Attaque spéciale, débloquée à 100 XP gagnés'
                     }
                   />
                 </View>
@@ -206,16 +255,16 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
                 accessibilityRole="button"
                 accessibilityLabel="Abandonner le combat"
                 style={{ opacity: showAbandon ? 1 : 0 }}
-                className="mt-2 items-center py-2"
+                className="items-center py-1"
               >
-                <FlowText className="text-[10px] uppercase tracking-wider text-flow-faint">
+                <FlowText className="text-[10px] uppercase tracking-wider text-brand-locked">
                   Abandonner le combat
                 </FlowText>
               </Pressable>
             </View>
-          </View>
+          </SafeAreaView>
         ) : null}
-      </SafeAreaView>
+      </View>
     </Modal>
   )
 }

@@ -1,13 +1,18 @@
-export const soldierSheet = require('@/assets/caracter/Hero.png')
+export const soldierSheet = require('@/assets/combat/sprite_hero.png')
 
-export const SOLDIER_FRAME_SIZE = 100
-export const SOLDIER_SHEET_W = 300
-export const SOLDIER_SHEET_H = 800
+export const SOLDIER_FRAME_W = 502
+export const SOLDIER_FRAME_H = 502
+
+export const SOLDIER_SHEET_W = 1506
+export const SOLDIER_SHEET_H = 1506
 export const SOLDIER_SHEET_COLS = 3
-export const SOLDIER_SHEET_ROWS = 8
+export const SOLDIER_SHEET_ROWS = 3
 
-/** ~180px on screen; boss sprite is 120px. */
-export const SOLDIER_DISPLAY_SCALE = 1.8
+export const SOLDIER_CELL_W = SOLDIER_SHEET_W / SOLDIER_SHEET_COLS
+export const SOLDIER_CELL_H = SOLDIER_SHEET_H / SOLDIER_SHEET_ROWS
+
+/** ~190px on screen. */
+export const SOLDIER_DISPLAY_SCALE = 0.38
 
 export type { PlayerSoldierAnim, SoldierAnimConfig } from './animConfig'
 export { SOLDIER_ANIMS } from './animConfig'

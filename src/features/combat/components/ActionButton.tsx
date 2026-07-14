@@ -1,35 +1,29 @@
-import { Pressable, View } from 'react-native'
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import type { ComponentProps } from 'react'
-import { FLOW } from '@/constants/flowTheme'
-import { FlowText } from '@/components/ui/flow-text'
+import { ChunkyButton, CHUNKY_COLORS, type ChunkyPalette } from '@/components/ui/chunky-button'
+import type { GameIconName } from '@/components/ui/game-icon'
 import type { CombatActionButtonParams, CombatActionVariant } from '../types'
 
-const variantClass: Record<CombatActionVariant, string> = {
-  breathe: 'border-flow-cta/35 bg-flow-secondary',
-  water: 'border-sky-200 bg-sky-50',
-  distract: 'border-flow-border bg-flow-bg',
-  special: 'border-flow-gold/60 bg-flow-secondary',
+const PALETTE: Record<CombatActionVariant, ChunkyPalette> = {
+  breathe: CHUNKY_COLORS.green,
+  water: CHUNKY_COLORS.blue,
+  distract: CHUNKY_COLORS.gray,
+  special: CHUNKY_COLORS.gold,
 }
 
-const iconColor: Record<CombatActionVariant, string> = {
-  breathe: FLOW.cta,
-  water: '#0284C7',
-  distract: FLOW.muted,
-  special: FLOW.gold,
+const SHORT_LABEL: Record<CombatActionVariant, string> = {
+  breathe: 'Respirer',
+  water: 'Eau',
+  distract: 'Distraire',
+  special: 'Spécial',
 }
 
-const iconName: Record<
-  CombatActionVariant,
-  ComponentProps<typeof MaterialCommunityIcons>['name']
-> = {
+const ICON: Record<CombatActionVariant, GameIconName> = {
   breathe: 'lungs',
-  water: 'water',
-  distract: 'gamepad-variant',
-  special: 'flash',
+  water: 'drop',
+  distract: 'pad',
+  special: 'bolt',
 }
 
+/** Mockup chunky action — 3D face, icon + label, corner badge. */
 export const ActionButton = ({
   label,
   onPress,
@@ -38,41 +32,16 @@ export const ActionButton = ({
   badge,
   lockHint,
   accessibilityLabel,
-  compact = false,
 }: CombatActionButtonParams) => (
-  <Pressable
+  <ChunkyButton
+    label={SHORT_LABEL[variant]}
+    icon={variant === 'special' && disabled ? 'lock' : ICON[variant]}
+    palette={PALETTE[variant]}
     onPress={onPress}
     disabled={disabled}
-    accessibilityRole="button"
+    badge={badge ?? (disabled && lockHint ? lockHint : undefined)}
+    height={66}
+    fontSize={14}
     accessibilityLabel={accessibilityLabel ?? label}
-    accessibilityState={{ disabled }}
-    className={`w-full flex-row items-center rounded-2xl border px-3 ${
-      compact ? 'min-h-[48px] py-2.5' : 'min-h-[52px] py-3'
-    } ${variantClass[variant]} ${disabled ? 'opacity-50' : 'active:opacity-85'}`}
-  >
-    <MaterialCommunityIcons
-      name={iconName[variant]}
-      size={compact ? 18 : 22}
-      color={iconColor[variant]}
-    />
-    <FlowText
-      className={`ml-2 flex-1 font-bold ${
-        compact ? 'text-[11px]' : 'text-xs'
-      } ${variant === 'special' && !disabled ? 'text-flow-gold' : 'text-flow-text'}`}
-    >
-      {label}
-    </FlowText>
-    {badge ? (
-      <View className="flex-row items-center gap-1 rounded-full bg-flow-border px-2 py-1">
-        <MaterialIcons name="schedule" size={12} color={FLOW.faint} />
-        <FlowText className="text-[10px] text-flow-muted">{badge}</FlowText>
-      </View>
-    ) : null}
-    {disabled && lockHint ? (
-      <View className="flex-row items-center gap-1 rounded-full bg-flow-border px-2 py-1">
-        <MaterialIcons name="lock" size={12} color={FLOW.faint} />
-        <FlowText className="text-[9px] text-flow-faint">{lockHint}</FlowText>
-      </View>
-    ) : null}
-  </Pressable>
+  />
 )

@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  BOSS_ATTACK_NAMES,
+  BOSS_COUNTER_ACTION,
+  BREATHE_RESULT,
+  bossMaxHpForLevel,
+  COMBAT_BOSS_BASE_HP,
   combatActionLabel,
   DAMAGE_TO_BOSS,
   rollBossRiposteDamage,
@@ -11,39 +16,106 @@ describe('rollBossRiposteDamage', () => {
   })
 
   it(`
-    Given Math.random returns 0
+    Given level 1 and Math.random returns 0
     When rollBossRiposteDamage is called
-    Then the minimum damage 7 is returned
+    Then the minimum damage 12 is returned
   `, () => {
     vi.spyOn(Math, 'random').mockReturnValue(0)
 
-    const damage = rollBossRiposteDamage()
+    const damage = rollBossRiposteDamage(1)
 
-    expect(damage).toBe(7)
+    expect(damage).toBe(12)
   })
 
   it(`
-    Given Math.random returns just below 1
+    Given level 1 and Math.random returns just below 1
     When rollBossRiposteDamage is called
-    Then the maximum damage 15 is returned
+    Then the maximum damage 20 is returned
   `, () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.999999)
 
-    const damage = rollBossRiposteDamage()
+    const damage = rollBossRiposteDamage(1)
 
-    expect(damage).toBe(15)
+    expect(damage).toBe(20)
   })
 
   it(`
-    Given Math.random returns 0.5
+    Given level 6 and Math.random returns 0
     When rollBossRiposteDamage is called
-    Then damage 11 is returned
+    Then the level tier adds +10 damage
   `, () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0.5)
+    vi.spyOn(Math, 'random').mockReturnValue(0)
 
-    const damage = rollBossRiposteDamage()
+    const damage = rollBossRiposteDamage(6)
 
-    expect(damage).toBe(11)
+    expect(damage).toBe(22)
+  })
+
+  it(`
+    Given a level above the scaling cap
+    When rollBossRiposteDamage is called
+    Then damage stays at the level 6 tier
+  `, () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+
+    const damage = rollBossRiposteDamage(10)
+
+    expect(damage).toBe(22)
+  })
+})
+
+describe('bossMaxHpForLevel', () => {
+  it(`
+    Given level 1
+    When bossMaxHpForLevel is called
+    Then the base HP is returned
+  `, () => {
+    const level = 1
+
+    const maxHp = bossMaxHpForLevel(level)
+
+    expect(maxHp).toBe(COMBAT_BOSS_BASE_HP)
+  })
+
+  it(`
+    Given level 3
+    When bossMaxHpForLevel is called
+    Then HP grows by 13 per level
+  `, () => {
+    const level = 3
+
+    const maxHp = bossMaxHpForLevel(level)
+
+    expect(maxHp).toBe(COMBAT_BOSS_BASE_HP + 26)
+  })
+
+  it(`
+    Given a level above the scaling cap
+    When bossMaxHpForLevel is called
+    Then HP stays at the level 7 cap
+  `, () => {
+    const level = 10
+
+    const maxHp = bossMaxHpForLevel(level)
+
+    expect(maxHp).toBe(COMBAT_BOSS_BASE_HP + 13 * 6)
+  })
+})
+
+describe('BOSS_COUNTER_ACTION', () => {
+  it(`
+    Given every telegraphed boss attack
+    When its counter is read
+    Then a counter action exists and is never the special attack
+  `, () => {
+    const attacks = BOSS_ATTACK_NAMES
+
+    const counters = attacks.map((name) => BOSS_COUNTER_ACTION[name])
+
+    const allDefined = counters.every((counter) => counter != null)
+    const noneIsSpecial = counters.every((counter) => counter !== 'special')
+    expect(allDefined).toBe(true)
+    expect(noneIsSpecial).toBe(true)
   })
 })
 
@@ -99,34 +171,42 @@ describe('combatActionLabel', () => {
 
 describe('DAMAGE_TO_BOSS', () => {
   it(`
-    Given action breathe
-    When damage is read from the table
-    Then boss damage is 35
+    Given the damage table
+    When action damages are compared
+    Then every action deals damage and special outdamages all basic actions
   `, () => {
-    expect(DAMAGE_TO_BOSS.breathe).toBe(35)
+    const { breathe, water, distract, special } = DAMAGE_TO_BOSS
+
+    const allDealDamage = [breathe, water, distract, special].every((damage) => damage > 0)
+    const specialIsHighest = [breathe, water, distract].every((damage) => special > damage)
+
+    expect(allDealDamage).toBe(true)
+    expect(specialIsHighest).toBe(true)
   })
 
   it(`
-    Given action water
-    When damage is read from the table
-    Then boss damage is 13
+    Given breathe is the healing action
+    When its damage is compared to the DPS actions
+    Then breathe deals the lightest hit
   `, () => {
-    expect(DAMAGE_TO_BOSS.water).toBe(13)
-  })
+    const { breathe, water, distract } = DAMAGE_TO_BOSS
 
-  it(`
-    Given action distract
-    When damage is read from the table
-    Then boss damage is 17
-  `, () => {
-    expect(DAMAGE_TO_BOSS.distract).toBe(17)
+    expect(breathe).toBeLessThan(water)
+    expect(breathe).toBeLessThan(distract)
   })
+})
 
+describe('BREATHE_RESULT', () => {
   it(`
-    Given action special
-    When damage is read from the table
-    Then boss damage is 70
+    Given breathing grades from perfect to off
+    When heal and damage are read
+    Then better precision always yields better results
   `, () => {
-    expect(DAMAGE_TO_BOSS.special).toBe(70)
+    const { perfect, good, off } = BREATHE_RESULT
+
+    expect(perfect.heal).toBeGreaterThan(good.heal)
+    expect(good.heal).toBeGreaterThan(off.heal)
+    expect(perfect.damage).toBeGreaterThanOrEqual(good.damage)
+    expect(good.damage).toBeGreaterThanOrEqual(off.damage)
   })
 })

@@ -1,13 +1,19 @@
-export const bossSheet = require('@/assets/combat/boss-sheet.png')
+export const bossSheet = require('@/assets/combat/sprite_boss.png')
 
-export const BOSS_FRAME_SIZE = 100
-export const BOSS_SHEET_W = 300
-export const BOSS_SHEET_H = 400
+/** TexturePacker target cell — current PNG is 1302×1160 (3×2). */
+export const BOSS_FRAME_W = 432
+export const BOSS_FRAME_H = 578
+
+export const BOSS_SHEET_W = 1302
+export const BOSS_SHEET_H = 1160
 export const BOSS_SHEET_COLS = 3
-export const BOSS_SHEET_ROWS = 4
+export const BOSS_SHEET_ROWS = 2
 
-/** Matches prior static boss display (~120px). */
-export const BOSS_DISPLAY_SCALE = 1.2
+export const BOSS_CELL_W = BOSS_SHEET_W / BOSS_SHEET_COLS
+export const BOSS_CELL_H = BOSS_SHEET_H / BOSS_SHEET_ROWS
+
+/** ~350px tall — boss dominant but clears hero gap. */
+export const BOSS_DISPLAY_SCALE = 0.60
 
 export type { BossAnim, BossAnimConfig } from './animConfig'
 export { BOSS_ANIMS } from './animConfig'

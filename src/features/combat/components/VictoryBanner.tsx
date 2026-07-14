@@ -1,62 +1,188 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useEffect } from 'react'
 import { View } from 'react-native'
-import { FLOW } from '@/constants/flowTheme'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
+import { LinearGradient } from 'expo-linear-gradient'
 import { FlowText } from '@/components/ui/flow-text'
-import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
-import { CombatResultBackdrop } from './CombatResultBackdrop'
+import { GameCard } from '@/components/ui/game-card'
+import { GameIcon } from '@/components/ui/game-icon'
+import { ChunkyButton, CHUNKY_COLORS } from '@/components/ui/chunky-button'
+import { ArenaFrame, ArenaPlinth } from './ArenaFrame'
+import { CartoonHero } from './CartoonSprites'
 import type { VictoryBannerParams } from '../types'
 
 const coinReward = (xp: number) => Math.max(10, Math.round(xp * 0.6))
 
-export const VictoryBanner = ({ xpGained, level, onContinue }: VictoryBannerParams) => {
-  const coins = coinReward(xpGained)
+const CONFETTI = [
+  { top: 70, left: 40, color: '#fbbf24', round: true },
+  { top: 96, right: 52, color: '#22c55e', round: false },
+  { top: 130, left: 84, color: '#c084fc', round: true },
+  { top: 88, left: 170, color: '#ef4444', round: false },
+  { top: 150, right: 96, color: '#fbbf24', round: false },
+  { top: 116, right: 150, color: '#60a5fa', round: true },
+] as const
+
+const ConfettiPiece = ({
+  top,
+  left,
+  right,
+  color,
+  round,
+  delay,
+}: {
+  top: number
+  left?: number
+  right?: number
+  color: string
+  round: boolean
+  delay: number
+}) => {
+  const scale = useSharedValue(0)
+  const drift = useSharedValue(0)
+
+  useEffect(() => {
+    scale.value = withDelay(delay, withSpring(1, { damping: 9, stiffness: 160 }))
+    drift.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(-6, { duration: 1100, easing: Easing.inOut(Easing.sin) }),
+          withTiming(0, { duration: 1100, easing: Easing.inOut(Easing.sin) })
+        ),
+        -1,
+        true
+      )
+    )
+  }, [delay, drift, scale])
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }, { translateY: drift.value }, { rotate: '24deg' }],
+  }))
 
   return (
-    <View className="flex-1 bg-flow-bg">
-      <CombatResultBackdrop heroAnim="victory" showBoss bossAnim="death" bossMuted />
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        style,
+        {
+          position: 'absolute',
+          top,
+          left,
+          right,
+          width: 8,
+          height: 8,
+          borderRadius: round ? 4 : 2,
+          backgroundColor: color,
+        },
+      ]}
+    />
+  )
+}
 
-      <View className="flex-1 px-6 pb-8 pt-4">
-        <View className="self-center rounded-full border border-flow-cta/30 bg-flow-secondary px-8 py-2">
-          <FlowText className="text-sm font-bold text-flow-cta">Victoire !</FlowText>
-        </View>
+export const VictoryBanner = ({ xpGained, level, onContinue }: VictoryBannerParams) => {
+  const coins = coinReward(xpGained)
+  const bannerScale = useSharedValue(0.4)
 
-        <FlowText className="mt-5 text-center text-xs leading-5 text-flow-muted">
-          L&apos;Envie recule…
-        </FlowText>
-        <FlowText className="mt-1 text-center text-base font-bold text-flow-text">
-          Tu es plus fort !
-        </FlowText>
+  useEffect(() => {
+    bannerScale.value = withDelay(200, withSpring(1, { damping: 10, stiffness: 140 }))
+  }, [bannerScale])
 
-        <View className="mt-7 w-full">
-          <FlowText className="mb-3 text-center text-[10px] font-bold uppercase tracking-wider text-flow-cta">
-            Récompenses
-          </FlowText>
-          <View className="rounded-2xl border border-flow-border bg-flow-secondary px-4 py-4">
-            <View className="mb-3 flex-row items-center justify-between border-b border-flow-border pb-3">
-              <FlowText className="text-[10px] uppercase tracking-wider text-flow-faint">
-                Niveau
-              </FlowText>
-              <FlowText className="text-sm font-bold text-flow-text">{level}</FlowText>
-            </View>
-            <View className="mb-3 flex-row items-center">
-              <View className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-flow-cta/15">
-                <FlowText className="text-[10px] font-bold text-flow-cta">XP</FlowText>
-              </View>
-              <FlowText className="text-sm font-bold text-flow-text">+{xpGained} XP</FlowText>
-            </View>
-            <View className="flex-row items-center">
-              <View className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-flow-gold/20">
-                <MaterialIcons name="monetization-on" size={18} color={FLOW.gold} />
-              </View>
-              <FlowText className="text-sm font-bold text-flow-text">+{coins}</FlowText>
-            </View>
+  const bannerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: bannerScale.value }],
+  }))
+
+  return (
+    <SafeAreaView className="flex-1 bg-brand-bg">
+      <View className="flex-1 px-5 pb-4 pt-3" style={{ gap: 16 }}>
+        <ArenaFrame style={{ flex: 1, minHeight: 320 }}>
+          {CONFETTI.map((c, i) => (
+            <ConfettiPiece key={i} {...c} delay={250 + i * 90} />
+          ))}
+          <ArenaPlinth width={150} style={{ alignSelf: 'center', bottom: 36 }} />
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 46,
+              left: 0,
+              right: 0,
+              alignItems: 'center',
+            }}
+          >
+            <CartoonHero anim="victory" width={140} height={175} />
           </View>
+
+          <Animated.View
+            style={[bannerStyle, { position: 'absolute', top: 34, alignSelf: 'center' }]}
+          >
+            <LinearGradient
+              colors={['#fcd34d', '#fbbf24']}
+              style={{
+                paddingHorizontal: 34,
+                paddingVertical: 10,
+                borderRadius: 999,
+                shadowColor: '#fbbf24',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4,
+                shadowRadius: 12,
+                elevation: 8,
+              }}
+            >
+              <FlowText
+                className="text-[26px] font-black"
+                style={{ color: '#3b2000', letterSpacing: 1 }}
+              >
+                Victoire !
+              </FlowText>
+            </LinearGradient>
+          </Animated.View>
+        </ArenaFrame>
+
+        <GameCard
+          className="flex-row items-center justify-between px-5 py-4"
+          style={{ borderColor: 'rgba(251,191,36,0.35)' }}
+        >
+          <View className="flex-row items-center gap-2">
+            <GameIcon name="gem" size={18} color="#fbbf24" />
+            <FlowText className="text-[17px] font-bold text-brand-gold">+{xpGained} XP</FlowText>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <GameIcon name="coin" size={18} color="#fbbf24" />
+            <FlowText className="text-[17px] font-bold text-brand-gold">+{coins} or</FlowText>
+          </View>
+          <FlowText className="text-[13px] font-bold text-brand-success">Nv {level}</FlowText>
+        </GameCard>
+
+        <View
+          className="min-h-[48px] justify-center rounded-2xl px-4 py-3"
+          style={{
+            backgroundColor: '#160826',
+            borderWidth: 1.5,
+            borderColor: 'rgba(168,85,247,0.45)',
+          }}
+        >
+          <FlowText className="text-center text-sm font-bold leading-5 text-white">
+            L&apos;Envie bat en retraite. Tu es plus fort qu&apos;elle.
+          </FlowText>
         </View>
 
-        <View className="mt-auto pt-8">
-          <OnboardingPrimaryButton label="Continuer" onPress={onContinue} />
-        </View>
+        <ChunkyButton
+          label="Continuer"
+          palette={CHUNKY_COLORS.green}
+          height={58}
+          fontSize={16}
+          letterSpacing={1}
+          onPress={onContinue}
+        />
       </View>
-    </View>
+    </SafeAreaView>
   )
 }

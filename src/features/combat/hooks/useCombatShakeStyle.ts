@@ -13,6 +13,7 @@ export type CombatShakeFrom = 'left' | 'right'
  */
 export function useCombatShakeStyle(shakeKey: number, hitFrom: CombatShakeFrom) {
   const offset = useSharedValue(0)
+  const opacity = useSharedValue(1)
 
   useEffect(() => {
     if (shakeKey <= 0) return
@@ -26,9 +27,15 @@ export function useCombatShakeStyle(shakeKey: number, hitFrom: CombatShakeFrom) 
       withTiming(3 * sign, { duration: 40 }),
       withTiming(0, { duration: 50 })
     )
-  }, [shakeKey, hitFrom, offset])
+    opacity.value = 1
+    opacity.value = withSequence(
+      withTiming(0.4, { duration: 75 }),
+      withTiming(1, { duration: 75 })
+    )
+  }, [shakeKey, hitFrom, offset, opacity])
 
   return useAnimatedStyle(() => ({
+    opacity: opacity.value,
     transform: [{ translateX: offset.value }],
   }))
 }

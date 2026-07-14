@@ -1,66 +1,111 @@
+import type { ReactNode } from 'react'
 import { View } from 'react-native'
 import { FlowText } from '@/components/ui/flow-text'
+import { COMBAT_BOSS_REGEN_MESSAGE } from '../constants'
+import { BREATHE_GRADE_LABEL } from '../breatheCycle'
 import type { CombatMessageBoxParams } from '../types'
 
-// min-h-[72px] locks the height across all message states (idle+prompt ~68px, player_hit ~64px)
-// so the flex-1 arena above doesn't jump when the message changes on attack.
-const boxClass =
-  'mb-3 min-h-[72px] justify-center rounded-2xl border border-flow-border bg-flow-secondary px-4 py-3'
+const ACTION_COLOR: Record<string, string> = {
+  "Boire de l'eau": '#60a5fa',
+  Respirer: '#22c55e',
+  'Se distraire': '#94a3b8',
+  'Attaque spéciale': '#fbbf24',
+}
 
-const Prompt = () => (
-  <FlowText className="mt-1 text-right text-xs text-flow-cta">▶</FlowText>
-)
-
+/** Mockup dialog — dark violet box, 14px bold copy, colored keywords. */
 export const CombatMessageBox = ({
   message,
   showPrompt = true,
   heroName,
+  nextAttack,
 }: CombatMessageBoxParams) => {
   const idlePrompt =
     heroName != null && heroName.length > 0
       ? `Que doit faire ${heroName} ?`
       : 'Que vas-tu faire ?'
 
+  const wrap = (children: ReactNode) => (
+    <View
+      className="min-h-[48px] justify-center rounded-2xl px-4 py-3"
+      style={{
+        backgroundColor: '#160826',
+        borderWidth: 1.5,
+        borderColor: 'rgba(168,85,247,0.45)',
+      }}
+    >
+      {children}
+    </View>
+  )
+
+  const body = 'text-sm font-bold leading-5 text-white'
+
   if (message.kind === 'idle') {
-    return (
-      <View className={boxClass}>
-        <FlowText className="text-left text-xs leading-5 text-flow-muted">
-          {showPrompt ? idlePrompt : '…'}
-        </FlowText>
-        {showPrompt ? <Prompt /> : null}
-      </View>
+    return wrap(
+      <>
+        <FlowText className={body}>{showPrompt ? idlePrompt : '…'}</FlowText>
+        {showPrompt && nextAttack != null ? (
+          <FlowText className="mt-0.5 text-xs font-bold leading-4" style={{ color: '#c084fc' }}>
+            L&apos;Envie prépare {nextAttack}…
+          </FlowText>
+        ) : null}
+      </>
     )
   }
 
   if (message.kind === 'status') {
-    return (
-      <View className={boxClass}>
-        <FlowText className="text-left text-xs leading-5 text-flow-text">
-          {message.text}
-        </FlowText>
-        {showPrompt ? <Prompt /> : null}
-      </View>
-    )
+    return wrap(<FlowText className={body}>{message.text}</FlowText>)
   }
 
   if (message.kind === 'player_hit') {
-    return (
-      <View className={boxClass}>
-        <FlowText className="text-left text-xs leading-5 text-flow-text">
-          Tu utilises {message.actionLabel} !{'\n'}C&apos;est super efficace ! L&apos;Envie subit{' '}
-          {message.damage} dégâts !
-        </FlowText>
-        {showPrompt ? <Prompt /> : null}
-      </View>
+    const color = ACTION_COLOR[message.actionLabel] ?? '#60a5fa'
+    return wrap(
+      <FlowText className={body}>
+        Tu utilises <FlowText className={body} style={{ color }}>{message.actionLabel}</FlowText> !
+        {' '}L&apos;Envie subit{' '}
+        <FlowText className={body} style={{ color }}>{message.damage} dégâts</FlowText> !
+      </FlowText>
     )
   }
 
-  return (
-    <View className={boxClass}>
-      <FlowText className="text-left text-xs leading-5 text-flow-text">
-        L&apos;Envie utilise {message.attackName} !{'\n'}C&apos;est super efficace !
+  if (message.kind === 'player_breathe') {
+    return wrap(
+      <FlowText className={body}>
+        <FlowText className={body} style={{ color: '#22c55e' }}>
+          {BREATHE_GRADE_LABEL[message.grade]}
+        </FlowText>
+        {' '}Tu récupères{' '}
+        <FlowText className={body} style={{ color: '#22c55e' }}>{message.heal} PV</FlowText>
+        {' '}et l&apos;Envie subit{' '}
+        <FlowText className={body} style={{ color: '#22c55e' }}>{message.damage} dégâts</FlowText> !
       </FlowText>
-      {showPrompt ? <Prompt /> : null}
-    </View>
+    )
+  }
+
+  if (message.kind === 'boss_countered') {
+    return wrap(
+      <FlowText className={body}>
+        <FlowText className={body} style={{ color: '#22c55e' }}>Contré !</FlowText>
+        {' '}<FlowText className={body} style={{ color: '#c084fc' }}>{message.attackName}</FlowText>
+        {' '}échoue —{' '}
+        <FlowText className={body} style={{ color: '#fbbf24' }}>+{message.bonusXp} XP</FlowText>
+      </FlowText>
+    )
+  }
+
+  if (message.kind === 'boss_regen') {
+    return wrap(
+      <FlowText className={body} style={{ color: '#4ade80' }}>
+        {COMBAT_BOSS_REGEN_MESSAGE}
+      </FlowText>
+    )
+  }
+
+  return wrap(
+    <FlowText className={body}>
+      L&apos;Envie utilise{' '}
+      <FlowText className={body} style={{ color: '#c084fc' }}>{message.attackName}</FlowText> !
+      {' '}Tu subis{' '}
+      <FlowText className={body} style={{ color: '#ef4444' }}>{message.damage} dégâts</FlowText> !
+    </FlowText>
   )
 }

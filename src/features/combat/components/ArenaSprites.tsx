@@ -1,14 +1,22 @@
 import type { ReactNode } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import Animated from 'react-native-reanimated'
-import { ARENA_SPRITE_LAYOUT } from '../arenaAssets'
-import type { BossAnim } from '../bossSheet'
-import type { PlayerSoldierAnim } from '../soldierSheet'
+import type { BossAnim, PlayerSoldierAnim } from '../animConfig'
+import type { useBossIntroStyle } from '../hooks/useBossIntroStyle'
 import type { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
-import { BossSprite } from './BossSprite'
-import { PlayerSoldierSprite } from './PlayerSoldierSprite'
+import { ArenaPlinth } from './ArenaFrame'
+import { BreatheHeroAura } from './BreatheHeroAura'
+import { CartoonBoss, CartoonHero } from './CartoonSprites'
+import type { BreathePhase } from '../breatheCycle'
 
 type ShakeStyle = ReturnType<typeof useCombatShakeStyle>
+type IntroStyle = ReturnType<typeof useBossIntroStyle>
+
+/** Mockup sizes — frames 12-15 (hero 116×141, boss 130×130). */
+export const HERO_ARENA_W = 116
+export const HERO_ARENA_H = 141
+export const BOSS_ARENA_W = 130
+export const BOSS_ARENA_H = 130
 
 type ArenaSpritesParams = {
   playerAnim: PlayerSoldierAnim
@@ -16,11 +24,12 @@ type ArenaSpritesParams = {
   showBoss?: boolean
   bossMuted?: boolean
   playerShakeStyle?: ShakeStyle
+  bossIntroStyle?: IntroStyle
   bossShakeStyle?: ShakeStyle
+  breatheActive?: boolean
+  breathePhase?: BreathePhase
   children?: ReactNode
 }
-
-const ROW_STYLE = { position: 'absolute', left: 0, right: 0, zIndex: 10, alignItems: 'center' } as const
 
 export const ArenaSprites = ({
   playerAnim,
@@ -28,23 +37,39 @@ export const ArenaSprites = ({
   showBoss = true,
   bossMuted = false,
   playerShakeStyle,
+  bossIntroStyle,
   bossShakeStyle,
+  breatheActive = false,
+  breathePhase = 'countdown',
   children,
 }: ArenaSpritesParams) => (
-  <>
-    <Animated.View style={[playerShakeStyle, { ...ROW_STYLE, ...ARENA_SPRITE_LAYOUT.player }]}>
-      <PlayerSoldierSprite anim={playerAnim} />
+  <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+    <ArenaPlinth width={122} style={{ left: '7%', bottom: 24 }} />
+    {showBoss ? <ArenaPlinth width={134} style={{ right: '5%', bottom: 28 }} /> : null}
+
+    <Animated.View
+      style={[
+        playerShakeStyle,
+        { position: 'absolute', zIndex: 30, left: '6%', bottom: 34 },
+      ]}
+    >
+      {breatheActive ? <BreatheHeroAura phase={breathePhase} /> : null}
+      <CartoonHero anim={playerAnim} width={HERO_ARENA_W} height={HERO_ARENA_H} />
     </Animated.View>
 
     {showBoss ? (
-      <Animated.View style={[bossShakeStyle, { ...ROW_STYLE, ...ARENA_SPRITE_LAYOUT.boss }]}>
-        {/* scaleX: -1 on inner View so boss faces the player; shake stays in parent space */}
-        <View style={{ transform: [{ scaleX: -1 }] }}>
-          <BossSprite anim={bossAnim} muted={bossMuted} />
-        </View>
+      <Animated.View
+        style={[
+          bossIntroStyle,
+          { position: 'absolute', zIndex: 10, right: '4%', bottom: 40 },
+        ]}
+      >
+        <Animated.View style={bossShakeStyle}>
+          <CartoonBoss anim={bossAnim} muted={bossMuted} width={BOSS_ARENA_W} height={BOSS_ARENA_H} />
+        </Animated.View>
       </Animated.View>
     ) : null}
 
     {children}
-  </>
+  </View>
 )

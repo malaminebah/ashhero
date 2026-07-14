@@ -1,39 +1,44 @@
 import type { PropsWithChildren } from 'react'
-import { View } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { useBossIntroStyle } from '../hooks/useBossIntroStyle'
 import { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
-import { ArenaBackgroundPanel } from './ArenaBackgroundPanel'
+import { ArenaFrame } from './ArenaFrame'
 import { ArenaSprites } from './ArenaSprites'
+import { CombatEffectOverlay } from './CombatEffectOverlay'
 import type { CombatArenaViewParams } from '../types'
 
+/** Framed night arena (mockup) — sprites, hit effects, breathe aura.
+ * Boss stays mounted after KO: CartoonBoss death anim dissolves it. */
 export const CombatArenaView = ({
-  bossDefeated,
+  phase,
+  bossDefeated: _bossDefeated,
   bossShakeKey,
   playerShakeKey,
   playerAnim,
   bossAnim,
+  combatEffect,
+  breatheActive = false,
+  breathePhase = 'countdown',
+  style,
   children,
 }: PropsWithChildren<CombatArenaViewParams>) => {
+  const bossIntro = useBossIntroStyle(phase)
   const bossShake = useCombatShakeStyle(bossShakeKey, 'left')
   const playerShake = useCombatShakeStyle(playerShakeKey, 'right')
 
   return (
-    <View className="max-h-full w-full flex-1">
-      <ArenaBackgroundPanel
-        variant="fill"
-        tone="game"
-        className="flex-1 rounded-2xl border border-white/10 bg-brand-bg"
+    <ArenaFrame style={style}>
+      <ArenaSprites
+        playerAnim={playerAnim}
+        bossAnim={bossAnim}
+        bossIntroStyle={bossIntro}
+        bossShakeStyle={bossShake}
+        playerShakeStyle={playerShake}
+        breatheActive={breatheActive}
+        breathePhase={breathePhase}
       >
-        <ArenaSprites
-          playerAnim={playerAnim}
-          bossAnim={bossAnim}
-          showBoss={!bossDefeated}
-          playerShakeStyle={playerShake}
-          bossShakeStyle={bossShake}
-        >
-          {children}
-        </ArenaSprites>
-      </ArenaBackgroundPanel>
-    </View>
+        {children}
+      </ArenaSprites>
+      <CombatEffectOverlay combatEffect={combatEffect} />
+    </ArenaFrame>
   )
 }

@@ -13,14 +13,9 @@ const persistProfile = (): Promise<void> => {
 export const useCombat = () => {
   const winCombat = useTrackerStore((s) => s.winCombat)
   const loseCombat = useTrackerStore((s) => s.loseCombat)
-  const bestStreak = useTrackerStore((s) => s.bestStreak)
-
-  const streak = bestStreak ?? 0
-  const canUseSpecial = streak >= 7
 
   const handleVictory = useCallback(
-    async (action: CombatAction) => {
-      const xpGained = COMBAT_XP_BY_ACTION[action]
+    async (action: CombatAction, xpGained: number) => {
       winCombat(action, xpGained)
       const uid = getCurrentUid()
       if (uid) {
@@ -44,5 +39,5 @@ export const useCombat = () => {
     }
   }, [loseCombat])
 
-  return { handleVictory, handleDefeat, canUseSpecial, XP_TABLE: COMBAT_XP_BY_ACTION }
+  return { handleVictory, handleDefeat, XP_TABLE: COMBAT_XP_BY_ACTION }
 }
