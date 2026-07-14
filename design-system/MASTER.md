@@ -84,18 +84,37 @@ import { flowShadow } from '@/constants/flowTheme'
 
 ---
 
-## 2. Tokens Game (`brand.*`) — legacy combat / tabs
+## 2. Tokens Game (`brand.*`) — zone sombre (maquette ashhero-ui-frames)
+
+Référence : maquette 22 frames (juillet 2026). Typo : **Nunito** partout (M5x7 abandonné, `font-pixel` en secours).
 
 | Token | Hex | Usage |
 |-------|-----|--------|
 | `brand-bg` | `#08000f` | Fond écran |
-| `brand-bg2` | `#0f0020` | Tab bar |
-| `brand-success` | `#22c55e` | Joueur, progression |
-| `brand-accent` | `#a855f7` | Boss, PV ennemi |
-| `brand-gold` | `#fbbf24` | XP, récompenses |
-| `brand-red` | `#ef4444` | Danger |
+| `brand-bg2` | `#0f0020` | Tab bar flottante |
+| `brand-card` | `#150826` | Cartes (GameCard) |
+| `brand-track` | `#1d0b2b` | Fond barres / wells |
+| `brand-muted` | `#8b7aa8` | Labels (GameLabel) |
+| `brand-locked` | `#5b4a75` | Éléments verrouillés |
+| `brand-success` | `#22c55e` | Joueur, streak, CTA vert |
+| `brand-accent` | `#a855f7` | Boss, violet |
+| `brand-gold` | `#fbbf24` | XP, récompenses, jalon en cours |
+| `brand-red` | `#ef4444` | Danger, dégâts |
+| `brand-blue` | `#3b82f6` | Eau, DÉF |
 
-Voir sections 5–6 pour composants combat existants.
+### Composants Game partagés
+
+| Composant | Fichier | Notes |
+|-----------|---------|-------|
+| Bouton chunky 3D | `components/ui/chunky-button.tsx` | `CHUNKY_COLORS` green/blue/gray/gold/violet, press anim |
+| Carte sombre | `components/ui/game-card.tsx` | 20px radius, bordure blanche 7 % |
+| Label uppercase | `components/ui/game-label.tsx` | 11px 700 `brand-muted` |
+| Barre XP or | `components/ui/xp-bar.tsx` | gradient `#f59e0b→#fbbf24` |
+| Icônes jeu | `components/ui/game-icon.tsx` | lungs/drop/swords/crown/gem… |
+| Sprites cartoon SVG | `components/characters/HeroSprite.tsx` · `BossSprite.tsx` | poses maquette (avatars hors combat) |
+| Étoiles arène | `components/ui/star-field.tsx` | |
+
+Combat : spritesheets PNG `assets/combat/sprite_hero.png` (3×3) / `sprite_boss.png` (3×2) + `assets/images/night_arena.jpg` — voir `src/features/combat/`.
 
 ---
 
@@ -200,10 +219,58 @@ Référence implémentation : `src/features/combat/components/*`, `src/features/
 | Boutons &lt; 48px | `min-h-[52px]` |
 | Ombres dures noir 40% | `flowShadow.*` (~6–8%) |
 | Copier mascot Ahead (ghost) | Asset AshHero flat (TBD) |
+| Hex en dur dans un composant | Token `flowTheme.ts` / `theme.ts` / Tailwind |
+| Divider par réflexe | `gap` + whitespace |
+| Animation bloquante &gt; 500ms hors combat | 150–450ms, jamais bloquant |
 
 ---
 
-## 7. Accessibilité & motion
+## 7. Discipline UI — garde-fous senior (moderne & minimaliste)
+
+Règles transverses Flow **et** Game. Elles priment sur les habitudes locales d'un fichier.
+
+### 7.1 Couleur
+
+- **Zéro hex en dur dans un composant** — tout vient des tokens (`flowTheme.ts`, `theme.ts`, classes Tailwind). Seule exception : une couleur **portée par la donnée** (ex. `mood.circleColor`), jamais décorative.
+- **1 couleur d'accent par écran.** Le reste : neutres (`brand-muted`, blanc, `brand-track` / `flow-muted`, `flow-border`).
+- Fond teinté = couleur + alpha hex : **`${color}26`** (~15 %). Pattern unique pour tous les cercles/chips/pills teintés — pas de variantes `33`/`40` improvisées.
+- La couleur code une **sémantique** (succès, danger, XP, donnée) — jamais « pour faire joli ».
+
+### 7.2 Typographie
+
+- Échelle fermée : **11 · 13 · 15 · 18 · 22** px (+ `text-2xl` pour les gros chiffres). Pas de taille ad hoc.
+- Max **2 graisses par écran** : extrabold (titres, chiffres) + regular/semibold (corps).
+- `letterSpacing` custom réservé aux titres (`-0.4`) et labels uppercase (`0.6`) — nulle part ailleurs.
+
+### 7.3 Espacement & hiérarchie
+
+- Échelle **4px** uniquement : 4 / 8 / 12 / 16 / 20 / 24 / 32 / 40.
+- Padding horizontal écran : Flow `px-6`, Game `px-5` — jamais mélangés sur un même écran.
+- **1 action primaire par écran.** Tout le reste est secondaire (texte, ghost, chevron).
+- Une carte = **2 niveaux de texte max** (titre + support). Besoin d'un 3e → écran détail.
+- Aérer plutôt que séparer : un `gap` remplace un divider dans 90 % des cas.
+
+### 7.4 Motion
+
+- Micro-interactions **150–300ms** · entrées d'écran **300–450ms** · stagger **≤ 60ms/item**.
+- `transform` + `opacity` uniquement (Reanimated, UI thread) — jamais width/height/layout.
+- Hors combat, aucune animation ne bloque une action utilisateur au-delà de 500ms.
+
+### 7.5 États — non négociable
+
+- Composant interactif : pressed (`active:opacity-*`) **et** disabled visibles.
+- Écran data : **loading, empty, error** — tous les trois. Un empty state a une copy FR + une action. Un écran sans empty state n'est pas terminé.
+- Jamais de layout shift au hover/press (pas de scale qui pousse le layout).
+
+### 7.6 Étendre, pas dupliquer
+
+- Besoin visuel proche d'un composant existant → **prop/variante**, pas un fork.
+- Style répété **2 fois** → composant partagé (ex. `MoodIcon`). Répété 1 fois → inline, pas d'abstraction préventive.
+- Un nouveau composant sans état ni logique qui wrappe juste des classes = à refuser en review.
+
+---
+
+## 8. Accessibilité & motion
 
 - Contraste Flow : texte `#171717` sur `#FFFFFF` ≥ 4.5:1
 - Contraste CTA : blanc sur `#7C3AED` ≥ 4.5:1
@@ -214,7 +281,7 @@ Référence implémentation : `src/features/combat/components/*`, `src/features/
 
 ---
 
-## 8. Assets — backlog (post design system)
+## 9. Assets — backlog (post design system)
 
 | Asset | Spec | Écrans |
 |-------|------|--------|
@@ -229,7 +296,7 @@ Placeholder actuel : `Hero.png` sprite combat dans tuile mint.
 
 ---
 
-## 9. Fichiers code ↔ design
+## 10. Fichiers code ↔ design
 
 | Sujet | Fichier |
 |-------|---------|
@@ -242,11 +309,11 @@ Placeholder actuel : `Hero.png` sprite combat dans tuile mint.
 
 ---
 
-## 10. Évolution
+## 11. Évolution
 
 1. Modifier **ce fichier** ou `design-system/pages/<écran>.md`
 2. Propager tokens → `flowTheme.ts` + `tailwind.config.js`
 3. Implémenter composants Flow
-4. Remplacer placeholders assets (§8)
+4. Remplacer placeholders assets (§9)
 
-_Dernière sync : design system Flow Ahead-like — juin 2026._
+_Dernière sync : discipline UI senior (§7) — juillet 2026._

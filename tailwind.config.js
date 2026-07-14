@@ -15,6 +15,10 @@ module.exports = {
         brand: {
           bg: "#08000f",
           bg2: "#0f0020",
+          card: "#150826",
+          track: "#1d0b2b",
+          muted: "#8b7aa8",
+          locked: "#5b4a75",
           surface: "rgba(255,255,255,0.03)",
           border: "rgba(168,85,247,0.15)",
           accent: "#a855f7",
@@ -22,6 +26,7 @@ module.exports = {
           accentDeep: "#4c1d95",
           gold: "#fbbf24",
           red: "#ef4444",
+          blue: "#3b82f6",
           success: "#22c55e",
         },
         flow: {
@@ -51,9 +56,10 @@ module.exports = {
         dim: "rgba(243,232,255,0.2)",
       },
       fontFamily: {
-        sans: ["M5x7"],
+        sans: ["Nunito"],
         mono: ["M5x7"],
-        flow: ["System"],
+        flow: ["Nunito"],
+        pixel: ["M5x7"],
       },
     },
   },

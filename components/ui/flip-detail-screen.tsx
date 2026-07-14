@@ -10,8 +10,6 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { FLOW } from '@/constants/flowTheme'
-import { flowCardShadow, flowSurface } from '@/constants/flowSurfaces'
 import { FlowBackButton } from './flow-back-button'
 import { FlowText } from './flow-text'
 
@@ -57,13 +55,15 @@ export const FlipDetailScreen = ({
   })
 
   return (
-    <SafeAreaView className="flex-1 bg-flow-bg" edges={['top', 'left', 'right']}>
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-brand-bg" edges={['top', 'left', 'right']}>
+      <StatusBar style="light" />
       <View className="px-6 pt-2">
         <FlowBackButton onPress={onClose} label="Retour" />
         <View className="mb-4 flex-row items-center justify-center gap-1.5">
-          <MaterialIcons name="import-export" size={14} color={FLOW.faint} />
-          <FlowText className="text-xs text-flow-faint">Appuie sur la carte pour la retourner</FlowText>
+          <MaterialIcons name="import-export" size={14} color="#8b7aa8" />
+          <FlowText className="text-xs text-brand-muted">
+            Appuie sur la carte pour la retourner
+          </FlowText>
         </View>
       </View>
 
@@ -75,8 +75,8 @@ export const FlipDetailScreen = ({
       >
         <View className="min-h-[420px] flex-1">
           <Animated.View
-            style={[StyleSheet.absoluteFillObject, flowCardShadow, frontStyle]}
-            className={`overflow-hidden rounded-2xl border border-flow-cta/20 ${flowSurface.cardActive}`}
+            style={[StyleSheet.absoluteFillObject, frontStyle]}
+            className="overflow-hidden rounded-[20px] border border-[rgba(168,85,247,0.35)] bg-brand-card"
           >
             <ScrollView
               className="flex-1"
@@ -93,8 +93,8 @@ export const FlipDetailScreen = ({
             </ScrollView>
           </Animated.View>
           <Animated.View
-            style={[StyleSheet.absoluteFillObject, flowCardShadow, backStyle]}
-            className={`overflow-hidden rounded-2xl border border-flow-border ${flowSurface.card}`}
+            style={[StyleSheet.absoluteFillObject, backStyle]}
+            className="overflow-hidden rounded-[20px] border border-[rgba(255,255,255,0.07)] bg-brand-card"
           >
             <ScrollView
               className="flex-1"

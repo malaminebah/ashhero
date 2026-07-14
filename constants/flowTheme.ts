@@ -51,10 +51,9 @@ export const FLOW_TYPO = {
   button: { size: 16, weight: '700' as const },
 } as const
 
-/** Interim : System. Cible : Nunito (expo-font). */
+/** Nunito chargée via expo-font ; setupDefaultFont mappe fontWeight → face. */
 export const flowFontFamily = {
-  sans: 'System' as const,
-  /** @future expo-font — Nunito wght 400–700 */
+  sans: 'Nunito' as const,
   body: 'Nunito' as const,
 } as const
 
@@ -62,9 +61,9 @@ export const flowShadow = {
   card: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 2,
   },
   canvas: {
     shadowColor: '#000',
