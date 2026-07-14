@@ -7,6 +7,8 @@ import {
   saveMoodEntry,
   MoodAlreadyFilledError,
 } from '@/src/services/mood.service'
+import { useTrackerStore } from '@/src/features/tracker/store'
+import { MOOD_XP_REWARD } from '../moodTaxonomy'
 import type { MoodEntry, PrimaryMood } from '../types'
 import { formatLocalDate, getCurrentWeekDays, getISOWeekId } from '../utils/weekDates'
 
@@ -74,6 +76,7 @@ export function useWeeklyMood() {
           sub,
         }
         await saveMoodEntry(uid, entry)
+        useTrackerStore.getState().addXp(MOOD_XP_REWARD)
         const saved = await getMoodEntry(uid, todayKey)
         if (saved) {
           setEntriesByDate((prev) => ({ ...prev, [todayKey]: saved }))

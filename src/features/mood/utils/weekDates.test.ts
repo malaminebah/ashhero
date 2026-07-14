@@ -34,7 +34,8 @@ describe('getMondayOfWeek', () => {
 
     const monday = getMondayOfWeek(wednesday)
 
-    expect(formatLocalDate(monday)).toBe('2026-06-15')
+    const formatted = formatLocalDate(monday)
+    expect(formatted).toBe('2026-06-15')
   })
 
   it(`
@@ -59,7 +60,8 @@ describe('getMondayOfWeek', () => {
 
     const monday = getMondayOfWeek(sunday)
 
-    expect(formatLocalDate(monday)).toBe('2026-06-15')
+    const formatted = formatLocalDate(monday)
+    expect(formatted).toBe('2026-06-15')
   })
 })
 

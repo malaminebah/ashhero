@@ -25,6 +25,7 @@ export type WeekDayCell = {
 export type MoodTodayCardParams = {
   canFillToday: boolean
   todayLabel?: string
+  todayMood?: PrimaryMood
 }
 
 export type MoodWeekChartParams = {
@@ -39,4 +40,10 @@ export type WeeklyMoodStripParams = {
 
 export type MoodFlowProgressParams = {
   step: 1 | 2
+}
+
+export type MoodIconParams = {
+  mood: PrimaryMood
+  /** Diameter of the tinted circle in px. */
+  size?: number
 }

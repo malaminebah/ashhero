@@ -4,7 +4,16 @@ export type PrimaryMoodDef = {
   id: PrimaryMood
   label: string
   circleColor: string
+  /** MaterialCommunityIcons glyph name — rendered by MoodIcon. */
+  icon: string
+  /** Positivity 1..5 — drives bar heights, averages and trends. */
+  score: number
 }
+
+export const MOOD_MAX_SCORE = 5
+
+/** XP granted when the daily mood is logged. */
+export const MOOD_XP_REWARD = 5
 
 export type SubMoodDef = {
   id: string
@@ -12,12 +21,12 @@ export type SubMoodDef = {
 }
 
 export const PRIMARY_MOODS: PrimaryMoodDef[] = [
-  { id: 'calm', label: 'Calme', circleColor: '#7dd3fc' },
-  { id: 'joy', label: 'Joie', circleColor: '#fdba74' },
-  { id: 'sadness', label: 'Tristesse', circleColor: '#94a3b8' },
-  { id: 'anger', label: 'Colère', circleColor: '#f87171' },
-  { id: 'fear', label: 'Peur', circleColor: '#c084fc' },
-  { id: 'disgust', label: 'Dégoût', circleColor: '#86efac' },
+  { id: 'calm', label: 'Calme', circleColor: '#7dd3fc', icon: 'emoticon-happy-outline', score: 4 },
+  { id: 'joy', label: 'Joie', circleColor: '#fdba74', icon: 'emoticon-excited-outline', score: 5 },
+  { id: 'sadness', label: 'Tristesse', circleColor: '#94a3b8', icon: 'emoticon-sad-outline', score: 2 },
+  { id: 'anger', label: 'Colère', circleColor: '#f87171', icon: 'emoticon-angry-outline', score: 1 },
+  { id: 'fear', label: 'Peur', circleColor: '#c084fc', icon: 'emoticon-frown-outline', score: 2 },
+  { id: 'disgust', label: 'Dégoût', circleColor: '#86efac', icon: 'emoticon-sick-outline', score: 3 },
 ]
 
 export const SUB_MOODS: Record<PrimaryMood, SubMoodDef[]> = {

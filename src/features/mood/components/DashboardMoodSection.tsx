@@ -1,5 +1,6 @@
 import { View } from 'react-native'
 import { FlowText } from '@/components/ui/flow-text'
+import { GameLabel } from '@/components/ui/game-label'
 import { useWeeklyMood } from '../hooks/useWeeklyMood'
 import { getPrimaryMood, getSubMoodLabel } from '../moodTaxonomy'
 import { MoodTodayCard } from './MoodTodayCard'
@@ -15,12 +16,16 @@ export const DashboardMoodSection = () => {
       : undefined
 
   return (
-    <View className="mb-2">
-      <FlowText className="mb-3 text-lg font-bold text-flow-text">Aujourd&apos;hui</FlowText>
-      {error ? <FlowText className="mb-3 text-xs text-red-500">{error}</FlowText> : null}
+    <View className="mt-5">
+      <GameLabel className="mb-2.5">Aujourd&apos;hui</GameLabel>
+      {error ? <FlowText className="mb-3 text-xs text-brand-red">{error}</FlowText> : null}
       {!isLoading ? (
         <>
-          <MoodTodayCard canFillToday={canFillToday} todayLabel={todayLabel} />
+          <MoodTodayCard
+            canFillToday={canFillToday}
+            todayLabel={todayLabel}
+            todayMood={todayEntry?.primary}
+          />
           <WeeklyMoodStrip weekDays={weekDays} entriesByDate={entriesByDate} />
         </>
       ) : null}

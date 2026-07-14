@@ -5,10 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import { FlowBackButton } from '@/components/ui/flow-back-button'
 import { FlowText } from '@/components/ui/flow-text'
-import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
-import { PRIMARY_MOODS, getSubMoods } from '@/src/features/mood/moodTaxonomy'
+import { ChunkyButton, CHUNKY_COLORS } from '@/components/ui/chunky-button'
+import {
+  PRIMARY_MOODS,
+  MOOD_XP_REWARD,
+  getPrimaryMood,
+  getSubMoods,
+} from '@/src/features/mood/moodTaxonomy'
 import type { PrimaryMood } from '@/src/features/mood/types'
 import { MoodFlowProgress } from '@/src/features/mood/components/MoodFlowProgress'
+import { MoodIcon } from '@/src/features/mood/components/MoodIcon'
 import { useWeeklyMood } from '@/src/features/mood/hooks/useWeeklyMood'
 
 export default function MoodDetailScreen() {
@@ -23,16 +29,17 @@ export default function MoodDetailScreen() {
 
   if (!isValidPrimary) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-flow-bg px-6">
-        <StatusBar style="dark" />
-        <FlowText className="text-sm text-flow-muted">Émotion invalide.</FlowText>
+      <SafeAreaView className="flex-1 items-center justify-center bg-brand-bg px-6">
+        <StatusBar style="light" />
+        <FlowText className="text-sm text-brand-muted">Émotion invalide.</FlowText>
         <Pressable onPress={() => router.replace('/mood' as never)} className="mt-4">
-          <FlowText className="text-sm font-bold text-flow-cta">Recommencer</FlowText>
+          <FlowText className="text-sm font-bold text-brand-accent">Recommencer</FlowText>
         </Pressable>
       </SafeAreaView>
     )
   }
 
+  const mood = getPrimaryMood(primary)
   const subs = getSubMoods(primary)
 
   const onSave = async () => {
@@ -46,10 +53,10 @@ export default function MoodDetailScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-flow-bg">
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-brand-bg">
+      <StatusBar style="light" />
       <ScrollView
-        className="flex-1 px-6"
+        className="flex-1 px-5"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
@@ -57,14 +64,21 @@ export default function MoodDetailScreen() {
 
         <MoodFlowProgress step={2} />
 
-        <FlowText className="text-center text-[22px] font-bold text-flow-text">
+        <FlowText className="text-[22px] font-extrabold text-white" style={{ letterSpacing: -0.4 }}>
           Plus précisément…
         </FlowText>
-        <FlowText className="mt-3 text-center text-[15px] leading-6 text-flow-muted">
+        <FlowText className="mt-2 text-[15px] leading-6 text-brand-muted">
           Quelle émotion décrit le mieux ce que tu ressens ?
         </FlowText>
 
-        <View className="mt-8 flex-row flex-wrap gap-2">
+        <View className="mt-7 flex-row items-center gap-3 self-center rounded-full bg-brand-card py-1.5 pl-1.5 pr-5">
+          <MoodIcon mood={primary} size={40} />
+          <FlowText className="text-sm font-extrabold" style={{ color: mood.circleColor }}>
+            {mood.label}
+          </FlowText>
+        </View>
+
+        <View className="mt-7 flex-row flex-wrap gap-2">
           {subs.map((sub) => {
             const active = selectedSub === sub.id
             return (
@@ -73,16 +87,16 @@ export default function MoodDetailScreen() {
                 onPress={() => setSelectedSub(sub.id)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                className={`rounded-2xl border px-4 py-3 active:opacity-90 ${
+                className="rounded-2xl border px-4 py-3 active:opacity-90"
+                style={
                   active
-                    ? 'border-flow-cta bg-flow-cta'
-                    : 'border-flow-border bg-flow-secondary'
-                }`}
+                    ? { borderColor: mood.circleColor, backgroundColor: `${mood.circleColor}26` }
+                    : { borderColor: 'rgba(255,255,255,0.1)', backgroundColor: '#150826' }
+                }
               >
                 <FlowText
-                  className={`text-xs font-bold ${
-                    active ? 'text-white' : 'text-flow-text'
-                  }`}
+                  className="text-xs font-bold"
+                  style={{ color: active ? mood.circleColor : '#ffffff' }}
                 >
                   {sub.label}
                 </FlowText>
@@ -92,15 +106,21 @@ export default function MoodDetailScreen() {
         </View>
 
         {error ? (
-          <FlowText className="mt-4 text-sm text-red-500">{error}</FlowText>
+          <FlowText className="mt-4 text-sm text-brand-red">{error}</FlowText>
         ) : null}
 
-        <View className="mt-10">
-          <OnboardingPrimaryButton
-            label={isSaving ? 'Enregistrement…' : 'Continuer'}
+        <FlowText className="mt-10 text-center text-xs font-bold text-brand-gold">
+          +{MOOD_XP_REWARD} XP en notant ton humeur
+        </FlowText>
+
+        <View className="mt-3">
+          <ChunkyButton
+            label={isSaving ? 'Enregistrement…' : 'Enregistrer mon humeur'}
+            palette={CHUNKY_COLORS.green}
+            height={56}
+            fontSize={15}
             onPress={() => void onSave()}
             disabled={!selectedSub || isSaving || !canFillToday}
-            loading={isSaving}
           />
         </View>
       </ScrollView>

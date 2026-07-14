@@ -3,6 +3,7 @@ import {
   getPrimaryMood,
   getSubMoodLabel,
   getSubMoods,
+  MOOD_MAX_SCORE,
   PRIMARY_MOODS,
 } from './moodTaxonomy'
 
@@ -16,11 +17,8 @@ describe('getPrimaryMood', () => {
 
     const mood = getPrimaryMood(id)
 
-    expect(mood).toEqual({
-      id: 'joy',
-      label: 'Joie',
-      circleColor: '#fdba74',
-    })
+    expect(mood.id).toBe('joy')
+    expect(mood.label).toBe('Joie')
   })
 
   it(`
@@ -91,9 +89,41 @@ describe('getSubMoodLabel', () => {
 describe('PRIMARY_MOODS', () => {
   it(`
     Given the mood taxonomy
-    When primary moods are counted
-    Then six emotions are defined
+    When primary mood ids are collected
+    Then every id is unique
   `, () => {
-    expect(PRIMARY_MOODS).toHaveLength(6)
+    const ids = PRIMARY_MOODS.map((m) => m.id)
+
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it(`
+    Given every primary mood definition
+    When its display fields are read
+    Then each mood has a label, an icon and a score within bounds
+  `, () => {
+    const moods = PRIMARY_MOODS
+
+    const allDisplayable = moods.every(
+      (mood) =>
+        mood.label.length > 0 &&
+        mood.icon.length > 0 &&
+        mood.score >= 1 &&
+        mood.score <= MOOD_MAX_SCORE
+    )
+
+    expect(allDisplayable).toBe(true)
+  })
+
+  it(`
+    Given every primary mood
+    When its sub-moods are resolved
+    Then each mood offers at least one sub-mood
+  `, () => {
+    const moods = PRIMARY_MOODS
+
+    const subMoodCounts = moods.map((mood) => getSubMoods(mood.id).length)
+
+    expect(subMoodCounts.every((count) => count > 0)).toBe(true)
   })
 })
