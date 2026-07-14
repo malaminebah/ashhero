@@ -1,5 +1,7 @@
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
+  linkWithCredential,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInAnonymously,
@@ -45,12 +47,32 @@ export const signOutUser = async (): Promise<void> => {
   await signOut(auth)
 }
 
+/** Upgrades the anonymous session to email+password — keeps the same uid (profile preserved). */
+export const linkAnonymousWithEmail = async (
+  email: string,
+  password: string
+): Promise<string> => {
+  const user = auth.currentUser
+  if (!user || !user.isAnonymous) {
+    throw new Error('link-requires-anonymous-session')
+  }
+  const credential = EmailAuthProvider.credential(email.trim(), password)
+  const { user: linked } = await linkWithCredential(user, credential)
+  return linked.uid
+}
+
 export const getCurrentUid = (): string | null => {
   return auth.currentUser?.uid ?? null
 }
 
-export const onAuthReady = (callback: (uid: string | null) => void) => {
+export const isCurrentUserAnonymous = (): boolean => {
+  return auth.currentUser?.isAnonymous ?? false
+}
+
+export const onAuthReady = (
+  callback: (uid: string | null, isAnonymous: boolean) => void
+) => {
   return onAuthStateChanged(auth, (user) => {
-    callback(user?.uid ?? null)
+    callback(user?.uid ?? null, user?.isAnonymous ?? false)
   })
 }

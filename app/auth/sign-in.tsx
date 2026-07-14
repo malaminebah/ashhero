@@ -1,6 +1,7 @@
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
 import { AuthEntryRedirect } from '@/src/features/auth/components/AuthEntryRedirect'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
+import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
 import { OnboardingInput } from '@/src/features/onboarding/components/OnboardingInput'
 import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
 import { Link, useRouter } from 'expo-router'
@@ -11,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function SignInScreen() {
   const router = useRouter()
-  const { signIn, error, pending, clearError } = useEmailAuthActions()
+  const { signIn, signInAsGuest, error, pending, clearError } = useEmailAuthActions()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -19,6 +20,12 @@ export default function SignInScreen() {
     clearError()
     const uid = await signIn(email, password)
     if (uid) router.replace('/' as never)
+  }
+
+  const onGuest = async () => {
+    clearError()
+    const uid = await signInAsGuest()
+    if (uid) router.replace('/breathe' as never)
   }
 
   return (
@@ -31,25 +38,30 @@ export default function SignInScreen() {
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentContainerClassName="flex-grow px-6 py-8"
+          contentContainerClassName="flex-grow px-6 py-6"
           showsVerticalScrollIndicator={false}
         >
           <Pressable onPress={() => router.back()} className="mb-2 self-start py-1 active:opacity-70">
             <OnboardingText className="text-sm text-flow-muted">Retour</OnboardingText>
           </Pressable>
 
-          <View className="mb-10 items-center pt-4">
-            <OnboardingText className="text-[28px] font-bold text-flow-brand">ashhero</OnboardingText>
-            <OnboardingText className="mt-2 text-center text-[15px] text-flow-muted">
-              Content de te revoir.
+          <View className="mb-9 items-center pt-6">
+            <OnboardingText className="text-[28px] font-extrabold text-flow-brand" style={{ letterSpacing: -0.5 }}>
+              ashhero
+            </OnboardingText>
+            <OnboardingText className="mt-6 text-center text-2xl font-bold leading-8 text-flow-text">
+              Content de te revoir
+            </OnboardingText>
+            <OnboardingText className="mt-2 text-center text-[15px] leading-6 text-flow-muted">
+              Connecte-toi pour retrouver ta progression.
             </OnboardingText>
           </View>
 
           <OnboardingInput
-            label="E-mail"
+            label="Email"
             value={email}
             onChangeText={setEmail}
-            placeholder="toi@exemple.com"
+            placeholder="ton@email.com"
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
@@ -64,28 +76,39 @@ export default function SignInScreen() {
           />
 
           <Link href={'/auth/forgot-password' as never} asChild>
-            <Pressable className="mb-6 self-end py-1">
-              <OnboardingText className="text-sm text-flow-cta">Mot de passe oublié</OnboardingText>
+            <Pressable className="self-end py-1">
+              <OnboardingText className="text-sm font-semibold text-flow-cta">
+                Mot de passe oublié ?
+              </OnboardingText>
             </Pressable>
           </Link>
 
           {error ? (
-            <OnboardingText className="mb-4 text-sm text-red-500">{error}</OnboardingText>
+            <OnboardingText className="mt-3 text-sm text-red-500">{error}</OnboardingText>
           ) : null}
 
-          <OnboardingPrimaryButton
-            label={pending ? '…' : 'Se connecter'}
-            onPress={onSubmit}
-            disabled={pending}
-          />
+          <View className="flex-1" />
 
-          <OnboardingText className="mt-8 text-center text-sm text-flow-muted">
-            Pas encore de compte ?
-          </OnboardingText>
+          <View className="mt-8 gap-3">
+            <OnboardingPrimaryButton
+              label={pending ? '…' : 'Se connecter'}
+              onPress={() => void onSubmit()}
+              disabled={pending}
+            />
+            <OnboardingSecondaryButton
+              label="Continuer en invité"
+              onPress={() => void onGuest()}
+              disabled={pending}
+            />
+          </View>
+
           <Link href={'/auth/register' as never} asChild>
-            <Pressable className="items-center py-3">
-              <OnboardingText className="text-base font-bold text-flow-text">
-                Créer un compte
+            <Pressable className="mt-5 items-center py-2 active:opacity-70">
+              <OnboardingText className="text-sm text-flow-faint">
+                Pas encore de compte ?{' '}
+                <OnboardingText className="text-sm font-bold text-flow-cta">
+                  Créer un compte
+                </OnboardingText>
               </OnboardingText>
             </Pressable>
           </Link>

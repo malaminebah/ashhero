@@ -1,23 +1,23 @@
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
 import { AuthEntryRedirect } from '@/src/features/auth/components/AuthEntryRedirect'
+import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { OnboardingHeroAura } from '@/src/features/onboarding/components/OnboardingHeroAura'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { OnboardingSecondaryButton } from '@/src/features/onboarding/components/OnboardingSecondaryButton'
 import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
-import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const welcomeHero = require('@/assets/images/welcome-hero.png')
-
 export default function WelcomeScreen() {
   const router = useRouter()
   const { signInAsGuest, pending } = useEmailAuthActions()
+  const existingUid = useSessionStore((s) => s.uid)
 
   const onStart = async () => {
-    const uid = await signInAsGuest()
-    if (uid) router.replace('/' as never)
+    const uid = existingUid ?? (await signInAsGuest())
+    if (uid) router.replace('/breathe' as never)
   }
 
   return (
@@ -26,38 +26,33 @@ export default function WelcomeScreen() {
       <StatusBar style="dark" />
       <View className="flex-1 justify-between py-6">
         <View className="flex-1 items-center justify-center">
-          <Image
-            source={welcomeHero}
-            style={{ width: '100%', height: 300 }}
-            contentFit="contain"
-            accessibilityLabel="Héros AshHero qui s'envole"
-          />
-
-          <OnboardingText className="mt-8 text-[30px] font-bold text-flow-brand">
+          <OnboardingText className="text-[28px] font-extrabold text-flow-brand" style={{ letterSpacing: -0.5 }}>
             ashhero
           </OnboardingText>
-          <OnboardingText className="mt-3 text-center text-[22px] font-bold leading-7 text-flow-text">
-            Contrôle tes envies,{'\n'}contrôle ta vie.
+
+          <View className="mt-4">
+            <OnboardingHeroAura pose="idle" tint="green" />
+          </View>
+
+          <OnboardingText className="mt-5 text-center text-2xl font-bold leading-8 text-flow-text">
+            Deviens le héros{'\n'}de ton arrêt
+          </OnboardingText>
+          <OnboardingText className="mt-3 max-w-[290px] text-center text-[15px] leading-6 text-flow-muted">
+            Un coach bienveillant et des combats pour vaincre l&apos;envie, un jour à la fois.
           </OnboardingText>
         </View>
 
-        <View>
+        <View className="gap-3">
           <OnboardingPrimaryButton
             label={pending ? '…' : 'Commencer'}
             onPress={onStart}
             disabled={pending}
           />
-          <View className="mt-3">
-            <OnboardingSecondaryButton
-              label="J'ai déjà un compte"
-              onPress={() => router.push('/auth/sign-in' as never)}
-              disabled={pending}
-            />
-          </View>
-          <OnboardingText className="mt-6 text-center text-[11px] leading-4 text-flow-faint">
-            En continuant, tu acceptes nos conditions d&apos;utilisation et notre politique de
-            confidentialité.
-          </OnboardingText>
+          <OnboardingSecondaryButton
+            label="J'ai déjà un compte"
+            onPress={() => router.push('/auth/sign-in' as never)}
+            disabled={pending}
+          />
         </View>
       </View>
     </SafeAreaView>

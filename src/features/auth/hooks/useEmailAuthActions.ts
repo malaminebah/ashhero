@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import {
+  linkAnonymousWithEmail,
   registerWithEmail,
   sendPasswordReset,
   signInAnon,
@@ -19,12 +20,16 @@ export const useEmailAuthActions = () => {
   }, [])
 
   const wrap = useCallback(
-    async <T,>(fn: () => Promise<T>, errorContext: AuthErrorContext = 'signIn'): Promise<T | undefined> => {
+    async <T,>(
+      fn: () => Promise<T>,
+      errorContext: AuthErrorContext = 'signIn',
+      anonymous = false
+    ): Promise<T | undefined> => {
       setState({ error: null, pending: true })
       try {
         const result = await fn()
         if (typeof result === 'string') {
-          useSessionStore.getState().setFromAuth(result)
+          useSessionStore.getState().setFromAuth(result, anonymous)
         }
         setState({ error: null, pending: false })
         return result
@@ -43,13 +48,19 @@ export const useEmailAuthActions = () => {
   )
 
   const signInAsGuest = useCallback(
-    () => wrap(() => signInAnon()),
+    () => wrap(() => signInAnon(), 'signIn', true),
     [wrap]
   )
 
   const register = useCallback(
     (email: string, password: string) =>
       wrap(() => registerWithEmail(email, password)),
+    [wrap]
+  )
+
+  const linkAccount = useCallback(
+    (email: string, password: string) =>
+      wrap(() => linkAnonymousWithEmail(email, password)),
     [wrap]
   )
 
@@ -82,6 +93,7 @@ export const useEmailAuthActions = () => {
     signIn,
     signInAsGuest,
     register,
+    linkAccount,
     sendReset,
     signOut,
   }

@@ -49,6 +49,9 @@ export const getProfile = async (
     vapeBottlePriceEuro:
       typeof data.vapeBottlePriceEuro === 'number' ? data.vapeBottlePriceEuro : null,
     vapeMlPerWeek: typeof data.vapeMlPerWeek === 'number' ? data.vapeMlPerWeek : null,
+    yearsUsing: typeof data.yearsUsing === 'number' ? data.yearsUsing : null,
+    triggers: Array.isArray(data.triggers) ? data.triggers : [],
+    motivations: Array.isArray(data.motivations) ? data.motivations : [],
     heroName:
       typeof data.heroName === 'string' && data.heroName.trim().length > 0
         ? data.heroName.trim().slice(0, 32)

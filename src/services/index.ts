@@ -1,5 +1,7 @@
 export {
   getCurrentUid,
+  isCurrentUserAnonymous,
+  linkAnonymousWithEmail,
   onAuthReady,
   registerWithEmail,
   sendPasswordReset,
