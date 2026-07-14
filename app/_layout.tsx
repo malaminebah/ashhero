@@ -5,6 +5,14 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
+import {
+  Nunito_400Regular,
+  Nunito_500Medium,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
+} from '@expo-google-fonts/nunito'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
@@ -21,7 +29,7 @@ import { useTrackerStore } from '@/src/features/tracker/store'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
 import { OnboardingPrimaryButton } from '@/src/features/onboarding/components/OnboardingPrimaryButton'
 import { OnboardingText } from '@/src/features/onboarding/components/OnboardingText'
-import { View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 
 export const unstable_settings = {
   initialRouteName: 'index',
@@ -30,6 +38,12 @@ export const unstable_settings = {
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     M5x7: require('@/assets/fonts/m5x7.ttf'),
+    Nunito_400Regular,
+    Nunito_500Medium,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+    Nunito_900Black,
   })
 
   const colorScheme = useColorScheme()
@@ -53,8 +67,8 @@ export default function RootLayout() {
   }, [fontsLoaded])
 
   useEffect(() => {
-    return onAuthReady((userUid) => {
-      setFromAuth(userUid)
+    return onAuthReady((userUid, isAnonymous) => {
+      setFromAuth(userUid, isAnonymous)
       setIsLoading(false)
     })
   }, [setFromAuth])
@@ -128,8 +142,10 @@ export default function RootLayout() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-flow-bg">
-        <OnboardingText className="text-sm text-flow-muted">Chargement…</OnboardingText>
+      <View className="flex-1 items-center justify-center gap-5 bg-brand-bg">
+        <OnboardingText className="text-2xl font-extrabold text-flow-brand">ashhero</OnboardingText>
+        <ActivityIndicator color="#a855f7" size="large" />
+        <OnboardingText className="text-sm text-brand-muted">Chargement…</OnboardingText>
       </View>
     )
   }
@@ -164,12 +180,17 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="legal/[slug]" options={{ headerShown: false }} />
         <Stack.Screen name="mood" options={{ headerShown: false }} />
         <Stack.Screen name="jalon" options={{ headerShown: false }} />
         <Stack.Screen name="defense-badge" options={{ headerShown: false }} />
         <Stack.Screen name="profile-badge" options={{ headerShown: false }} />
         <Stack.Screen name="stat" options={{ headerShown: false }} />
         <Stack.Screen name="level" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="paywall"
+          options={{ presentation: 'modal', headerShown: false, animation: 'slide_from_bottom' }}
+        />
       </Stack>
 
       <StatusBar style="auto" />
