@@ -9,7 +9,11 @@ export const TabBarPixelIcon = ({
 }: TabBarPixelIconParams) => (
   <Image
     source={source as ImageSource}
-    style={{ width: size, height: size, opacity: focused ? 1 : 0.5 }}
+    style={{
+      width: size,
+      height: size,
+      opacity: focused ? 1 : 0.5,
+    }}
     contentFit="contain"
   />
 )
