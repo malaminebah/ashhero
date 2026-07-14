@@ -60,9 +60,23 @@ export const CombatMessageBox = ({
     const color = ACTION_COLOR[message.actionLabel] ?? '#60a5fa'
     return wrap(
       <FlowText className={body}>
+        {message.crit ? (
+          <FlowText className={body} style={{ color: '#fbbf24' }}>Coup critique ! </FlowText>
+        ) : null}
         Tu utilises <FlowText className={body} style={{ color }}>{message.actionLabel}</FlowText> !
         {' '}L&apos;Envie subit{' '}
         <FlowText className={body} style={{ color }}>{message.damage} dégâts</FlowText> !
+      </FlowText>
+    )
+  }
+
+  if (message.kind === 'player_water') {
+    return wrap(
+      <FlowText className={body}>
+        Tu bois de l&apos;eau : tu récupères{' '}
+        <FlowText className={body} style={{ color: '#60a5fa' }}>{message.heal} PV</FlowText>
+        {' '}et l&apos;Envie subit{' '}
+        <FlowText className={body} style={{ color: '#60a5fa' }}>{message.damage} dégâts</FlowText> !
       </FlowText>
     )
   }

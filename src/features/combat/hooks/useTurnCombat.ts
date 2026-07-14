@@ -1,7 +1,7 @@
 import { useCombat } from '@/src/features/tracker/hooks/useCombat'
 import { COMBAT_XP_BY_ACTION } from '@/src/features/tracker/combatXpTable'
 import { useTrackerStore } from '@/src/features/tracker/store'
-import { canUseSpecialAttack, levelFromXp } from '@/src/features/tracker/utils/levelProgress'
+import { canUseSpecialAttack } from '@/src/features/tracker/utils/levelProgress'
 import type { CombatAction } from '@/src/features/tracker/types'
 import * as Haptics from 'expo-haptics'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -15,17 +15,27 @@ import {
   BOSS_COUNTER_ACTION,
   BOSS_REGEN_MS,
   BREATHE_RESULT,
-  bossMaxHpForLevel,
   COMBAT_BREATHE_STATUS,
   combatActionLabel,
   COUNTER_BONUS_XP,
+  CRAVING_TIERS,
+  CRIT_CHANCE,
+  CRIT_MULTIPLIER,
   DAMAGE_TO_BOSS,
+  WATER_HEAL,
   randomBossAttackName,
   rollBossRegenPlan,
   rollBossRiposteDamage,
 } from '../constants'
 import { applyBossRegenHp, bossRegenHealAmount, shouldTriggerBossRegen } from '../utils/bossRegen'
-import type { BattleMessage, BossAttackName, CombatEffect, CombatPhase, FloatDamagePayload } from '../types'
+import type {
+  BattleMessage,
+  BossAttackName,
+  CombatEffect,
+  CombatPhase,
+  CravingTier,
+  FloatDamagePayload,
+} from '../types'
 import type { BossRegenPlan } from '../constants'
 import type { BreatheGrade } from '../breatheCycle'
 import type { CombatSpriteCue } from '../utils/combatVisuals'
@@ -49,15 +59,16 @@ function postAnimHandoffMs(animMs: number): number {
 type Options = {
   enabled: boolean
   playerMaxHp: number
+  tier: CravingTier
 }
 
-export function useTurnCombat({ enabled, playerMaxHp }: Options) {
+export function useTurnCombat({ enabled, playerMaxHp, tier }: Options) {
   const { handleVictory, handleDefeat } = useCombat()
 
   const [phase, setPhase] = useState<CombatPhase>('entering')
   const [playerHp, setPlayerHp] = useState(playerMaxHp)
-  const [bossMaxHp, setBossMaxHp] = useState(bossMaxHpForLevel(1))
-  const [bossHp, setBossHp] = useState(bossMaxHpForLevel(1))
+  const [bossMaxHp, setBossMaxHp] = useState(CRAVING_TIERS[tier].bossHp)
+  const [bossHp, setBossHp] = useState(CRAVING_TIERS[tier].bossHp)
   const [nextBossAttack, setNextBossAttack] = useState<BossAttackName>(() => randomBossAttackName())
   const [battleMessage, setBattleMessage] = useState<BattleMessage>({ kind: 'idle' })
   const [bossShakeKey, setBossShakeKey] = useState(0)
@@ -70,8 +81,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
   const [specialsUsed, setSpecialsUsed] = useState(0)
 
   const xpAtStartRef = useRef(0)
-  const levelRef = useRef(1)
-  const bossMaxHpRef = useRef(bossMaxHpForLevel(1))
+  const bossMaxHpRef = useRef(CRAVING_TIERS[tier].bossHp)
   const nextAttackRef = useRef<BossAttackName>(nextBossAttack)
   const counteredRef = useRef(false)
   const bossRegenPlanRef = useRef<BossRegenPlan | null>(null)
@@ -149,9 +159,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
     endedRef.current = false
     finalizedRef.current = false
     inputLockRef.current = false
-    const level = levelFromXp(useTrackerStore.getState().xp)
-    levelRef.current = level
-    const maxHp = bossMaxHpForLevel(level)
+    const maxHp = CRAVING_TIERS[tier].bossHp
     bossMaxHpRef.current = maxHp
     counteredRef.current = false
     rollNextBossAttack()
@@ -159,7 +167,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
     setPhase('entering')
     setPlayerHp(playerMaxHp)
     setBossHp(maxHp)
-    setBattleMessage({ kind: 'status', text: "L'Envie apparaît !" })
+    setBattleMessage({ kind: 'status', text: CRAVING_TIERS[tier].introText })
     setBossShakeKey(0)
     setPlayerShakeKey(0)
     setVictoryAction(null)
@@ -182,7 +190,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
         setBattleMessage({ kind: 'idle' })
       }, BOSS_INTRO_MS)
     }, INTRO_DURATION_MS)
-  }, [clearTimers, playerMaxHp, rollNextBossAttack])
+  }, [clearTimers, playerMaxHp, rollNextBossAttack, tier])
 
   useEffect(() => {
     if (enabled && !wasEnabledRef.current) {
@@ -242,7 +250,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
       return
     }
 
-    const dmg = rollBossRiposteDamage(levelRef.current)
+    const dmg = rollBossRiposteDamage(tier)
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
     setBattleMessage({ kind: 'boss_hit', attackName: name, damage: dmg })
     setCombatEffect({
@@ -277,7 +285,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
       }
       return next
     })
-  }, [clearEnemyTimers, finalizeDefeat, playSpriteCue, rollNextBossAttack, showFloatDamage])
+  }, [clearEnemyTimers, finalizeDefeat, playSpriteCue, rollNextBossAttack, showFloatDamage, tier])
 
   const startBossWindup = useCallback(() => {
     if (endedRef.current) return
@@ -340,9 +348,13 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
   )
 
   const applyDamageToBoss = useCallback(
-    (action: CombatAction, damage: number, breathe?: { heal: number; grade: BreatheGrade }) => {
+    (action: CombatAction, baseDamage: number, support?: { heal: number; grade?: BreatheGrade }) => {
       const countered = BOSS_COUNTER_ACTION[nextAttackRef.current] === action
       counteredRef.current = countered
+
+      // Utility moves (water/breathe) heal instead — only pure attacks can crit.
+      const crit = support == null && Math.random() < CRIT_CHANCE
+      const damage = crit ? Math.round(baseDamage * CRIT_MULTIPLIER) : baseDamage
 
       const xpGain = COMBAT_XP_BY_ACTION[action] + (countered ? COUNTER_BONUS_XP : 0)
       let nextSessionXp = 0
@@ -357,21 +369,23 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
 
       const animMs = playerAttackDurationMs(action)
       playSpriteCue(action, animMs)
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
-      if (breathe != null) {
-        setPlayerHp((prev) => Math.min(playerMaxHp, prev + breathe.heal))
-        setBattleMessage({
-          kind: 'player_breathe',
-          grade: breathe.grade,
-          damage,
-          heal: breathe.heal,
-        })
-        showFloatDamage('player', breathe.heal, 'heal')
+      void Haptics.impactAsync(
+        crit ? Haptics.ImpactFeedbackStyle.Heavy : Haptics.ImpactFeedbackStyle.Light
+      ).catch(() => {})
+      if (support != null) {
+        setPlayerHp((prev) => Math.min(playerMaxHp, prev + support.heal))
+        setBattleMessage(
+          support.grade != null
+            ? { kind: 'player_breathe', grade: support.grade, damage, heal: support.heal }
+            : { kind: 'player_water', damage, heal: support.heal }
+        )
+        showFloatDamage('player', support.heal, 'heal')
       } else {
         setBattleMessage({
           kind: 'player_hit',
           actionLabel: combatActionLabel(action),
           damage,
+          crit,
         })
         showFloatDamage('boss', damage)
       }
@@ -388,11 +402,15 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
           clearEnemyTimers()
           endedRef.current = true
           inputLockRef.current = true
+          // Read nextSessionXp inside the timer: the setSessionXp updater that
+          // fills it may run after this bossHp updater in the same batch.
           celebrateTimerRef.current = setTimeout(() => {
+            // Harder cravings pay a flat XP bonus on top of the session XP.
+            setSessionXp((prev) => prev + CRAVING_TIERS[tier].victoryBonusXp)
             setPhase('celebrate_victory')
             celebrateTimerRef.current = setTimeout(() => {
               celebrateTimerRef.current = null
-              void finalizeVictory(action, nextSessionXp)
+              void finalizeVictory(action, nextSessionXp + CRAVING_TIERS[tier].victoryBonusXp)
             }, VICTORY_CELEBRATE_MS)
           }, postAnimHandoffMs(animMs))
         } else {
@@ -408,6 +426,7 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
       playSpriteCue,
       scheduleEnemyTurn,
       showFloatDamage,
+      tier,
       turnCount,
     ]
   )
@@ -423,7 +442,11 @@ export function useTurnCombat({ enabled, playerMaxHp }: Options) {
       }
       inputLockRef.current = true
       setPhase('resolving_instant')
-      applyDamageToBoss(action, DAMAGE_TO_BOSS[action])
+      applyDamageToBoss(
+        action,
+        DAMAGE_TO_BOSS[action],
+        action === 'water' ? { heal: WATER_HEAL } : undefined
+      )
     },
     [phase, sessionXp, specialsUsed, applyDamageToBoss]
   )

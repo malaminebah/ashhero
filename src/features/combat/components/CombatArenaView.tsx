@@ -10,6 +10,7 @@ import type { CombatArenaViewParams } from '../types'
  * Boss stays mounted after KO: CartoonBoss death anim dissolves it. */
 export const CombatArenaView = ({
   phase,
+  bossTier,
   bossDefeated: _bossDefeated,
   bossShakeKey,
   playerShakeKey,
@@ -30,6 +31,7 @@ export const CombatArenaView = ({
       <ArenaSprites
         playerAnim={playerAnim}
         bossAnim={bossAnim}
+        bossTier={bossTier}
         bossIntroStyle={bossIntro}
         bossShakeStyle={bossShake}
         playerShakeStyle={playerShake}

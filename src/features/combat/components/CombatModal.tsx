@@ -5,7 +5,13 @@ import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FlowText } from '@/components/ui/flow-text'
-import { BOSS_COUNTER_ACTION, COMBAT_PLAYER_MAX_HP, combatActionLabel } from '../constants'
+import {
+  BOSS_COUNTER_ACTION,
+  COMBAT_PLAYER_MAX_HP,
+  combatActionLabel,
+  CRAVING_TIERS,
+  WATER_HEAL,
+} from '../constants'
 import { breatheTotalTicks } from '../breatheCycle'
 import { useStats } from '@/src/features/tracker/hooks/useStats'
 import { useTrackerStore } from '@/src/features/tracker/store'
@@ -44,7 +50,7 @@ function chipFill(combatEffect: CombatEffect): string | undefined {
   return undefined
 }
 
-export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
+export const CombatModal = ({ visible, tier, onClose }: CombatModalParams) => {
   const router = useRouter()
   const heroName = useTrackerStore((s) => s.heroName)
   const heroLabel = displayHeroName(heroName)
@@ -82,7 +88,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
     chooseInstantAction,
     abandon,
     reset,
-  } = useTurnCombat({ enabled: visible, playerMaxHp: effectivePlayerMaxHp })
+  } = useTurnCombat({ enabled: visible, playerMaxHp: effectivePlayerMaxHp, tier })
 
   const breathe = useBreatheTimer(onBreatheComplete, showBreatheTimer)
 
@@ -140,7 +146,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
 
               <CombatHpBar
                 variant="boss"
-                name="L'Envie"
+                name={CRAVING_TIERS[tier].bossName}
                 level={combatLevel + 1}
                 hp={bossHp}
                 maxHp={bossMaxHp}
@@ -148,6 +154,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
 
               <CombatArenaView
                 phase={phase}
+                bossTier={tier}
                 bossDefeated={bossHp <= 0}
                 bossShakeKey={bossShakeKey}
                 playerShakeKey={playerShakeKey}
@@ -219,7 +226,7 @@ export const CombatModal = ({ visible, onClose }: CombatModalParams) => {
                     label={combatActionLabel('water')}
                     onPress={() => chooseInstantAction('water')}
                     disabled={!showActionButtons}
-                    badge={counterBadge('water')}
+                    badge={counterBadge('water') ?? `+${WATER_HEAL} PV`}
                     accessibilityLabel="Boire de l'eau"
                   />
                 </View>
