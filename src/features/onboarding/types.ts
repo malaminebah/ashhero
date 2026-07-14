@@ -14,6 +14,12 @@ export type OnboardingData = {
   vapeMlPerWeek: number | null
   quitDate: Date | null
   isFirstTime: boolean| null
+  /** Approximate years of use — midpoint of the chosen range (profileFacts.YEARS_OPTIONS). */
+  yearsUsing: number | null
+  /** Craving trigger ids (profileFacts.TRIGGERS). */
+  triggers: string[]
+  /** Motivation ids (profileFacts.MOTIVATIONS). */
+  motivations: string[]
 }
 
 export type OnboardingChoiceVariant = 'primary' | 'outline'
@@ -43,5 +49,7 @@ export type OnboardingChoiceCardParams = {
   icon?: OnboardingChoiceIcon
   label: string
   variant?: OnboardingChoiceVariant
+  /** Toggle mode — shows a check circle instead of a chevron. */
+  selected?: boolean
   onPress: () => void
 }

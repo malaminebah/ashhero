@@ -10,6 +10,9 @@ const initialState: OnboardingData = {
   vapeBottlePriceEuro: null,
   vapeMlPerWeek: null,
   quitDate: null,
+  yearsUsing: null,
+  triggers: [],
+  motivations: [],
 }
 
 type OnboardingStore = OnboardingData&{

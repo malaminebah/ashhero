@@ -1,5 +1,6 @@
 import { TextInput } from 'react-native'
-import { FLOW } from '@/constants/flowTheme'
+import { FLOW, flowShadow } from '@/constants/flowTheme'
+import { flowSurface } from '@/constants/flowSurfaces'
 
 import { OnboardingText } from './OnboardingText'
 
@@ -35,7 +36,8 @@ export const OnboardingInput = ({
       secureTextEntry={secureTextEntry}
       autoCapitalize={autoCapitalize}
       autoComplete={autoComplete}
-      className="mb-5 min-h-[52px] rounded-2xl border border-flow-border bg-flow-bg px-4 font-flow text-lg text-flow-text"
+      className={`mb-5 min-h-[52px] font-flow text-lg text-flow-text ${flowSurface.input}`}
+      style={flowShadow.card}
     />
   </>
 )

@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import type { OnboardingHeaderParams } from '../types'
 import { OnboardingText } from './OnboardingText'
 
-const TOTAL = 5
+const TOTAL = 8
 
 export const OnboardingHeader = ({ step, title, subtitle }: OnboardingHeaderParams) => (
   <View className="mb-8 items-center">

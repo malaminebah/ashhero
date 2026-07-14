@@ -1,18 +1,22 @@
 import { View } from 'react-native'
-import { PlayerSoldierSprite } from '@/src/features/combat/components/PlayerSoldierSprite'
-import type { PlayerSoldierAnim } from '@/src/features/combat/soldierSheet'
+import { HeroSprite, type HeroPose } from '@/components/characters/HeroSprite'
 
 type OnboardingMascotParams = {
-  anim?: PlayerSoldierAnim
+  pose?: HeroPose
   size?: 'sm' | 'md' | 'lg'
 }
 
-const SCALE = { sm: 0.55, md: 0.75, lg: 0.95 } as const
+const SIZES = {
+  sm: { width: 82, height: 100 },
+  md: { width: 115, height: 140 },
+  lg: { width: 150, height: 182 },
+} as const
 
-export const OnboardingMascot = ({ anim = 'idle', size = 'md' }: OnboardingMascotParams) => (
-  <View className="items-center justify-center overflow-hidden rounded-[28px] bg-flow-mascot px-4 py-3">
-    <View style={{ transform: [{ scale: SCALE[size] }] }}>
-      <PlayerSoldierSprite anim={anim} />
+export const OnboardingMascot = ({ pose = 'idle', size = 'md' }: OnboardingMascotParams) => {
+  const dims = SIZES[size]
+  return (
+    <View className="items-center justify-center rounded-[28px] bg-flow-mascot p-5">
+      <HeroSprite pose={pose} width={dims.width} height={dims.height} />
     </View>
-  </View>
-)
+  )
+}

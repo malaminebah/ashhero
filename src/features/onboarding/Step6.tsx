@@ -2,21 +2,23 @@ import React from 'react'
 import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useOnboardingStore } from './store'
-import { TRIGGERS } from './profileFacts'
+import { MOTIVATIONS } from './profileFacts'
 import { OnboardingHeader } from './components/OnboardingHeader'
 import { OnboardingChoiceCard } from './components/OnboardingChoiceCard'
 import { OnboardingPrimaryButton } from './components/OnboardingPrimaryButton'
 import { OnboardingScreen } from './components/OnboardingScreen'
 
-const Step5 = () => {
-  const triggers = useOnboardingStore((s) => s.triggers)
+const Step6 = () => {
+  const motivations = useOnboardingStore((s) => s.motivations)
   const setField = useOnboardingStore((s) => s.setField)
   const router = useRouter()
 
   const toggle = (id: string) => {
     setField(
-      'triggers',
-      triggers.includes(id) ? triggers.filter((t) => t !== id) : [...triggers, id]
+      'motivations',
+      motivations.includes(id)
+        ? motivations.filter((m) => m !== id)
+        : [...motivations, id]
     )
   }
 
@@ -25,24 +27,24 @@ const Step5 = () => {
       footer={
         <OnboardingPrimaryButton
           label="Continuer"
-          onPress={() => router.push('/onboarding/step6' as never)}
-          disabled={triggers.length === 0}
+          onPress={() => router.push('/onboarding/step7' as never)}
+          disabled={motivations.length === 0}
         />
       }
     >
       <OnboardingHeader
-        step={5}
-        title="Quand l'envie frappe le plus ?"
-        subtitle="Choisis tout ce qui te concerne — l'Envie attaquera là où tu l'attends."
+        step={6}
+        title="Tu te bats pour quoi ?"
+        subtitle="Tes raisons seront tes armes les jours difficiles."
       />
       <View>
-        {TRIGGERS.map((t) => (
+        {MOTIVATIONS.map((m) => (
           <OnboardingChoiceCard
-            key={t.id}
-            icon={t.icon}
-            label={t.label}
-            selected={triggers.includes(t.id)}
-            onPress={() => toggle(t.id)}
+            key={m.id}
+            icon={m.icon}
+            label={m.label}
+            selected={motivations.includes(m.id)}
+            onPress={() => toggle(m.id)}
           />
         ))}
       </View>
@@ -50,4 +52,4 @@ const Step5 = () => {
   )
 }
 
-export default Step5
+export default Step6
