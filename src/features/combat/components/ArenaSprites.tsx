@@ -7,7 +7,9 @@ import type { useCombatShakeStyle } from '../hooks/useCombatShakeStyle'
 import { ArenaPlinth } from './ArenaFrame'
 import { BreatheHeroAura } from './BreatheHeroAura'
 import { CartoonBoss, CartoonHero } from './CartoonSprites'
+import { CRAVING_TIERS } from '../constants'
 import type { BreathePhase } from '../breatheCycle'
+import type { CravingTier } from '../types'
 
 type ShakeStyle = ReturnType<typeof useCombatShakeStyle>
 type IntroStyle = ReturnType<typeof useBossIntroStyle>
@@ -21,6 +23,7 @@ export const BOSS_ARENA_H = 130
 type ArenaSpritesParams = {
   playerAnim: PlayerSoldierAnim
   bossAnim: BossAnim
+  bossTier?: CravingTier
   showBoss?: boolean
   bossMuted?: boolean
   playerShakeStyle?: ShakeStyle
@@ -34,6 +37,7 @@ type ArenaSpritesParams = {
 export const ArenaSprites = ({
   playerAnim,
   bossAnim,
+  bossTier = 'medium',
   showBoss = true,
   bossMuted = false,
   playerShakeStyle,
@@ -65,7 +69,13 @@ export const ArenaSprites = ({
         ]}
       >
         <Animated.View style={bossShakeStyle}>
-          <CartoonBoss anim={bossAnim} muted={bossMuted} width={BOSS_ARENA_W} height={BOSS_ARENA_H} />
+          <CartoonBoss
+            anim={bossAnim}
+            muted={bossMuted}
+            variant={bossTier}
+            width={BOSS_ARENA_W * CRAVING_TIERS[bossTier].bossScale}
+            height={BOSS_ARENA_H * CRAVING_TIERS[bossTier].bossScale}
+          />
         </Animated.View>
       </Animated.View>
     ) : null}

@@ -10,7 +10,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import { BossSprite as BossArt, type BossPose } from '@/components/characters/BossSprite'
+import { BossSprite as BossArt, type BossPose, type BossVariant } from '@/components/characters/BossSprite'
 import { HeroSprite as HeroArt, type HeroPose } from '@/components/characters/HeroSprite'
 import { bossAnimDurationMs, soldierAnimDurationMs } from '../animConfig'
 import type { BossAnim, PlayerSoldierAnim } from '../animConfig'
@@ -162,9 +162,10 @@ export type CartoonBossParams = {
   width: number
   height: number
   muted?: boolean
+  variant?: BossVariant
 }
 
-export const CartoonBoss = ({ anim, width, height, muted = false }: CartoonBossParams) => {
+export const CartoonBoss = ({ anim, width, height, muted = false, variant = 'medium' }: CartoonBossParams) => {
   const wobble = useSharedValue(1)
   const dashX = useSharedValue(0)
   const squashY = useSharedValue(1)
@@ -234,7 +235,7 @@ export const CartoonBoss = ({ anim, width, height, muted = false }: CartoonBossP
 
   return (
     <Animated.View style={style} accessibilityLabel="L'Envie">
-      <BossArt pose={BOSS_POSE[anim]} width={width} height={height} />
+      <BossArt pose={BOSS_POSE[anim]} width={width} height={height} variant={variant} />
     </Animated.View>
   )
 }
