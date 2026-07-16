@@ -11,6 +11,14 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 **Labels suggérés (à créer une fois dans le dépôt) :** `mvp`, `v2`, `content`, `auth`, `firebase`, `tracker`, `combat`, `ux-copy`, `infra`, `blocked` (adapter à ton board).
 
+**Labels audit sécurité/store (2026-07-16) — créés sur le dépôt :** `securite` (jaune `#FFD600`), `store` (bleu `#2196F3`), `legal` (violet `#5319E7`).
+
+```bash
+gh label create securite --color FFD600 --description "Sécurité (auth, Firestore, données)" -R malaminebah/ashhero
+gh label create store --color 2196F3 --description "Bloquant soumission App Store / Play Store" -R malaminebah/ashhero
+gh label create legal --color 5319E7 --description "Conformité légale / RGPD" -R malaminebah/ashhero
+```
+
 ---
 
 ## Handoff PO — synthèse board (2026-06-22)
@@ -799,31 +807,218 @@ Colle chaque ticket dans **Issues → New issue**, ou utilise [GitHub CLI](https
 
 | Ticket | Statut board |
 |--------|--------------|
-| T-304 | **To Do** |
+| T-304 | **To Do** (epic) |
+| T-314 → T-322 | Voir section [Sécurité & conformité store](#sécurité--conformité-store-audit-2026-07-16) |
 
-### T-304 — Infra : build EAS + identité app + checklist stores
+### T-304 — Infra : build EAS + identité app + checklist stores (epic)
 
-**Labels :** `mvp`, `infra`  
+**Labels :** `mvp`, `infra`, `store`  
 **Statut board :** `To Do`
 
 **Objectif** : permettre un build installable TestFlight / Play Internal et préparer la soumission store.
 
-**Périmètre**
-- Renommer app (`AshHero`), `ios.bundleIdentifier`, `android.package`
-- `eas.json` + profils build
-- `.env.example` documenté (✅) + secrets EAS
-- Politique confidentialité URL + liens depuis welcome/settings
-- Suppression compte (RGPD) — écran réglages
+**Décomposé (audit 2026-07-16) en tickets exécutables** : T-314 (bundle ID/EAS), T-315 (suppression compte), T-316 (policy URL), T-317 (retirer debug), T-318 (formulaires stores). Ce ticket reste l'epic parent — le fermer seulement quand les 5 sous-tickets sont Done.
 
 **Hors périmètre** : analytics (T-303), social login (T-302)
 
-**Critères d'acceptation**
-- [ ] `eas build` iOS + Android réussit
-- [ ] Bundle ID / package uniques enregistrés
-- [ ] URL politique accessible depuis l'app
-- [ ] Checklist T-303 tranchée ou report V2 documenté
-
 **Dépend de :** T-111, T-112 validés PO
+
+---
+
+## Sécurité & conformité store (audit 2026-07-16)
+
+> Suite à l'audit "manque-t-il quelque chose pour être en règles / déployer sur les stores / l'app est-elle sécurisée" (session du 2026-07-16). Détaille et remplace en actions concrètes le périmètre vague de T-303/T-304.
+
+| Ticket | Thème | Label | Statut board |
+|--------|-------|-------|--------------|
+| T-314 | Bundle ID + EAS | `store` | To Do |
+| T-315 | Suppression de compte réelle | `store` | To Do |
+| T-316 | Politique de confidentialité — URL publique | `store` | To Do |
+| T-317 | Retirer bouton debug avant soumission | `store` | To Do |
+| T-318 | Formulaires App Privacy / Data Safety + classification | `store` | To Do |
+| T-319 | Règles Firestore : anti-triche / validation schéma | `securite` | Backlog |
+| T-320 | Firebase App Check | `securite` | Backlog |
+| T-321 | Retirer logs debug avec données utilisateur | `securite` | To Do |
+| T-322 | Avertir perte de données compte anonyme | `securite` | Backlog |
+
+### T-314 — Store : bundle ID iOS/Android + `eas.json`
+
+**Labels :** `mvp`, `infra`, `store`  
+**Statut board :** `To Do`
+
+**Objectif** : rendre un build store possible (aucun build TestFlight/Play Internal sans ça aujourd'hui).
+
+**Périmètre**
+- `app.json` : `ios.bundleIdentifier`, `android.package`, `ios.buildNumber`, `android.versionCode`
+- `eas.json` : profils `development` / `preview` / `production`
+- Compte EAS lié (`expo.extra.eas.projectId`, `owner`)
+
+**Critères d'acceptation**
+- [ ] `eas build --platform ios` et `--platform android` réussissent (profil preview)
+- [ ] Bundle ID / package uniques et réservés (App Store Connect / Play Console)
+
+**Fichiers :** `app.json`, `eas.json`
+
+---
+
+### T-315 — Store/RGPD : suppression de compte réelle
+
+**Labels :** `mvp`, `firebase`, `store`  
+**Statut board :** `To Do`
+
+**Objectif** : `deleteProfile()` ne supprime que `users/{uid}/profile/data` ; ni les sous-collections (étapes, rechutes, combats, mood) ni le compte Firebase Auth. Le seul bouton qui l'appelle est étiqueté "(test)" — ce n'est pas une suppression de compte utilisateur. Apple (guideline 5.1.1v) exige une vraie suppression accessible dans l'app dès qu'un compte peut être créé.
+
+**Périmètre**
+- Nouvelle fonction service : purge de toutes les sous-collections `users/{uid}/**` + `deleteUser(auth.currentUser)`
+- Écran réglages : bouton "Supprimer mon compte" avec confirmation explicite (pas le bouton debug actuel)
+- Gestion erreur `auth/requires-recent-login` (redemander mot de passe si besoin)
+
+**Critères d'acceptation**
+- [ ] Suppression retire profil + toutes sous-collections Firestore + compte Auth
+- [ ] Confirmation utilisateur avant suppression (pas d'action accidentelle)
+- [ ] `npx tsc --noEmit` OK ; testé sur un compte de test réel
+
+**Fichiers :** `src/services/user.service.ts`, `src/services/auth.service.ts`, écran réglages/profil
+
+**Dépend de :** aucun — bloquant avant soumission
+
+---
+
+### T-316 — Store : politique de confidentialité hébergée (URL publique)
+
+**Labels :** `content`, `legal`, `store`  
+**Statut board :** `To Do`
+
+**Objectif** : App Store Connect et Play Console exigent une URL web publique dans le formulaire de soumission. Le contenu existe déjà en in-app (`src/features/settings/legalContent.ts`) mais n'est visible que dans l'app — pas suffisant pour les deux stores.
+
+**Périmètre**
+- Publier la politique de confidentialité (et CGU) sur une page web accessible sans l'app (site vitrine, GitHub Pages, etc.)
+- Lien vers cette URL depuis l'écran réglages/welcome, en plus de l'écran in-app existant
+
+**Critères d'acceptation**
+- [ ] URL publique accessible sans connexion à l'app, renseignée dans les deux consoles stores
+- [ ] Contenu identique ou cohérent avec `legalContent.ts`
+
+**Fichiers :** `src/features/settings/legalContent.ts` (référence), page web hors repo app
+
+---
+
+### T-317 — Store : retirer bouton debug avant soumission
+
+**Labels :** `mvp`, `store`  
+**Statut board :** `To Do`
+
+**Objectif** : "Recommencer le parcours (test)" est visible en Profil dans le build actuel — reset onboarding de debug, pas destiné aux utilisateurs finaux ni à la review store.
+
+**Périmètre**
+- Retirer le bouton du build release, ou le flag derrière `__DEV__` / variable d'env dev-only
+
+**Critères d'acceptation**
+- [ ] Bouton absent d'un build `production` (profil EAS)
+- [ ] Toujours disponible en dev pour les tests internes si besoin
+
+**Fichiers :** `src/features/tracker/components/profile/ProfileScreenBody.tsx`
+
+---
+
+### T-318 — Store : formulaires App Privacy / Data Safety + classification d'âge
+
+**Labels :** `content`, `store`  
+**Statut board :** `To Do`
+
+**Objectif** : remplir les déclarations obligatoires de collecte de données pour chaque store, et répondre correctement à la classification liée au contenu santé/nicotine.
+
+**Périmètre**
+- Apple : formulaire "App Privacy" (nutrition label) — données collectées (profil, combats, mood) et finalités
+- Google : "Data Safety" form — équivalent
+- Questionnaire contenu : mentions à l'usage de substances (nicotine/vapotage) → impact classification d'âge (souvent 12+/PEGI 12 minimum)
+- Screenshots stores (iPhone 6.5"/5.5", iPad si `supportsTablet`, Android phone/tablet)
+
+**Critères d'acceptation**
+- [ ] Formulaires remplis et cohérents avec les données réellement collectées (Firebase Auth, Firestore)
+- [ ] Classification d'âge choisie et justifiée
+- [ ] Screenshots prêts pour les deux stores
+
+**Hors périmètre** : implémentation code (tâche 100 % console/produit)
+
+---
+
+### T-319 — Sécurité : règles Firestore sans validation de schéma (anti-triche)
+
+**Labels :** `firebase`, `securite`  
+**Statut board :** `Backlog`
+
+**Objectif** : `firestore.rules` isole correctement par `uid` mais n'impose aucune forme de données. Un client authentifié (hors app officielle, ex. outil REST) peut écrire n'importe quoi dans son propre document — HP infinis, XP, niveau, badges arbitraires.
+
+**Périmètre**
+- Ajouter des contraintes de validation dans `firestore.rules` (types, bornes) sur les champs critiques de progression (XP, niveau, HP combat, badges)
+- Pas de refonte du schéma Firestore
+
+**Critères d'acceptation**
+- [ ] Écriture avec valeur hors bornes (ex. XP négatif, niveau > max) refusée par les rules
+- [ ] Écritures normales de l'app (services existants) toujours acceptées — pas de régression
+- [ ] Testé via `docs/firestore-smoke-test.md` + émulateur si possible
+
+**Fichiers :** `firestore.rules`
+
+**Priorité :** avant tout système de classement/social ; sinon impact limité à la triche solo
+
+---
+
+### T-320 — Sécurité : Firebase App Check
+
+**Labels :** `firebase`, `infra`, `securite`  
+**Statut board :** `Backlog`
+
+**Objectif** : rien n'empêche aujourd'hui un script externe d'appeler l'API Firebase du projet (lecture/écriture) en dehors de l'app officielle — risque d'abus et de coût.
+
+**Périmètre**
+- Activer Firebase App Check (Play Integrity Android, App Attest/DeviceCheck iOS)
+- Intégrer le SDK côté `src/services/firebase.ts`
+
+**Critères d'acceptation**
+- [ ] App Check actif en production, requêtes non attestées refusées
+- [ ] Build dev/Expo Go toujours fonctionnel (debug token App Check)
+
+**Fichiers :** `src/services/firebase.ts`
+
+**Priorité :** avant un lancement public élargi ; pas bloquant pour une bêta fermée
+
+---
+
+### T-321 — Sécurité : retirer logs debug avec données utilisateur
+
+**Labels :** `firebase`, `securite`  
+**Statut board :** `To Do`
+
+**Objectif** : `saveProfile` logge en clair des données utilisateur (`console.log('[saveProfile]', { uid, unlockedEtapes })`) — bruit et exposition inutile en build release.
+
+**Périmètre**
+- Retirer ou conditionner (`__DEV__`) les `console.log` avec données utilisateur dans les services
+
+**Critères d'acceptation**
+- [ ] Aucun `console.log` de données utilisateur dans un build `production`
+- [ ] `npx tsc --noEmit` OK, tests inchangés
+
+**Fichiers :** `src/services/user.service.ts`
+
+---
+
+### T-322 — Sécurité : avertir la perte de données en compte anonyme
+
+**Labels :** `auth`, `securite`  
+**Statut board :** `Backlog`
+
+**Objectif** : l'auth anonyme (`docs/firebase-auth-strategy.md`) crée un `uid` dont les données Firestore sont perdues définitivement si l'app est désinstallée ou le cache vidé, sans liaison email. Vérifier qu'un message prévient l'utilisateur.
+
+**Périmètre**
+- Vérifier/ajouter un message visible (bannière profil ou onboarding) tant que le compte reste anonyme, incitant à "sécuriser mon compte" (liaison email, cf. stratégie V1+)
+
+**Critères d'acceptation**
+- [ ] Utilisateur anonyme voit un message explicite sur le risque de perte de données
+- [ ] CTA vers liaison email si déjà implémentée, sinon noté comme dépendance
+
+**Dépend de :** liaison email (`linkWithCredential`) — vérifier état d'implémentation avant de démarrer
 
 ---
 
