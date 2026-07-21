@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { db } from './firebase'
 import type { MoodEntry } from '@/src/features/mood/types'
 
@@ -47,11 +47,12 @@ export async function saveMoodEntry(
   entry: Omit<MoodEntry, 'createdAt'>
 ): Promise<void> {
   const ref = doc(db, 'users', uid, 'moodEntries', entry.date)
-  const existing = await getDoc(ref)
-  if (existing.exists()) throw new MoodAlreadyFilledError(entry.date)
-
-  await setDoc(ref, {
-    ...entry,
-    createdAt: serverTimestamp(),
+  await runTransaction(db, async (transaction) => {
+    const existing = await transaction.get(ref)
+    if (existing.exists()) throw new MoodAlreadyFilledError(entry.date)
+    transaction.set(ref, {
+      ...entry,
+      createdAt: serverTimestamp(),
+    })
   })
 }

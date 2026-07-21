@@ -84,14 +84,13 @@ export function useWeeklyMood() {
         return saved
       } catch (e) {
         if (e instanceof MoodAlreadyFilledError) {
-          setError('Tu as déjà renseigné ton humeur aujourd’hui.')
+          setError('Tu as déjà renseigné ton humeur aujourd\'hui.')
+        } else if (e instanceof Error && /unavailable|offline|network/i.test(e.message)) {
+          setError('Hors ligne. Réessaie quand tu as du réseau.')
+        } else if (e instanceof Error && /permission/i.test(e.message)) {
+          setError('Firestore : permission refusée. Déploie les rules.')
         } else {
-          const msg = e instanceof Error ? e.message : 'Enregistrement impossible.'
-          setError(
-            msg.includes('permission') || msg.includes('Permission')
-              ? 'Firestore : permission refusée. Déploie les rules.'
-              : 'Enregistrement impossible. Réessaie.'
-          )
+          setError('Enregistrement impossible. Réessaie.')
         }
         throw e
       } finally {
