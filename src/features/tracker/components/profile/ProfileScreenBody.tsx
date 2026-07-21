@@ -116,9 +116,11 @@ export const ProfileScreenBody = () => {
           <ButtonReset onAfterReset={onResetAll} />
         </View>
 
-        <Pressable onPress={onRestartFlow} className="mt-8 items-center py-3 active:opacity-80">
-          <FlowText className="text-xs text-brand-locked">Recommencer le parcours (test)</FlowText>
-        </Pressable>
+        {__DEV__ ? (
+          <Pressable onPress={onRestartFlow} className="mt-8 items-center py-3 active:opacity-80">
+            <FlowText className="text-xs text-brand-locked">Recommencer le parcours (test)</FlowText>
+          </Pressable>
+        ) : null}
       </View>
     </ScrollView>
   )

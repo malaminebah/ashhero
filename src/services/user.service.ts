@@ -19,12 +19,16 @@ export const saveProfile = async (
   uid: string,
   profile: TrackerConfig
 ): Promise<void> => {
-  console.log('[saveProfile]', { uid, unlockedEtapes: profile.unlockedEtapes })
+  if (__DEV__) {
+    console.log('[saveProfile]', { uid, unlockedEtapes: profile.unlockedEtapes })
+  }
   await setDoc(doc(db, 'users', uid, 'profile', 'data'), {
     ...profile,
     quitDate: profile.quitDate ? Timestamp.fromDate(profile.quitDate) : null,
   })
-  console.log('[saveProfile] done')
+  if (__DEV__) {
+    console.log('[saveProfile] done')
+  }
 }
 
 export const deleteProfile = async (uid: string): Promise<void> => {

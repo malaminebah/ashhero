@@ -29,13 +29,15 @@ export const useEtapes = (): EtapesResult => {
 
   useEffect(() => {
     const uid = getCurrentUid()
-    console.log('[useEtapes] useEffect', {
-      uid: uid ?? 'null',
-      reachedCount: reached.length,
-      reachedLabels: reached.map((e) => e.label),
-      unlockedCount: unlockedEtapes.length,
-      unlockedEtapes,
-    })
+    if (__DEV__) {
+      console.log('[useEtapes] useEffect', {
+        uid: uid ?? 'null',
+        reachedCount: reached.length,
+        reachedLabels: reached.map((e) => e.label),
+        unlockedCount: unlockedEtapes.length,
+        unlockedEtapes,
+      })
+    }
     if (!uid) return
 
     let didUnlock = false
@@ -50,8 +52,15 @@ export const useEtapes = (): EtapesResult => {
 
     if (didUnlock) {
       const profile = trackerProfileFromStore(useTrackerStore.getState())
-      console.log('[useEtapes] saving profile', { didUnlock, unlockedEtapes: profile.unlockedEtapes })
-      saveProfile(uid, profile).catch((err) => console.warn('[useEtapes] saveProfile error', err))
+      if (__DEV__) {
+        console.log('[useEtapes] saving profile', {
+          didUnlock,
+          unlockedEtapes: profile.unlockedEtapes,
+        })
+      }
+      saveProfile(uid, profile).catch((err) => {
+        if (__DEV__) console.warn('[useEtapes] saveProfile error', err)
+      })
     }
   }, [reached, unlockedEtapes, unlockEtape])
 
