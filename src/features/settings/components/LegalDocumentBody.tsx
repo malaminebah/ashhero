@@ -1,16 +1,17 @@
-import { Pressable, ScrollView, View } from 'react-native'
+import { Linking, Pressable, ScrollView, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { flowShadow } from '@/constants/flowTheme'
 import { FlowText } from '@/components/ui/flow-text'
-import { getLegalDocument } from '../legalContent'
+import { getLegalDocument, getPublicLegalUrl } from '../legalContent'
 import type { LegalDocumentScreenParams } from '../types'
 import { SettingsScreenHeader } from './SettingsScreenHeader'
 
 export const LegalDocumentBody = ({ slug }: LegalDocumentScreenParams) => {
   const router = useRouter()
   const doc = getLegalDocument(slug)
+  const publicUrl = doc ? getPublicLegalUrl(doc.slug) : null
 
   if (!doc) {
     return (
@@ -45,6 +46,17 @@ export const LegalDocumentBody = ({ slug }: LegalDocumentScreenParams) => {
               </FlowText>
             ))}
           </View>
+
+          {publicUrl ? (
+            <Pressable
+              onPress={() => void Linking.openURL(publicUrl)}
+              className="mt-4 items-center py-2 active:opacity-70"
+            >
+              <FlowText className="text-[13px] font-semibold text-flow-cta">
+                Voir en ligne
+              </FlowText>
+            </Pressable>
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>

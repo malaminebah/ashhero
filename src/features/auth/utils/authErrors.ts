@@ -1,6 +1,6 @@
 import { FirebaseError } from 'firebase/app'
 
-export type AuthErrorContext = 'signIn' | 'passwordReset'
+export type AuthErrorContext = 'signIn' | 'passwordReset' | 'deleteAccount'
 
 export const authErrorToUserMessage = (
   err: unknown,
@@ -25,6 +25,8 @@ export const authErrorToUserMessage = (
         return 'Trop de tentatives, réessaie plus tard.'
       case 'auth/network-request-failed':
         return 'Problème de connexion réseau.'
+      case 'auth/requires-recent-login':
+        return 'Pour des raisons de sécurité, reconnecte-toi puis réessaie de supprimer ton compte.'
       default:
         return err.message || 'Une erreur est survenue.'
     }

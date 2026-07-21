@@ -1,4 +1,5 @@
 export {
+  deleteAccount,
   getCurrentUid,
   isCurrentUserAnonymous,
   linkAnonymousWithEmail,

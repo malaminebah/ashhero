@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   EmailAuthProvider,
   linkWithCredential,
   onAuthStateChanged,
@@ -9,6 +10,7 @@ import {
   signOut,
 } from 'firebase/auth'
 import { auth } from './firebase'
+import { purgeUserData } from './user.service'
 
 export const signInAnon = async (): Promise<string> => {
   const { user } = await signInAnonymously(auth)
@@ -45,6 +47,20 @@ export const sendPasswordReset = async (email: string): Promise<void> => {
 
 export const signOutUser = async (): Promise<void> => {
   await signOut(auth)
+}
+
+/**
+ * Deletes all Firestore data then the Firebase Auth account itself.
+ * Order matters: Firestore is purged first, while still authenticated as `uid`
+ * (rules deny writes once the Auth user is gone).
+ * If the session is too old, Firebase throws `auth/requires-recent-login` —
+ * caller shows a message asking the user to sign out/in and retry, no reauth modal (MVP scope).
+ */
+export const deleteAccount = async (): Promise<void> => {
+  const user = auth.currentUser
+  if (!user) throw new Error('no-current-user')
+  await purgeUserData(user.uid)
+  await deleteUser(user)
 }
 
 /** Upgrades the anonymous session to email+password — keeps the same uid (profile preserved). */

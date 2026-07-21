@@ -1,11 +1,14 @@
+import { useState } from 'react'
 import { Alert, Linking, ScrollView, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import Constants from 'expo-constants'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FlowText } from '@/components/ui/flow-text'
+import { deleteAccount } from '@/src/services'
 import { useEmailAuthActions } from '@/src/features/auth/hooks/useEmailAuthActions'
 import { useSessionStore } from '@/src/features/auth/sessionStore'
+import { authErrorToUserMessage } from '@/src/features/auth/utils/authErrors'
 import { usePremium } from '@/src/features/premium/hooks/usePremium'
 import { SettingsDivider } from './SettingsDivider'
 import { SettingsRow } from './SettingsRow'
@@ -19,6 +22,7 @@ export const SettingsScreenBody = () => {
   const { signOut, pending: signOutPending } = useEmailAuthActions()
   const { isPremium } = usePremium()
   const isAnonymous = useSessionStore((s) => s.isAnonymous)
+  const [deletePending, setDeletePending] = useState(false)
 
   const openLegal = (slug: 'terms' | 'privacy' | 'rules') => {
     router.push(`/legal/${slug}` as never)
@@ -51,6 +55,30 @@ export const SettingsScreenBody = () => {
 
   const onContact = () => {
     void Linking.openURL('mailto:contact@ashhero.app?subject=Support%20AshHero')
+  }
+
+  const runDeleteAccount = async () => {
+    setDeletePending(true)
+    try {
+      await deleteAccount()
+      useSessionStore.getState().setFromAuth(null)
+      router.replace('/auth/login' as never)
+    } catch (e) {
+      Alert.alert('Suppression impossible', authErrorToUserMessage(e, 'deleteAccount'))
+    } finally {
+      setDeletePending(false)
+    }
+  }
+
+  const onDeleteAccount = () => {
+    Alert.alert(
+      'Supprimer mon compte',
+      'Action définitive : ton profil, tes combats, ton historique mood et ta série seront supprimés sans possibilité de récupération.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: 'Supprimer définitivement', style: 'destructive', onPress: () => void runDeleteAccount() },
+      ]
+    )
   }
 
   return (
@@ -92,6 +120,15 @@ export const SettingsScreenBody = () => {
               label={signOutPending ? 'Déconnexion…' : 'Se déconnecter'}
               onPress={onLogout}
               disabled={signOutPending}
+              showChevron={false}
+            />
+            <SettingsDivider />
+            <SettingsRow
+              icon="delete-outline"
+              label={deletePending ? 'Suppression…' : 'Supprimer mon compte'}
+              onPress={onDeleteAccount}
+              disabled={deletePending}
+              destructive
               showChevron={false}
             />
           </SettingsSection>

@@ -7,6 +7,9 @@ node_modules/
 .expo/
 dist/
 web-build/
+
+# Firebase CLI deploy cache
+.firebase/
 expo-env.d.ts
 
 # Native

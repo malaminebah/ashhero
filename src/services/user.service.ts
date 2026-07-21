@@ -1,6 +1,7 @@
 import {
   doc,
   getDoc,
+  getDocs,
   setDoc,
   deleteDoc,
   collection,
@@ -33,6 +34,19 @@ export const saveProfile = async (
 
 export const deleteProfile = async (uid: string): Promise<void> => {
   await deleteDoc(doc(db, 'users', uid, 'profile', 'data'))
+}
+
+const USER_SUBCOLLECTIONS = ['relapses', 'etapes', 'combats', 'moodEntries'] as const
+
+/** Deletes every document under users/{uid} (subcollections + profile). Used for real account deletion (RGPD/store). */
+export const purgeUserData = async (uid: string): Promise<void> => {
+  await Promise.all(
+    USER_SUBCOLLECTIONS.map(async (name) => {
+      const snap = await getDocs(collection(db, 'users', uid, name))
+      await Promise.all(snap.docs.map((docSnap) => deleteDoc(docSnap.ref)))
+    })
+  )
+  await deleteProfile(uid)
 }
 
 export const getProfile = async (

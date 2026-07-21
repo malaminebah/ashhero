@@ -16,11 +16,11 @@ export const LEGAL_DOCUMENTS: Record<LegalSlug, LegalDocument> = {
   privacy: {
     slug: 'privacy',
     title: 'Politique de confidentialité',
-    updatedAt: '23 juin 2026',
+    updatedAt: '21 juillet 2026',
     paragraphs: [
       "Nous collectons les données nécessaires au suivi de ta progression : profil, date d'arrêt, type de consommation, combats, humeur et préférences.",
       "Les données sont hébergées via Firebase (Google Cloud). Elles sont associées à ton compte et ne sont pas vendues à des tiers.",
-      "Tu peux demander la suppression de ton compte depuis l'application (Profil → réinitialisation) ou par e-mail.",
+      "Tu peux supprimer définitivement ton compte et toutes tes données depuis l'application (Réglages → Compte → Supprimer mon compte) ou par e-mail.",
       "Nous n'utilisons pas de publicité ciblée. Les analytics produit, s'ils sont activés plus tard, seront soumis à ton consentement.",
       "Contact DPO / confidentialité : privacy@ashhero.app",
     ],
@@ -44,4 +44,13 @@ export function getLegalDocument(slug: string): LegalDocument | null {
     return LEGAL_DOCUMENTS[slug as LegalSlug]
   }
   return null
+}
+
+const HOSTED_LEGAL_SLUGS: LegalSlug[] = ['privacy', 'terms']
+
+/** Firebase Hosting default URL — same project as EXPO_PUBLIC_FIREBASE_PROJECT_ID. */
+export function getPublicLegalUrl(slug: LegalSlug): string | null {
+  const projectId = process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID?.trim()
+  if (!projectId || !HOSTED_LEGAL_SLUGS.includes(slug)) return null
+  return `https://${projectId}.web.app/${slug}/`
 }
