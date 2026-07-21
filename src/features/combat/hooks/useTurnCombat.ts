@@ -206,9 +206,19 @@ export function useTurnCombat({ enabled, playerMaxHp, tier }: Options) {
       if (finalizedRef.current) return
       finalizedRef.current = true
       inputLockRef.current = true
-      await handleVictory(action, totalSessionXp)
-      setVictoryAction(action)
-      setPhase('victory')
+      try {
+        await handleVictory(action, totalSessionXp)
+        setVictoryAction(action)
+        setPhase('victory')
+      } catch (err) {
+        // Persist failed — no local XP; unlock finalize so close/retry stays possible.
+        finalizedRef.current = false
+        const text =
+          err instanceof Error
+            ? err.message
+            : 'Impossible d’enregistrer le combat. Réessaie.'
+        setBattleMessage({ kind: 'status', text })
+      }
     },
     [handleVictory]
   )
@@ -218,9 +228,18 @@ export function useTurnCombat({ enabled, playerMaxHp, tier }: Options) {
       if (finalizedRef.current) return
       finalizedRef.current = true
       inputLockRef.current = true
-      await handleDefeat()
-      setDefeatSource(source)
-      setPhase('defeat')
+      try {
+        await handleDefeat()
+        setDefeatSource(source)
+        setPhase('defeat')
+      } catch (err) {
+        finalizedRef.current = false
+        const text =
+          err instanceof Error
+            ? err.message
+            : 'Impossible d’enregistrer le combat. Réessaie.'
+        setBattleMessage({ kind: 'status', text })
+      }
     },
     [handleDefeat]
   )
