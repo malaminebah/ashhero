@@ -88,4 +88,4 @@ assets/icons/combat/
 # Soldier variants not used (app uses Soldier.png spritesheet)
 assets/caracter/Soldier-*.png
 !assets/caracter/Soldier.png
-
+.claude
