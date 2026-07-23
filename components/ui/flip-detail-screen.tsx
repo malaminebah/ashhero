@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -34,9 +35,11 @@ export const FlipDetailScreen = ({
     }
   }, [autoFlip, flipped])
 
-  const toggle = () => {
-    flipped.value = withTiming(flipped.value === 0 ? 1 : 0, { duration: 550 })
-  }
+  const tap = Gesture.Tap()
+    .maxDuration(250)
+    .onEnd(() => {
+      flipped.value = withTiming(flipped.value === 0 ? 1 : 0, { duration: 550 })
+    })
 
   const frontStyle = useAnimatedStyle(() => {
     const rotateY = interpolate(flipped.value, [0, 1], [0, 180])
@@ -67,13 +70,12 @@ export const FlipDetailScreen = ({
         </View>
       </View>
 
-      <Pressable
-        onPress={toggle}
-        accessibilityRole="button"
-        accessibilityLabel="Retourner la carte"
-        className="mx-6 mb-6 flex-1 active:opacity-95"
-      >
-        <View className="min-h-[420px] flex-1">
+      <GestureDetector gesture={tap}>
+        <View
+          accessibilityRole="button"
+          accessibilityLabel="Retourner la carte"
+          className="mx-6 mb-6 min-h-[420px] flex-1"
+        >
           <Animated.View
             style={[StyleSheet.absoluteFillObject, frontStyle]}
             className="overflow-hidden rounded-[20px] border border-[rgba(168,85,247,0.35)] bg-brand-card"
@@ -105,7 +107,7 @@ export const FlipDetailScreen = ({
             </ScrollView>
           </Animated.View>
         </View>
-      </Pressable>
+      </GestureDetector>
     </SafeAreaView>
   )
 }
